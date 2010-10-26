@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html lang="sv" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]> <html lang="sv" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]> <html lang="sv" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]> <html lang="sv" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="sv" class="no-js"> <!--<![endif]-->
+<head>
+<!-- meta -->
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title></title>
+<!-- css -->
+<link rel="stylesheet" type="text/css" href="/yap-goodies/css/global.css" />
+<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/themes/ui-lightness/jquery-ui.css" />
+
+<!-- javascript -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"></script>
+<!--[if IE]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<style>
+.box_gradient {
+            filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999'); /* IE6,IE7 */
+  background-color: #444444;
+  background-image: -moz-linear-gradient(top, #444444, #999999); /* FF3.6 */
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #444444),color-stop(1, #999999)); /* Saf4+, Chrome */
+        -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999')"; /* IE8 */
+}
+
+.box_round {
+  border-radius: 12px;
+}
+div {
+	border: 1px solid #000;
+}
+.visuallyhidden { position: absolute !important;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px); }
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible { visibility: hidden; }
+
+/* >> The Magnificent CLEARFIX: Updated to prevent margin-collapsing on child elements << j.mp/bestclearfix */
+.clearfix:before, .clearfix:after {
+  content: "\0020"; display: block; height: 0; visibility: hidden;
+}
+
+.clearfix:after { clear: both; }
+/* Fix clearfix: blueprintcss.lighthouseapp.com/projects/15318/tickets/5-extra-margin-padding-bottom-of-page */
+.clearfix { zoom: 1; }
+
+
+
+/* */
+</style>
+<!--[if lt IE 9 ]> 
+<style>
+#items li.item, #items li.gap {
+	display: inline;
+}
+#items li.gap {
+	width: 40px;
+}
+</style>
+<![endif]-->
+
+<script>
+/**
+ * @author Han Lin Yap < http://zencodez.net/ >
+ * @copyright 2010 zencodez.net
+ * @license http://creativecommons.org/licenses/by-sa/3.0/
+ * @package ingrediens.se
+ * @version 1.0 - 2010-10-26
+ * 
+ * Example Usage
+ * // This will look for all style-tags and parse them.
+ * $.cssStandard('style');
+ *
+ */
+(function ($) {
+	$.cssStandard = function(node) {
+		function cssObjToText(obj) {
+			var text = '';
+			$.each(obj, function(i, v) {
+				text += v.selector + '{';
+				$.each(v.block, function(k, v2) {
+					text += k + ':' + v2 + ';';
+				});
+				text += '}';
+			});
+			return text;
+		}
+	
+	
+		if (!(node instanceof jQuery)) {
+			node = $(node);
+		}
+		
+		node.each(function(index, element) {
+			var css = $(this).html();
+			// strip multiline comment
+			css = css.replace(/\/\*((?:[^\*]|\*[^\/])*)\*\//g, '');
+			
+			// remove newline
+			css = css.replace(/\n/g, '');
+			
+			// block
+			var block = css.split('{');
+			var objCss = [{'selector': $.trim(block.shift())}];
+			$.map(block, function (n, i) {
+					var t = n.split('}');
+					
+					tt = t[0].split(':');
+					
+					var b = {};
+					//console.log(tt);
+					var property, next;
+					while(tt.length > 0) {
+						if (!next) {
+							property = $.trim(tt.shift());
+							b[property] = '';
+						} else {
+							b[property] += ':';
+							next = false;
+						}
+					
+						b[property] += (function() {
+							
+							var a = tt.shift().split(';');							
+							if ($.trim(a[1]))
+								tt.unshift($.trim(a[1]));
+							else
+								next = true;
+							
+							return $.trim(a[0]);
+						})();
+					}
+					
+					objCss[i].block = b;
+					
+					
+					
+					
+					if (t[1]) {
+						objCss[i+1] = {'selector': $.trim(t[1])}
+					}
+				
+			});
+			
+			// Last step
+			var cssFinalize = [];
+			$.each(objCss, function (i, v) {
+				var newblock = {};
+				
+				$.each(v.block, function(k, v2) {
+					// border-radius
+					if (k == 'border-radius') {
+						newblock['-moz-border-radius'] = v2;
+						newblock['-webkit-border-radius'] = v2;
+					// box-shadow
+					} else if (k == 'box-shadow') {
+						newblock['-moz-box-shadow'] = v2;
+						newblock['-webkit-box-shadow'] = v2;
+					// transform
+					} else if (k == 'transform') {
+						newblock['-moz-transform'] = v2;
+						newblock['-o-transform'] = v2;
+						newblock['-webkit-transform'] = v2;
+					// transition
+					} else if (k == 'transition') {
+						newblock['-moz-transition'] = v2;
+						newblock['-o-transition'] = v2;
+						newblock['-webkit-transition'] = v2;
+					// box-sizing
+					} else if (k == 'box-sizing') {
+						newblock['-moz-box-sizing'] = v2;
+						newblock['-webkit-box-sizing'] = v2;
+					// border-image
+					} else if (k == 'border-image') {
+						newblock['-moz-border-image'] = v2;
+						newblock['-webkit-border-image'] = v2;
+					// box-orient
+					} else if (k == 'box-orient') {
+						newblock['-moz-box-orient'] = v2;
+						newblock['-webkit-box-orient'] = v2;
+					// box-flex
+					} else if (k == 'box-flex') {
+						newblock['-moz-box-flex'] = v2;
+						newblock['-webkit-box-flex'] = v2;
+					// column-width
+					} else if (k == 'column-width') {
+						newblock['-moz-column-width'] = v2;
+						newblock['-webkit-column-width'] = v2;
+					// column-gap
+					} else if (k == 'column-gap') {
+						newblock['-moz-column-gap'] = v2;
+						newblock['-webkit-column-gap'] = v2;
+					// column-rule
+					} else if (k == 'column-rule') {
+						newblock['-moz-column-rule'] = v2;
+						newblock['-webkit-column-rule'] = v2;
+					}
+					
+					
+					// calc
+					if (v2.indexOf('calc') == 0) {
+						newblock[k] = '-moz-' + v2;
+					}
+				});
+			
+				if (!$.isEmptyObject(newblock)) {
+					cssFinalize.push({
+						'selector': v.selector,
+						'block' : newblock
+					});
+				}
+			});
+			if (cssFinalize.length>0) {
+				$(this).after('<style class="css-finalized">' + cssObjToText(cssFinalize) + '</style>').addClass('css-finalize-read');
+			}
+		});
+	}
+	
+	$.cssStandard('style');
+
+})(jQuery);
+</script>
+</head>
+<body>
+<div class="box_round">hej</div>
+</body>
+</html>
