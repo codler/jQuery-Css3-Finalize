@@ -13,5 +13,5 @@ If you write without the prefix it won't work in those browser, you need the wri
 How to use
 
 Simply add this code to your site
-<script src="http://github.com/codler/jQuery-Css3-Finalize/blob/master/static/jquery.css3finalize-latest.min.js"></script>
-Once the code is loaded it will search for style-tags and parse them.
+<script src="http://github.com/codler/jQuery-Css3-Finalize/raw/master/static/jquery.css3finalize-latest.min.js"></script>
+Once the script is loaded it will search for style-tags and parse them.

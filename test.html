@@ -73,7 +73,7 @@ div {
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package ingrediens.se
- * @version 1.0 - 2010-10-26
+ * @version 1.1 - 2010-10-27
  * 
  * Example Usage
  * // This will look for all style-tags and parse them.
@@ -81,7 +81,8 @@ div {
  *
  */
 (function ($) {
-	$.cssStandard = function(node) {
+
+	$.cssFinalize = function(node) {
 		function cssObjToText(obj) {
 			var text = '';
 			$.each(obj, function(i, v) {
@@ -224,7 +225,7 @@ div {
 		});
 	}
 	
-	$.cssStandard('style');
+	$.cssFinalize('style');
 
 })(jQuery);
 </script>
