@@ -2,16 +2,17 @@
  * @author Han Lin Yap < http://zencodez.net/ >
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
- * @package ingrediens.se
- * @version 1.0 - 2010-10-26
+ * @package Css3-Finalize
+ * @version 1.1 - 2010-10-27
+ * @website http://github.com/codler/jQuery-Css3-Finalize
  * 
  * Example Usage
  * // This will look for all style-tags and parse them.
- * $.cssStandard('style');
- *
+ * $.cssFinalize('style');
  */
 (function ($) {
-	$.cssStandard = function(node) {
+
+	$.cssFinalize = function(node) {
 		function cssObjToText(obj) {
 			var text = '';
 			$.each(obj, function(i, v) {
@@ -23,23 +24,28 @@
 			});
 			return text;
 		}
-	
-	
-		if (!(node instanceof jQuery)) {
-			node = $(node);
-		}
 		
-		node.each(function(index, element) {
-			var css = $(this).html();
+		function cleanCss(css) {
 			// strip multiline comment
 			css = css.replace(/\/\*((?:[^\*]|\*[^\/])*)\*\//g, '');
 			
 			// remove newline
 			css = css.replace(/\n/g, '');
 			
+			return css;
+		}
+		
+		function parseFinalize(element, css) {
+			css = cleanCss(css);
+			
 			// block
 			var block = css.split('{');
-			var objCss = [{'selector': $.trim(block.shift())}];
+			if (block[0] != "") {
+				var objCss = [{'selector': $.trim(block.shift())}] 
+			} else {
+				var objCss = [];
+				block.shift();
+			}
 			$.map(block, function (n, i) {
 					var t = n.split('}');
 					
@@ -148,12 +154,33 @@
 					});
 				}
 			});
-			if (cssFinalize.length>0) {
-				$(this).after('<style class="css-finalized">' + cssObjToText(cssFinalize) + '</style>').addClass('css-finalize-read');
+			
+			appendStyle(element, cssFinalize);
+		}
+	
+	
+		if (!(node instanceof jQuery)) {
+			node = $(node);
+		}
+		
+		node.each(function(index, element) {
+			var $this = $(this);
+
+			// link-tags for firefox
+			if (this.tagName == 'LINK' && $.browser.mozilla) {
+				$('<div />').load(this.href, function(data) {
+					parseFinalize($this, data);
+				});
+			} else {
+				parseFinalize($this, $this.html());
 			}
 		});
+		
+		function appendStyle(element, cssObj) {
+			element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>').addClass('css-finalize-read');
+		}
 	}
 	
-	$.cssStandard('style');
+	$.cssFinalize('style');
 
 })(jQuery);
