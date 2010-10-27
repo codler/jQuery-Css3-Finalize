@@ -73,16 +73,92 @@ div {
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.1 - 2010-10-27
+ * @version 1.2 - 2010-10-27
  * @website http://github.com/codler/jQuery-Css3-Finalize
- * 
- * Example Usage
+ *
+ * == Description == 
+ * Some css3 attributes needs to have a prefix infront
+ * inorder to work in diffrent browser. The plugin takes
+ * care of that so you only need to write without the prefix.
+ *
+ * == Example Usage ==
  * // This will look for all style-tags and parse them.
  * $.cssFinalize('style');
  */
 (function ($) {
 
 	$.cssFinalize = function(node) {
+		var currentPrefix = false;
+		
+		if ($.browser.safari || $.browser.webkit) {
+			currentPrefix = 'webkit';
+		} else if ($.browser.mozilla) {
+			currentPrefix = 'moz'
+		} else if ($.browser.msie) {
+			currentPrefix = 'ms';
+		} else if ($.browser.opera) {
+			currentPrefix = 'o';
+		}
+	
+		function customRule(newAttr) {
+			return function(attr) {
+				return newAttr;
+			}
+		}
+		
+		var rules = {
+			// moz is comment out because the rule lies on "valueRule"
+			'background-clip'		 : [/*'moz',*/ 'webkit', 'khtml'],
+			'background-origin'		 : [/*'moz',*/ 'webkit', 'khtml'],
+			'background-size'		 : ['moz', 'webkit', 'khtml'],
+			
+			// border image
+			'border-image'				: ['moz', 'webkit'],
+			'border-top-image'			: ['moz', 'webkit'],
+			'border-right-image'		: ['moz', 'webkit'],
+			'border-bottom-image'		: ['moz', 'webkit'],
+			'border-left-image'			: ['moz', 'webkit'],
+			'border-corner-image'		: ['moz', 'webkit'],
+			'border-top-left-image'		: ['moz', 'webkit'],
+			'border-top-right-image'	: ['moz', 'webkit'],
+			'border-bottom-left-image'	: ['moz', 'webkit'],
+			'border-bottom-right-image'	: ['moz', 'webkit'],
+			
+			// border-radius
+			'border-radius' 			: ['moz', 'webkit'],
+			'border-top-left-radius'	: [customRule('-moz-border-radius-topleft'), 'webkit'],
+			'border-top-right-radius'	: [customRule('-moz-border-radius-topright'), 'webkit'],
+			'border-bottom-right-radius': [customRule('-moz-border-radius-bottomright'), 'webkit'],
+			'border-bottom-left-radius'	: [customRule('-moz-border-radius-bottomleft'), 'webkit'],
+			
+			'box-align'		 : ['moz', 'webkit'],
+			'box-direction'	 : ['moz', 'webkit'],
+			'box-flex'		 : ['moz', 'webkit'],
+			'box-flex-group' : ['moz', 'webkit'],
+			'box-lines'		 : ['moz', 'webkit'],
+			'box-ordinal-group' : ['moz', 'webkit'],
+			'box-orient'	 : ['moz', 'webkit'],
+			'box-pack'		 : ['moz', 'webkit'],
+			'box-shadow'	 : ['moz', 'webkit'],
+			'box-sizing'	 : ['moz', 'webkit'],
+			'column-count'	 : ['moz', 'webkit'],
+			'column-gap'	 : ['moz', 'webkit'],
+			'column-rule'	 : ['moz', 'webkit'],
+			'column-rule-color'	 : ['moz', 'webkit'],
+			'column-rule-style'	 : ['moz', 'webkit'],
+			'column-rule-width'	 : ['moz', 'webkit'],
+			'column-width'	 : ['moz', 'webkit'],
+			'tab-size'		 : ['moz', 'o'],
+			'text-overflow'	 : ['o'],
+			'transform'		 : ['moz', 'webkit', 'o'],
+			'transform-origin'	 : ['moz', 'webkit', 'o'],
+			'transition'	 : ['moz', 'webkit', 'o'],
+			'transition-delay' : ['moz', 'webkit', 'o'],
+			'transition-duration' : ['moz', 'webkit', 'o'],
+			'transition-property' : ['moz', 'webkit', 'o'],
+			'transition-timing-function' : ['moz', 'webkit', 'o']
+		}
+	
 		function cssObjToText(obj) {
 			var text = '';
 			$.each(obj, function(i, v) {
@@ -162,59 +238,52 @@ div {
 				var newblock = {};
 				
 				$.each(v.block, function(k, v2) {
-					// border-radius
-					if (k == 'border-radius') {
-						newblock['-moz-border-radius'] = v2;
-						newblock['-webkit-border-radius'] = v2;
-					// box-shadow
-					} else if (k == 'box-shadow') {
-						newblock['-moz-box-shadow'] = v2;
-						newblock['-webkit-box-shadow'] = v2;
-					// transform
-					} else if (k == 'transform') {
-						newblock['-moz-transform'] = v2;
-						newblock['-o-transform'] = v2;
-						newblock['-webkit-transform'] = v2;
-					// transition
-					} else if (k == 'transition') {
-						newblock['-moz-transition'] = v2;
-						newblock['-o-transition'] = v2;
-						newblock['-webkit-transition'] = v2;
-					// box-sizing
-					} else if (k == 'box-sizing') {
-						newblock['-moz-box-sizing'] = v2;
-						newblock['-webkit-box-sizing'] = v2;
-					// border-image
-					} else if (k == 'border-image') {
-						newblock['-moz-border-image'] = v2;
-						newblock['-webkit-border-image'] = v2;
-					// box-orient
-					} else if (k == 'box-orient') {
-						newblock['-moz-box-orient'] = v2;
-						newblock['-webkit-box-orient'] = v2;
-					// box-flex
-					} else if (k == 'box-flex') {
-						newblock['-moz-box-flex'] = v2;
-						newblock['-webkit-box-flex'] = v2;
-					// column-width
-					} else if (k == 'column-width') {
-						newblock['-moz-column-width'] = v2;
-						newblock['-webkit-column-width'] = v2;
-					// column-gap
-					} else if (k == 'column-gap') {
-						newblock['-moz-column-gap'] = v2;
-						newblock['-webkit-column-gap'] = v2;
-					// column-rule
-					} else if (k == 'column-rule') {
-						newblock['-moz-column-rule'] = v2;
-						newblock['-webkit-column-rule'] = v2;
+				
+					if (k in rules) {
+						for (prefix in rules[k]) {
+							if ($.isFunction(rules[k][prefix])) {
+								newblock[rules[k][prefix](k)] = v2;
+							} else {
+								if (currentPrefix == rules[k][prefix] || !currentPrefix) {
+									newblock['-' + rules[k][prefix] + '-' + k] = v2;
+								}
+							}
+						}
+					}
+					
+					// Only apply for firefox
+					if (currentPrefix == 'moz') {
+						// calc
+						if (v2.indexOf('calc') == 0) {
+							newblock[k] = '-moz-' + v2;
+						}
+						
+						// only for version 3.6 or lower
+						if (parseInt($.browser.version.substr(0,1)) < 4) {
+							// background-clip
+							if (v2 == 'padding-box' && k == 'background-clip') {
+								newblock[k] = 'padding';
+							// background-clip
+							} else if (v2 == 'border-box' && k == 'background-clip') {
+								newblock[k] = 'border';
+							// background-clip
+							} else if (v2 == 'content-box' && k == 'background-clip') {
+								newblock[k] = 'content';
+							// background-origin
+							} else if (v2 == 'padding-box' && k == 'background-origin') {
+								newblock[k] = 'padding';
+							// background-origin
+							} else if (v2 == 'border-box' && k == 'background-origin') {
+								newblock[k] = 'border';
+							// background-origin
+							} else if (v2 == 'content-box' && k == 'background-origin') {
+								newblock[k] = 'content';
+							}
+						}
 					}
 					
 					
-					// calc
-					if (v2.indexOf('calc') == 0) {
-						newblock[k] = '-moz-' + v2;
-					}
+					// TODO : Match background-image: linear-gradient()
 				});
 			
 				if (!$.isEmptyObject(newblock)) {
@@ -235,7 +304,9 @@ div {
 		
 		node.each(function(index, element) {
 			var $this = $(this);
-
+			if ($this.hasClass('css-finalize-read')) {
+				return true;
+			}
 			// link-tags for firefox
 			if (this.tagName == 'LINK' && $.browser.mozilla) {
 				$('<div />').load(this.href, function(data) {
@@ -251,7 +322,7 @@ div {
 		}
 	}
 	
-	$.cssFinalize('style');
+	$.cssFinalize('style, link');
 
 })(jQuery);
 </script>
