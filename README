@@ -9,3 +9,9 @@ For example the css3 attribute box-sizing need to have the prefix
 -o- in Opera
 
 If you write without the prefix it won't work in those browser, you need the write each of them. Here is where this jquery plugin comes in. You only need to write it without the prefix and the plugin will automatical add the prefix. With this you will save time and the pain of rewriting same attribute many times.
+
+How to use
+
+Simply add this code to your site
+<script src="http://github.com/codler/jQuery-Css3-Finalize/blob/master/static/jquery.css3finalize-latest.min.js"></script>
+Once the code is loaded it will search for style-tags and parse them.
