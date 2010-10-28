@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.3 - 2010-10-28
+ * @version 1.4 - 2010-10-28
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -169,7 +169,7 @@
 					}
 				
 			});
-			
+			//console.log(objCss);
 			return objCss;
 		}
 		
@@ -192,56 +192,56 @@
 			var cssFinalize = [];
 			$.each(objCss, function (i, v) {
 				var newblock = {};
-				
-				$.each(v.block, function(k, v2) {
-				
-					if (k in rules) {
-						for (prefix in rules[k]) {
-							if ($.isFunction(rules[k][prefix])) {
-								newblock[rules[k][prefix](k)] = v2;
-							} else {
-								if (currentPrefix == rules[k][prefix] || !currentPrefix) {
-									newblock['-' + rules[k][prefix] + '-' + k] = v2;
+				if (v.block) {
+					$.each(v.block, function(k, v2) {
+					
+						if (k in rules) {
+							for (prefix in rules[k]) {
+								if ($.isFunction(rules[k][prefix])) {
+									newblock[rules[k][prefix](k)] = v2;
+								} else {
+									if (currentPrefix == rules[k][prefix] || !currentPrefix) {
+										newblock['-' + rules[k][prefix] + '-' + k] = v2;
+									}
 								}
 							}
 						}
-					}
-					
-					// Only apply for firefox
-					if (currentPrefix == 'moz') {
-						// calc
-						if (v2.indexOf('calc') == 0) {
-							newblock[k] = '-moz-' + v2;
-						}
 						
-						// only for version 3.6 or lower
-						if (parseInt($.browser.version.substr(0,1)) < 4) {
-							// background-clip
-							if (v2 == 'padding-box' && k == 'background-clip') {
-								newblock[k] = 'padding';
-							// background-clip
-							} else if (v2 == 'border-box' && k == 'background-clip') {
-								newblock[k] = 'border';
-							// background-clip
-							} else if (v2 == 'content-box' && k == 'background-clip') {
-								newblock[k] = 'content';
-							// background-origin
-							} else if (v2 == 'padding-box' && k == 'background-origin') {
-								newblock[k] = 'padding';
-							// background-origin
-							} else if (v2 == 'border-box' && k == 'background-origin') {
-								newblock[k] = 'border';
-							// background-origin
-							} else if (v2 == 'content-box' && k == 'background-origin') {
-								newblock[k] = 'content';
+						// Only apply for firefox
+						if (currentPrefix == 'moz') {
+							// calc
+							if (v2.indexOf('calc') == 0) {
+								newblock[k] = '-moz-' + v2;
+							}
+							
+							// only for version 3.6 or lower
+							if (parseInt($.browser.version.substr(0,1)) < 4) {
+								// background-clip
+								if (v2 == 'padding-box' && k == 'background-clip') {
+									newblock[k] = 'padding';
+								// background-clip
+								} else if (v2 == 'border-box' && k == 'background-clip') {
+									newblock[k] = 'border';
+								// background-clip
+								} else if (v2 == 'content-box' && k == 'background-clip') {
+									newblock[k] = 'content';
+								// background-origin
+								} else if (v2 == 'padding-box' && k == 'background-origin') {
+									newblock[k] = 'padding';
+								// background-origin
+								} else if (v2 == 'border-box' && k == 'background-origin') {
+									newblock[k] = 'border';
+								// background-origin
+								} else if (v2 == 'content-box' && k == 'background-origin') {
+									newblock[k] = 'content';
+								}
 							}
 						}
-					}
-					
-					
-					// TODO : Match background-image: linear-gradient()
-				});
-			
+						
+						
+						// TODO : Match background-image: linear-gradient()
+					});
+				}
 				if (!$.isEmptyObject(newblock)) {
 					cssFinalize.push({
 						'selector': v.selector,
@@ -249,6 +249,7 @@
 					});
 				}
 			});
+				//console.log(cssFinalize);
 			if (cssFinalize.length > 0) {
 				appendStyle(element, cssFinalize);
 			}
