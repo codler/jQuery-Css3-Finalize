@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.2 - 2010-10-27
+ * @version 1.3 - 2010-10-28
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -101,35 +101,43 @@
 			return text;
 		}
 		
-		function cleanCss(css) {
-			// strip multiline comment
-			css = css.replace(/\/\*((?:[^\*]|\*[^\/])*)\*\//g, '');
-			
-			// remove newline
-			css = css.replace(/\n/g, '');
-			
-			return css;
-		}
-		
-		function parseFinalize(element, css) {
-			css = cleanCss(css);
-			
+		function cssTextToObj(text) {
 			// block
-			var block = css.split('{');
+			var block = text.split('{');
 			if (block[0] != "") {
 				var objCss = [{'selector': $.trim(block.shift())}] 
 			} else {
 				var objCss = [];
 				block.shift();
 			}
+			//console.log("-----------------------------------------");
+			//console.log(block);
 			$.map(block, function (n, i) {
+					//console.log("--------------------");
 					var t = n.split('}');
-					
-					tt = t[0].split(':');
+					if (t[0] == "") {
+						if (t[1]) {
+							objCss[i+1] = {'selector': $.trim(t[1])};
+						}
+						return true;
+					}
+					//console.log([t]);
+					var tt = t[0].split(':');
+					//var tt = [];
+					/*
+					for(ex in ttt) {
+						tt[ex] = ttt[ex];
+					}*/
+					//ttt = tt;
+					/*console.log(t[0]);
+					console.log(t[0].split(':'));
+					console.log(tt.length);
+					console.log(tt);*/
+					//console.log(ttt);
 					
 					var b = {};
-					//console.log(tt);
-					var property, next;
+					var property, next=false;
+					
 					while(tt.length > 0) {
 						if (!next) {
 							property = $.trim(tt.shift());
@@ -150,18 +158,36 @@
 							return $.trim(a[0]);
 						})();
 					}
-					
+					//console.log(objCss);
 					objCss[i].block = b;
 					
 					
 					
 					
 					if (t[1]) {
-						objCss[i+1] = {'selector': $.trim(t[1])}
+						objCss[i+1] = {'selector': $.trim(t[1])};
 					}
 				
 			});
 			
+			return objCss;
+		}
+		
+		function cleanCss(css) {
+			// strip multiline comment
+			css = css.replace(/\/\*((?:[^\*]|\*[^\/])*)\*\//g, '');
+			
+			// remove newline
+			css = css.replace(/\n/g, '');
+			css = css.replace(/\r/g, '');
+			
+			return css;
+		}
+		
+		function parseFinalize(element, cssText) {
+			cssText = cleanCss(cssText);
+			var objCss = cssTextToObj(cssText);
+
 			// Last step
 			var cssFinalize = [];
 			$.each(objCss, function (i, v) {
@@ -223,8 +249,9 @@
 					});
 				}
 			});
-			
-			appendStyle(element, cssFinalize);
+			if (cssFinalize.length > 0) {
+				appendStyle(element, cssFinalize);
+			}
 		}
 	
 	
