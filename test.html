@@ -73,7 +73,7 @@ ickbar {}
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.4 - 2010-10-28
+ * @version 1.5 - 2010-10-28
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -90,7 +90,7 @@ ickbar {}
 	$.cssFinalize = function(node) {
 		var currentPrefix = false;
 		
-		if ($.browser.safari || $.browser.webkit) {
+		if ($.browser.webkit || $.browser.safari) {
 			currentPrefix = 'webkit';
 		} else if ($.browser.mozilla) {
 			currentPrefix = 'moz'
@@ -131,29 +131,30 @@ ickbar {}
 			'border-bottom-right-radius': [customRule('-moz-border-radius-bottomright'), 'webkit'],
 			'border-bottom-left-radius'	: [customRule('-moz-border-radius-bottomleft'), 'webkit'],
 			
-			'box-align'		 : ['moz', 'webkit'],
-			'box-direction'	 : ['moz', 'webkit'],
-			'box-flex'		 : ['moz', 'webkit'],
-			'box-flex-group' : ['moz', 'webkit'],
-			'box-lines'		 : ['moz', 'webkit'],
-			'box-ordinal-group' : ['moz', 'webkit'],
-			'box-orient'	 : ['moz', 'webkit'],
-			'box-pack'		 : ['moz', 'webkit'],
-			'box-shadow'	 : ['moz', 'webkit'],
-			'box-sizing'	 : ['moz', 'webkit'],
-			'column-count'	 : ['moz', 'webkit'],
-			'column-gap'	 : ['moz', 'webkit'],
-			'column-rule'	 : ['moz', 'webkit'],
+			'box-align'			 : ['moz', 'webkit'],
+			'box-direction'		 : ['moz', 'webkit'],
+			'box-flex'			 : ['moz', 'webkit'],
+			'box-flex-group'	 : ['moz', 'webkit'],
+			'box-lines'			 : ['moz', 'webkit'],
+			'box-ordinal-group'	 : ['moz', 'webkit'],
+			'box-orient'		 : ['moz', 'webkit'],
+			'box-pack'			 : ['moz', 'webkit'],
+			'box-shadow'		 : ['moz', 'webkit'],
+			'box-sizing'		 : ['moz', 'webkit'],
+			'column-count'		 : ['moz', 'webkit'],
+			'column-gap'		 : ['moz', 'webkit'],
+			'column-rule'		 : ['moz', 'webkit'],
 			'column-rule-color'	 : ['moz', 'webkit'],
 			'column-rule-style'	 : ['moz', 'webkit'],
 			'column-rule-width'	 : ['moz', 'webkit'],
-			'column-width'	 : ['moz', 'webkit'],
-			'tab-size'		 : ['moz', 'o'],
-			'text-overflow'	 : ['o'],
-			'transform'		 : ['moz', 'webkit', 'o'],
-			'transform-origin'	 : ['moz', 'webkit', 'o'],
-			'transition'	 : ['moz', 'webkit', 'o'],
-			'transition-delay' : ['moz', 'webkit', 'o'],
+			'column-width'		 : ['moz', 'webkit'],
+			'tab-size'			 : ['moz', 'o'],
+			'text-overflow'		 : ['o'],
+			'text-size-adjust'	 : ['webkit', 'ms'],
+			'transform'			 : ['moz', 'webkit', 'o', 'ms'],
+			'transform-origin'	 : ['moz', 'webkit', 'o', 'ms'],
+			'transition'		 : ['moz', 'webkit', 'o'],
+			'transition-delay'	 : ['moz', 'webkit', 'o'],
 			'transition-duration' : ['moz', 'webkit', 'o'],
 			'transition-property' : ['moz', 'webkit', 'o'],
 			'transition-timing-function' : ['moz', 'webkit', 'o']
@@ -161,10 +162,10 @@ ickbar {}
 	
 		function cssObjToText(obj) {
 			var text = '';
-			$.each(obj, function(i, v) {
-				text += v.selector + '{';
-				$.each(v.block, function(k, v2) {
-					text += k + ':' + v2 + ';';
+			$.each(obj, function(i, block) {
+				text += block.selector + '{';
+				$.each(block.attributes, function(property, value) {
+					text += property + ':' + value + ';';
 				});
 				text += '}';
 			});
@@ -193,17 +194,6 @@ ickbar {}
 					}
 					//console.log([t]);
 					var tt = t[0].split(':');
-					//var tt = [];
-					/*
-					for(ex in ttt) {
-						tt[ex] = ttt[ex];
-					}*/
-					//ttt = tt;
-					/*console.log(t[0]);
-					console.log(t[0].split(':'));
-					console.log(tt.length);
-					console.log(tt);*/
-					//console.log(ttt);
 					
 					var b = {};
 					var property, next=false;
@@ -228,8 +218,7 @@ ickbar {}
 							return $.trim(a[0]);
 						})();
 					}
-					//console.log(objCss);
-					objCss[i].block = b;
+					objCss[i].attributes = b;
 					
 					
 					
@@ -239,7 +228,6 @@ ickbar {}
 					}
 				
 			});
-			//console.log(objCss);
 			return objCss;
 		}
 		
@@ -254,72 +242,102 @@ ickbar {}
 			return css;
 		}
 		
+		function findNeededAttributes(attributes) {
+			var newAttributes = {};
+			$.each(attributes, function(property, value) {
+				// Property Rules
+				var newProperty = propertyRules(property);
+				if (newProperty) {
+					newAttributes[newProperty] = value;
+				}
+				
+				// Value Rules
+				var newValue = valuesRules(property, value);
+				if (newValue) {
+					newAttributes[property] = newValue;
+				}
+			});
+			
+			return newAttributes;
+		}
+		
+		function propertyRules(property) {
+			if (property in rules) {
+				for (prefix in rules[property]) {
+					if ($.isFunction(rules[property][prefix])) {
+						return rules[property][prefix](property);
+					} else {
+						if (currentPrefix == rules[property][prefix] || !currentPrefix) {
+							return '-' + rules[property][prefix] + '-' + property;
+						}
+					}
+				}
+			}
+			
+			return false;
+		}
+		
+		function valuesRules(property, value) {
+			// Only apply for firefox
+			if (currentPrefix == 'moz') {
+				// calc
+				if (value.indexOf('calc') == 0) {
+					return '-moz-' + value;
+				}
+				
+				// only for version 3.6 or lower
+				if (parseInt($.browser.version.substr(0,1)) < 4) {
+					// background-clip or background-origin
+					if (property == 'background-clip' || 
+						property == 'background-origin') {
+						if (value == 'padding-box') {
+							return 'padding';
+						} else if (value == 'border-box') {
+							return 'border';
+						} else if (value == 'content-box') {
+							return 'content';
+						}							
+					}
+				}
+			}
+			
+			
+			// TODO : Match background-image: linear-gradient()
+			
+			
+			return false;
+		}
+		
+		function selectorRules(selector) {
+			// Only apply for firefox
+			if (currentPrefix == 'moz') {
+				// ::selection
+				//if (selector.indexOf('::selection') != -1) {
+					selector = selector.replace('::selection', '::-moz-selection');
+				//}
+			}
+			return selector;
+		}
+		
 		function parseFinalize(element, cssText) {
 			cssText = cleanCss(cssText);
 			var objCss = cssTextToObj(cssText);
-
-			// Last step
 			var cssFinalize = [];
-			$.each(objCss, function (i, v) {
-				var newblock = {};
-				if (v.block) {
-					$.each(v.block, function(k, v2) {
-					
-						if (k in rules) {
-							for (prefix in rules[k]) {
-								if ($.isFunction(rules[k][prefix])) {
-									newblock[rules[k][prefix](k)] = v2;
-								} else {
-									if (currentPrefix == rules[k][prefix] || !currentPrefix) {
-										newblock['-' + rules[k][prefix] + '-' + k] = v2;
-									}
-								}
-							}
-						}
-						
-						// Only apply for firefox
-						if (currentPrefix == 'moz') {
-							// calc
-							if (v2.indexOf('calc') == 0) {
-								newblock[k] = '-moz-' + v2;
-							}
-							
-							// only for version 3.6 or lower
-							if (parseInt($.browser.version.substr(0,1)) < 4) {
-								// background-clip
-								if (v2 == 'padding-box' && k == 'background-clip') {
-									newblock[k] = 'padding';
-								// background-clip
-								} else if (v2 == 'border-box' && k == 'background-clip') {
-									newblock[k] = 'border';
-								// background-clip
-								} else if (v2 == 'content-box' && k == 'background-clip') {
-									newblock[k] = 'content';
-								// background-origin
-								} else if (v2 == 'padding-box' && k == 'background-origin') {
-									newblock[k] = 'padding';
-								// background-origin
-								} else if (v2 == 'border-box' && k == 'background-origin') {
-									newblock[k] = 'border';
-								// background-origin
-								} else if (v2 == 'content-box' && k == 'background-origin') {
-									newblock[k] = 'content';
-								}
-							}
-						}
-						
-						
-						// TODO : Match background-image: linear-gradient()
-					});
-				}
-				if (!$.isEmptyObject(newblock)) {
-					cssFinalize.push({
-						'selector': v.selector,
-						'block' : newblock
-					});
+			// Look for needed attributes and add to cssFinalize
+			$.each(objCss, function (i, block) {
+				if (block.attributes) {
+					var neededAttributes = findNeededAttributes(block.attributes);
+					if (!$.isEmptyObject(neededAttributes)) {
+						cssFinalize.push({
+										// Selector Rules
+							'selector': selectorRules(block.selector),
+							'attributes' : neededAttributes
+						});
+					}
 				}
 			});
-				//console.log(cssFinalize);
+
+			element.addClass('css-finalize-read');
 			if (cssFinalize.length > 0) {
 				appendStyle(element, cssFinalize);
 			}
@@ -346,7 +364,7 @@ ickbar {}
 		});
 		
 		function appendStyle(element, cssObj) {
-			element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>').addClass('css-finalize-read');
+			element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
 		}
 	}
 	
