@@ -53,6 +53,9 @@ ickbar {}
 /* Fix clearfix: blueprintcss.lighthouseapp.com/projects/15318/tickets/5-extra-margin-padding-bottom-of-page */
 .clearfix { zoom: 1; }
 
+test {
+	transform: bla;
+}
 
 /* */
 </style>
@@ -73,7 +76,7 @@ ickbar {}
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.5 - 2010-10-28
+ * @version 1.6 - 2010-10-29
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -353,8 +356,9 @@ ickbar {}
 			if ($this.hasClass('css-finalize-read')) {
 				return true;
 			}
-			// link-tags for firefox
-			if (this.tagName == 'LINK' && $.browser.mozilla) {
+			//console.log(this.href);
+			// // link-tags for firefox, chrome
+			if (this.tagName == 'LINK') {
 				$('<div />').load(this.href, function(data) {
 					parseFinalize($this, data);
 				});
@@ -371,9 +375,42 @@ ickbar {}
 	$.cssFinalize('style, link');
 
 })(jQuery);
+
+function getContentFromIframe(iFrameName)
+{
+
+    var iframe = document.getElementById(iFrameName);
+    var content = iframe.contentDocument ||
+(iframe.contentWindow && iframe.contentWindow.document) ||
+iframe.document ||
+null;;
+	console.log(content.body.firstChild.innerHTML);
+    //alert('content: ' + content);    
+
+    //content = 'The inside of my frame has now changed';
+    //myIFrame.contentWindow.document.body.innerHTML = content;
+
+}
 </script>
 </head>
 <body>
+<a href="" onclick="getContentFromIframe('myIframe');return false;">Get the content</a>
 <div class="box_round">hej</div>
+<iframe id="myIframe" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/themes/ui-lightness/jquery-ui.css"></iframe>
+
+<iframe id="iframeId" name="iframeId" src="test.css"></iframe>
+<a href="" onclick="test2();return false;">test2</a>
+
+<script type="text/javascript">
+function test2() {
+    var iframeDoc;
+    if (window.frames && window.frames.iframeId &&
+        (iframeDoc = window.frames.iframeId.document)) {
+        var iframeBody = iframeDoc.body;
+        var ifromContent = iframeBody.innerHTML;
+		console.log(ifromContent);
+    }
+}
+</script>
 </body>
 </html>

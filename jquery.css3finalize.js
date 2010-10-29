@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.5 - 2010-10-28
+ * @version 1.6 - 2010-10-29
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -283,8 +283,9 @@
 			if ($this.hasClass('css-finalize-read')) {
 				return true;
 			}
-			// link-tags for firefox
-			if (this.tagName == 'LINK' && $.browser.mozilla) {
+			//console.log(this.href);
+			// // link-tags for firefox, chrome
+			if (this.tagName == 'LINK') {
 				$('<div />').load(this.href, function(data) {
 					parseFinalize($this, data);
 				});
