@@ -2,7 +2,7 @@
 #zida_quickbar {}
 
 /* colors for form validity */
-/* input:valid, textarea:valid { } */
+ input:valid, textarea:valid { } 
 input:invalid, textarea:invalid {
 transform: bla;
       border-radius: 1px;

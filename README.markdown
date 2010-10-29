@@ -25,6 +25,6 @@ Once the script is loaded it will search for style-tags and parse them.
 
 This script have been tested on <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code>
 
-Some notes:
-- The script can only read link-tags where it source are from same domain. Execpt for IE 7.
-- Link-tags can not be read on Chrome 7 on local files.
+#### Some notes
+* The script can only read link-tags where it source are from same domain. Execpt for IE 7.
+* Link-tags can not be read on Chrome 7 on local files.

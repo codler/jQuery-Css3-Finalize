@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.6 - 2010-10-29
+ * @version 1.7 - 2010-10-29
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -37,6 +37,16 @@
 		}
 		
 		var rules = {
+			'animation'				 : ['webkit'],
+			'animation-delay'		 : ['webkit'],
+			'animation-direction'	 : ['webkit'],
+			'animation-duration'	 : ['webkit'],
+			'animation-iteration-count' : ['webkit'],
+			'animation-name'		 : ['webkit'],
+			'animation-timing-function' : ['webkit'],
+			
+			'backface-visibility' : ['webkit'],
+		
 			// moz is comment out because the rule lies on "valueRule"
 			'background-clip'		 : [/*'moz',*/ 'webkit', 'khtml'],
 			'background-origin'		 : [/*'moz',*/ 'webkit', 'khtml'],
@@ -78,16 +88,26 @@
 			'column-rule-style'	 : ['moz', 'webkit'],
 			'column-rule-width'	 : ['moz', 'webkit'],
 			'column-width'		 : ['moz', 'webkit'],
+			'columns'			 : ['webkit'],
+			'marquee'			 : ['webkit'],
+			'marquee-direction'	 : ['webkit'],
+			'marquee-speed'		 : ['webkit'],
+			'marquee-style'		 : ['webkit'],
+			'perspective'		 : ['webkit'],
+			'perspective-origin' : ['webkit'],
 			'tab-size'			 : ['moz', 'o'],
 			'text-overflow'		 : ['o'],
 			'text-size-adjust'	 : ['webkit', 'ms'],
 			'transform'			 : ['moz', 'webkit', 'o', 'ms'],
 			'transform-origin'	 : ['moz', 'webkit', 'o', 'ms'],
+			'transform-style'	 : ['webkit'],
 			'transition'		 : ['moz', 'webkit', 'o'],
 			'transition-delay'	 : ['moz', 'webkit', 'o'],
 			'transition-duration' : ['moz', 'webkit', 'o'],
 			'transition-property' : ['moz', 'webkit', 'o'],
-			'transition-timing-function' : ['moz', 'webkit', 'o']
+			'transition-timing-function' : ['moz', 'webkit', 'o'],
+			'user-modify'		 : ['moz', 'webkit', 'khtml'],
+			'user-select'		 : ['moz', 'webkit', 'khtml']
 		}
 	
 		function cssObjToText(obj) {
@@ -102,7 +122,32 @@
 			return text;
 		}
 		
+		function cssTextAttributeToObj(text) {
+			var attribute = text.split(/(:[^;]*;?)/);
+			attribute.pop();
+			var objAttribute = {};
+			$.map(attribute, function(n, i) {
+				if (i % 2 == 1) {
+					objAttribute[$.trim(attribute[i-1])] = $.trim(n.substr(1).replace(';', ''));
+				}
+			});
+			//console.log(objAttribute);
+			return objAttribute;
+		}
+		
 		function cssTextToObj(text) {
+			var block = text.split(/({[^{}]*})/);
+			block.pop();
+			var objCss = [];
+			$.map(block, function(n, i) {
+				if (i % 2 == 0) {
+					objCss.push({'selector': $.trim(n)});
+				} else {
+					objCss[objCss.length-1].attributes = cssTextAttributeToObj(n.substr(1, n.length-2));
+				}
+			});
+			//console.log(objCss);
+			/*
 			// block
 			var block = text.split('{');
 			if (block[0] != "") {
@@ -157,7 +202,7 @@
 						objCss[i+1] = {'selector': $.trim(t[1])};
 					}
 				
-			});
+			});*/
 			return objCss;
 		}
 		
@@ -280,12 +325,12 @@
 		
 		node.each(function(index, element) {
 			var $this = $(this);
-			if ($this.hasClass('css-finalize-read')) {
+			if ($this.hasClass('css-finalize-read') || $this.hasClass('css-finalized')) {
 				return true;
 			}
 			//console.log(this.href);
 			// // link-tags for firefox, chrome
-			if (this.tagName == 'LINK') {
+			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
 				$('<div />').load(this.href, function(data) {
 					parseFinalize($this, data);
 				});
