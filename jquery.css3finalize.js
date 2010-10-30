@@ -3,12 +3,12 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.7 - 2010-10-29
+ * @version 1.8 - 2010-10-30
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
- * Some css3 attributes needs to have a prefix infront
- * inorder to work in diffrent browser. The plugin takes
+ * Some css3 attributes needs to have a prefix in front 
+ * in order to work in different browser. The plugin takes 
  * care of that so you only need to write without the prefix.
  *
  * == Example Usage ==
@@ -331,9 +331,11 @@
 			//console.log(this.href);
 			// // link-tags for firefox, chrome
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
-				$('<div />').load(this.href, function(data) {
-					parseFinalize($this, data);
-				});
+				try {
+					$('<div />').load(this.href, function(data) {
+						parseFinalize($this, data);
+					});
+				} catch(e){}
 			} else {
 				parseFinalize($this, $this.html());
 			}
@@ -342,8 +344,36 @@
 		function appendStyle(element, cssObj) {
 			element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
 		}
+		
+		
+		// Experimental - css hooks - require jquery 1.4.3+
+		if ($().jquery == '1.4.3') {
+			for (property in rules) {
+				//if ($.inArray(currentPrefix, rules[property])!== -1) {
+				if ((newProperty = propertyRules(property)) !== false) {
+					setCssHook(property, newProperty);
+				}
+			}
+		}
+		
+		function setCssHook(property, newProperty) {
+			$.cssHooks[$.camelCase(property)] = {
+				get: function( elem, computed, extra ) {
+				//	console.log('get');
+				//	console.log(computed);
+				//	console.log(extra);
+					return elem.style[$.camelCase(newProperty)];
+				},
+				set: function( elem, value ) {
+					elem.style[$.camelCase(newProperty)] = value;
+				}
+			}
+		}
 	}
-	
-	$.cssFinalize('style, link');
-
+	$(function() {
+		$.cssFinalize('style, link');
+		//$('a').css({'border' : '1px solid #000000', 'border-radius' : 10, 'margin' : 10});
+		//console.log($('a:first').css('border-radius'));
+		//console.log($('a:first').css('margin'));
+	});
 })(jQuery);
