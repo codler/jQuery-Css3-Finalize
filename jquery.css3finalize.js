@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.8 - 2010-10-30
+ * @version 1.9 - 2010-11-01
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -124,6 +124,7 @@
 		
 		function cssTextAttributeToObj(text) {
 			var attribute = text.split(/(:[^;]*;?)/);
+			//console.log(attribute);
 			attribute.pop();
 			var objAttribute = {};
 			$.map(attribute, function(n, i) {
@@ -137,72 +138,59 @@
 		
 		function cssTextToObj(text) {
 			var block = text.split(/({[^{}]*})/);
+			//console.log(block);
 			block.pop();
 			var objCss = [];
-			$.map(block, function(n, i) {
+			var recusiveBlock = false;
+			var t;
+			var tt = 0;
+			var ttt;
+			//for (var i = 0; i < block.length; i++) {
+			var i = 0;
+			while(i < block.length) {			
+			//$.map(block, function(n, i) {
 				if (i % 2 == 0) {
-					objCss.push({'selector': $.trim(n)});
+					var selector = $.trim(block[i]);
+					if (recusiveBlock) {
+						if (selector.indexOf('}') != -1) {
+							block[i] = selector = selector.substr(1);
+							//console.log(block);
+							ttt = block.splice(tt, i - tt);
+							ttt.shift()
+							ttt.unshift(t[1]);
+							/* console.log(block);
+							console.log("hge");
+							console.log(objCss.length-1);
+							console.log(i);
+							console.log(tt);
+							console.log(cssTextToObj(ttt.join(''))); */
+							objCss[objCss.length-1].attributes = cssTextToObj(ttt.join(''));
+							/*console.log("efter");
+							console.log(objCss);*/
+							recusiveBlock = false;
+							i = tt;
+							continue;
+						}
+					} else {
+						
+						if (selector.indexOf('{') != -1) {
+							t = selector.split('{');
+							selector = $.trim(t[0]);
+							recusiveBlock = true;
+							tt = i;
+						}
+						//console.log('push');
+						//console.log(selector);
+						objCss.push({'selector': selector});
+					}
 				} else {
-					objCss[objCss.length-1].attributes = cssTextAttributeToObj(n.substr(1, n.length-2));
+					if (!recusiveBlock) {
+						objCss[objCss.length-1].attributes = cssTextAttributeToObj(block[i].substr(1, block[i].length-2));
+					}
 				}
-			});
-			//console.log(objCss);
-			/*
-			// block
-			var block = text.split('{');
-			if (block[0] != "") {
-				var objCss = [{'selector': $.trim(block.shift())}] 
-			} else {
-				var objCss = [];
-				block.shift();
+				i++;
 			}
-			//console.log("-----------------------------------------");
-			//console.log(block);
-			$.map(block, function (n, i) {
-					//console.log("--------------------");
-					var t = n.split('}');
-					if (t[0] == "") {
-						if (t[1]) {
-							objCss[i+1] = {'selector': $.trim(t[1])};
-						}
-						return true;
-					}
-					//console.log([t]);
-					var tt = t[0].split(':');
-					
-					var b = {};
-					var property, next=false;
-					
-					while(tt.length > 0) {
-						if (!next) {
-							property = $.trim(tt.shift());
-							b[property] = '';
-						} else {
-							b[property] += ':';
-							next = false;
-						}
-					
-						b[property] += (function() {
-							
-							var a = tt.shift().split(';');							
-							if ($.trim(a[1]))
-								tt.unshift($.trim(a[1]));
-							else
-								next = true;
-							
-							return $.trim(a[0]);
-						})();
-					}
-					objCss[i].attributes = b;
-					
-					
-					
-					
-					if (t[1]) {
-						objCss[i+1] = {'selector': $.trim(t[1])};
-					}
-				
-			});*/
+			//});
 			return objCss;
 		}
 		
@@ -218,6 +206,8 @@
 		}
 		
 		function findNeededAttributes(attributes) {
+			// attributes is an array only if it is recursive blocks. skip those attributes.
+			if ($.isArray(attributes)) return {};
 			var newAttributes = {};
 			$.each(attributes, function(property, value) {
 				// Property Rules
@@ -297,6 +287,7 @@
 		function parseFinalize(element, cssText) {
 			cssText = cleanCss(cssText);
 			var objCss = cssTextToObj(cssText);
+			//console.log(objCss);
 			var cssFinalize = [];
 			// Look for needed attributes and add to cssFinalize
 			$.each(objCss, function (i, block) {

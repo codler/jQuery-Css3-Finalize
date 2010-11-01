@@ -19,11 +19,11 @@ Simply add this code to your site
 &lt;script src=&quot;http://github.com/codler/jQuery-Css3-Finalize/raw/master/static/jquery.css3finalize-latest.min.js&quot;&gt;&lt;/script&gt;
 </code>
 
-Once the script is loaded it will search for style-tags and parse them.
+Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
 ## Tests
 
-This script has been tested on <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code>
+This script has been tested in windows on <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code>
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain. Except for local files in IE 7.
@@ -32,8 +32,11 @@ This script has been tested on <code>IE 7</code>, <code>FF 3.6</code>, <code>Chr
 ## $.fn.Css is extended
 
 You can leave out the prefix when setting a style in Jquery css method.
+
 Example
+
 <code>$('a').css({'border' : '1px solid #000000', 'border-radius' : 10});</code>
 
 In normal case you would have needed to add a prefix
+
 <code>$('a').css({'border' : '1px solid #000000', '-moz-border-radius' : 10});</code>
