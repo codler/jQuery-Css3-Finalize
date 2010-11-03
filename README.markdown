@@ -23,7 +23,7 @@ Once the script is loaded it will search for style-tags and link-tags (within sa
 
 ## Tests
 
-This script has been tested in windows on <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code>
+This script has been tested on windows in <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code>
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain. Except for local files in IE 7.

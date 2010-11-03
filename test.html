@@ -34,6 +34,8 @@
   border-radius: 12px
 }
 
+	@import url("screen.css");
+
 @-webkit-keyframes bounce {
  from {
    left: 0px;
@@ -43,7 +45,62 @@
  }
 }
 
-  @keyframes 'bounce' {
+ 
+
+
+div {
+	border: 1px solid #000;
+}
+.visuallyhidden { position: absolute !important;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px) }
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible { visibility: hidden; }
+
+/* >> The Magnificent CLEARFIX: Updated to prevent margin-collapsing on child elements << j.mp/bestclearfix */
+.clearfix:before, .clearfix:after {
+  content: "\0020"; display: block; height: 0; visibility: hidden;
+}
+ickbar {}
+@media print {
+  * { background: transparent !important; color: #444 !important; text-shadow: none !important; }
+  a, a:visited { color: #444 !important; text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after { content: ""; }  /* Don't show links for images */
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; } /* css-discuss.incutio.com/wiki/Printing_Tables */ 
+  tr, img { page-break-inside: avoid; }
+  @page { margin: 0.5cm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3{ page-break-after: avoid; }
+}
+.clearfix:after { clear: both; }
+/* Fix clearfix: blueprintcss.lighthouseapp.com/projects/15318/tickets/5-extra-margin-padding-bottom-of-page */
+.clearfix { zoom: 1; }
+
+
+
+
+/* 
+ * print styles
+ * inlined to avoid required HTTP connection www.phpied.com/delay-loading-your-print-css/ 
+ */
+@media print {
+  * { background: transparent !important; color: #444 !important; text-shadow: none !important; }
+  a, a:visited { color: #444 !important; text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after { content: ""; }  /* Don't show links for images */
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; } /* css-discuss.incutio.com/wiki/Printing_Tables */ 
+  tr, img { page-break-inside: avoid; }
+  @page { margin: 0.5cm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3{ page-break-after: avoid; }
+}
+ @keyframes 'bounce' {
 
     from {
       top: 100px;
@@ -70,34 +127,10 @@
     }
 
   }
-
-
-div {
-	border: 1px solid #000;
-}
-.visuallyhidden { position: absolute !important;
-  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-  clip: rect(1px, 1px, 1px, 1px) }
-
-/* Hide visually and from screenreaders, but maintain layout */
-.invisible { visibility: hidden; }
-
-/* >> The Magnificent CLEARFIX: Updated to prevent margin-collapsing on child elements << j.mp/bestclearfix */
-.clearfix:before, .clearfix:after {
-  content: "\0020"; display: block; height: 0; visibility: hidden;
-}
-ickbar {}
-
-.clearfix:after { clear: both; }
-/* Fix clearfix: blueprintcss.lighthouseapp.com/projects/15318/tickets/5-extra-margin-padding-bottom-of-page */
-.clearfix { zoom: 1; }
-
-
-
-test {
-	transform: bla;
-}
-
+  @import url("screen.css");
+@import url("antiscreen.css") handheld;
+@import url("antiscreen.css") only screen and
+(max-device-width:480px);
 /* */
 </style>
 <!--[if lt IE 9 ]> 
@@ -117,7 +150,7 @@ test {
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.9 - 2010-11-01
+ * @version 1.10 - 2010-11-03
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -253,7 +286,10 @@ test {
 		function cssTextToObj(text) {
 			var block = text.split(/({[^{}]*})/);
 			//console.log(block);
-			block.pop();
+			// fixes recursive block at end
+			if (block[block.length-1].indexOf('}') == -1) {
+				block.pop();
+			}
 			var objCss = [];
 			var recusiveBlock = false;
 			var t;
@@ -263,26 +299,37 @@ test {
 			var i = 0;
 			while(i < block.length) {			
 			//$.map(block, function(n, i) {
+				//console.log('block');
+				//console.log(block);
 				if (i % 2 == 0) {
 					var selector = $.trim(block[i]);
 					if (recusiveBlock) {
 						if (selector.indexOf('}') != -1) {
-							block[i] = selector = selector.substr(1);
+							//console.log(selector);
+							selector = selector.substr(1);
+							//if (selector != "") {
+								block[i] = selector;
+							//}
+							
 							//console.log(block);
 							ttt = block.splice(tt, i - tt);
 							ttt.shift()
 							ttt.unshift(t[1]);
-							/* console.log(block);
-							console.log("hge");
-							console.log(objCss.length-1);
-							console.log(i);
-							console.log(tt);
-							console.log(cssTextToObj(ttt.join(''))); */
+							// console.log(block);
+							//console.log("hge");
+							//console.log(ttt);
+							//console.log(objCss.length-1);
+							//console.log(i);
+							//console.log(tt);
+							//console.log(cssTextToObj(ttt.join(''))); 
 							objCss[objCss.length-1].attributes = cssTextToObj(ttt.join(''));
 							/*console.log("efter");
 							console.log(objCss);*/
 							recusiveBlock = false;
 							i = tt;
+							//console.log(block.length);
+							//console.log(block);
+							//console.log(i);
 							continue;
 						}
 					} else {
@@ -295,9 +342,12 @@ test {
 						}
 						//console.log('push');
 						//console.log(selector);
-						objCss.push({'selector': selector});
+						if (selector != "") {
+							objCss.push({'selector': selector});
+						}
 					}
 				} else {
+					//console.log('odd');
 					if (!recusiveBlock) {
 						objCss[objCss.length-1].attributes = cssTextAttributeToObj(block[i].substr(1, block[i].length-2));
 					}
@@ -315,6 +365,9 @@ test {
 			// remove newline
 			css = css.replace(/\n/g, '');
 			css = css.replace(/\r/g, '');
+			
+			// remove @import - Future TODO read if css was imported and parse it.
+			css = css.replace(/\@import[^;]*;/g, '');
 			
 			return css;
 		}
@@ -400,6 +453,7 @@ test {
 		
 		function parseFinalize(element, cssText) {
 			cssText = cleanCss(cssText);
+			//console.log(cssText);
 			var objCss = cssTextToObj(cssText);
 			//console.log(objCss);
 			var cssFinalize = [];
@@ -464,9 +518,6 @@ test {
 		function setCssHook(property, newProperty) {
 			$.cssHooks[$.camelCase(property)] = {
 				get: function( elem, computed, extra ) {
-				//	console.log('get');
-				//	console.log(computed);
-				//	console.log(extra);
 					return elem.style[$.camelCase(newProperty)];
 				},
 				set: function( elem, value ) {

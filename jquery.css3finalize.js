@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.9 - 2010-11-01
+ * @version 1.10 - 2010-11-03
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -139,7 +139,10 @@
 		function cssTextToObj(text) {
 			var block = text.split(/({[^{}]*})/);
 			//console.log(block);
-			block.pop();
+			// fixes recursive block at end
+			if (block[block.length-1].indexOf('}') == -1) {
+				block.pop();
+			}
 			var objCss = [];
 			var recusiveBlock = false;
 			var t;
@@ -153,20 +156,13 @@
 					var selector = $.trim(block[i]);
 					if (recusiveBlock) {
 						if (selector.indexOf('}') != -1) {
-							block[i] = selector = selector.substr(1);
-							//console.log(block);
+							selector = selector.substr(1);
+								block[i] = selector;
+							
 							ttt = block.splice(tt, i - tt);
 							ttt.shift()
 							ttt.unshift(t[1]);
-							/* console.log(block);
-							console.log("hge");
-							console.log(objCss.length-1);
-							console.log(i);
-							console.log(tt);
-							console.log(cssTextToObj(ttt.join(''))); */
 							objCss[objCss.length-1].attributes = cssTextToObj(ttt.join(''));
-							/*console.log("efter");
-							console.log(objCss);*/
 							recusiveBlock = false;
 							i = tt;
 							continue;
@@ -179,9 +175,9 @@
 							recusiveBlock = true;
 							tt = i;
 						}
-						//console.log('push');
-						//console.log(selector);
-						objCss.push({'selector': selector});
+						if (selector != "") {
+							objCss.push({'selector': selector});
+						}
 					}
 				} else {
 					if (!recusiveBlock) {
@@ -201,6 +197,9 @@
 			// remove newline
 			css = css.replace(/\n/g, '');
 			css = css.replace(/\r/g, '');
+			
+			// remove @import - Future TODO read if css was imported and parse it.
+			css = css.replace(/\@import[^;]*;/g, '');
 			
 			return css;
 		}
@@ -286,6 +285,7 @@
 		
 		function parseFinalize(element, cssText) {
 			cssText = cleanCss(cssText);
+			//console.log(cssText);
 			var objCss = cssTextToObj(cssText);
 			//console.log(objCss);
 			var cssFinalize = [];
@@ -350,9 +350,6 @@
 		function setCssHook(property, newProperty) {
 			$.cssHooks[$.camelCase(property)] = {
 				get: function( elem, computed, extra ) {
-				//	console.log('get');
-				//	console.log(computed);
-				//	console.log(extra);
 					return elem.style[$.camelCase(newProperty)];
 				},
 				set: function( elem, value ) {
