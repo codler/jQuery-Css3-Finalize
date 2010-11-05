@@ -12,6 +12,8 @@
 
 <title></title>
 <!-- css -->
+<link rel="stylesheet" type="text/css" href="yap-goodies.css" />
+<link rel="stylesheet" type="text/css" href="boilerplate.css" />
 <link rel="stylesheet" type="text/css" href="test.css" />
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/themes/ui-lightness/jquery-ui.css" />
 
@@ -21,31 +23,81 @@
 <!--[if IE]>
 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
-<style>
+
+<style data="comment">
+/* Test comment */
+/* /* */ */
+/* /* */
+/* */
+/**/
+</style>
+
+<style data="empty">
+/* Test empty blocks */
+#empty {}
+#empty2 { }
+#empty3{}
+</style>
+
+<style data="colon">
+/* Test colon in values */
 .box_gradient {
-            filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999'); /* IE6,IE7 */
-  background-color: #444444;
-  background-image: -moz-linear-gradient(top, #444444, #999999); /* FF3.6 */
-  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #444444),color-stop(1, #999999)); /* Saf4+, Chrome */
-        -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999')"; /* IE8 */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999'); /* IE6,IE7 */
+	background-color: #444444;
+	background-image: -moz-linear-gradient(top, #444444, #999999); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #444444),color-stop(1, #999999)); /* Saf4+, Chrome */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999')"; /* IE8 */
 }
+</style>
 
+<style data="semi-colon">
+/* Test with no semi-colon at end */
 .box_round {
-  border-radius: 12px
+	border-radius: 12px
 }
-
-	@import url("screen.css");
-
-@-webkit-keyframes bounce {
- from {
-   left: 0px;
- }
- to {
-   left: 200px;
- }
+.box_round2 {
+	border: 12px;
+	border-radius: 12px
 }
+</style>
 
- 
+<style data="import">
+/* Test import */
+@import url("test.css");
+@import url("landscape.css") all and
+	(orientation:landscape);
+</style>
+
+<style data="recursive-blocks">
+/* Test recursive blocks */
+@keyframes bounce {
+	from {
+		left: 0px;
+	}
+	to {
+		left: 200px;
+	}
+}
+</style>
+
+<!--[if lt IE 9 ]> 
+<style data="conditional-statements">
+/* Test conditional-statements */
+.box_round {
+	transform: 12px
+}
+</style>
+<![endif]-->
+
+<style>
+
+@font-face {
+	font-family: 'MisoBold';
+	src: url('css/fonts/miso-bold-webfont.eot');
+	src: local('☺'), url('css/fonts/miso-bold-webfont.woff') format('woff'), url('css/fonts/miso-bold-webfont.ttf') format('truetype'), url('css/fonts/miso-bold-webfont.svg#webfontWPKh07R7') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
 
 
 div {
@@ -80,7 +132,8 @@ ickbar {}
 /* Fix clearfix: blueprintcss.lighthouseapp.com/projects/15318/tickets/5-extra-margin-padding-bottom-of-page */
 .clearfix { zoom: 1; }
 
-
+@import url("landscape.css") all and
+4	(orientation:landscape);
 
 
 /* 
@@ -150,7 +203,7 @@ ickbar {}
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.10 - 2010-11-03
+ * @version 1.11 - 2010-11-05
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -172,6 +225,10 @@ ickbar {}
 		} else if ($.browser.mozilla) {
 			currentPrefix = 'moz'
 		} else if ($.browser.msie) {
+			// No vendor prefix in ie 7
+			if (parseInt($.browser.version.substr(0,1)) <= 7) {
+				return true;
+			}
 			currentPrefix = 'ms';
 		} else if ($.browser.opera) {
 			currentPrefix = 'o';
@@ -261,9 +318,13 @@ ickbar {}
 			var text = '';
 			$.each(obj, function(i, block) {
 				text += block.selector + '{';
-				$.each(block.attributes, function(property, value) {
-					text += property + ':' + value + ';';
-				});
+				if ($.isArray(block.attributes)) {
+					text += cssObjToText(block.attributes);
+				} else {
+					$.each(block.attributes, function(property, value) {
+						text += property + ':' + value + ';';
+					});
+				}
 				text += '}';
 			});
 			return text;
@@ -447,6 +508,8 @@ ickbar {}
 				//if (selector.indexOf('::selection') != -1) {
 					selector = selector.replace('::selection', '::-moz-selection');
 				//}
+			} else if(currentPrefix == 'webkit') {
+				selector = selector.replace('@keyframes', '@-webkit-keyframes');
 			}
 			return selector;
 		}
@@ -466,6 +529,12 @@ ickbar {}
 										// Selector Rules
 							'selector': selectorRules(block.selector),
 							'attributes' : neededAttributes
+						});
+					} else if (selectorRules(block.selector) != block.selector) {
+						cssFinalize.push({
+										// Selector Rules
+							'selector': selectorRules(block.selector),
+							'attributes' : block.attributes
 						});
 					}
 				}
@@ -487,8 +556,7 @@ ickbar {}
 			if ($this.hasClass('css-finalize-read') || $this.hasClass('css-finalized')) {
 				return true;
 			}
-			//console.log(this.href);
-			// // link-tags for firefox, chrome
+			// link-tags
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
 				try {
 					$('<div />').load(this.href, function(data) {

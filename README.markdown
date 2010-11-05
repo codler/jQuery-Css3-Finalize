@@ -16,8 +16,12 @@ If you write without the prefix it won't work in those browser, you need the wri
 Simply add this code to your site
 
 <code>
-&lt;script src=&quot;http://github.com/codler/jQuery-Css3-Finalize/raw/master/static/jquery.css3finalize-latest.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://github.com/codler/jQuery-Css3-Finalize/raw/master/static/jquery.css3finalize-latest.min.js&quot;&gt;&lt;/script&gt;
 </code>
+
+Alternative links
+
+<code>http://bsy.se/jquery.css3finalize-latest.min.js</code> or <code>http://static.zencodez.net/js/jquery.css3finalize-latest.min.js</code>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 

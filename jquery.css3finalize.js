@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.10 - 2010-11-03
+ * @version 1.11 - 2010-11-05
  * @website http://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -25,6 +25,10 @@
 		} else if ($.browser.mozilla) {
 			currentPrefix = 'moz'
 		} else if ($.browser.msie) {
+			// No vendor prefix in ie 7
+			if (parseInt($.browser.version.substr(0,1)) <= 7) {
+				return true;
+			}
 			currentPrefix = 'ms';
 		} else if ($.browser.opera) {
 			currentPrefix = 'o';
@@ -114,9 +118,13 @@
 			var text = '';
 			$.each(obj, function(i, block) {
 				text += block.selector + '{';
-				$.each(block.attributes, function(property, value) {
-					text += property + ':' + value + ';';
-				});
+				if ($.isArray(block.attributes)) {
+					text += cssObjToText(block.attributes);
+				} else {
+					$.each(block.attributes, function(property, value) {
+						text += property + ':' + value + ';';
+					});
+				}
 				text += '}';
 			});
 			return text;
@@ -152,19 +160,37 @@
 			var i = 0;
 			while(i < block.length) {			
 			//$.map(block, function(n, i) {
+				//console.log('block');
+				//console.log(block);
 				if (i % 2 == 0) {
 					var selector = $.trim(block[i]);
 					if (recusiveBlock) {
 						if (selector.indexOf('}') != -1) {
+							//console.log(selector);
 							selector = selector.substr(1);
+							//if (selector != "") {
 								block[i] = selector;
+							//}
 							
+							//console.log(block);
 							ttt = block.splice(tt, i - tt);
 							ttt.shift()
 							ttt.unshift(t[1]);
+							// console.log(block);
+							//console.log("hge");
+							//console.log(ttt);
+							//console.log(objCss.length-1);
+							//console.log(i);
+							//console.log(tt);
+							//console.log(cssTextToObj(ttt.join(''))); 
 							objCss[objCss.length-1].attributes = cssTextToObj(ttt.join(''));
+							/*console.log("efter");
+							console.log(objCss);*/
 							recusiveBlock = false;
 							i = tt;
+							//console.log(block.length);
+							//console.log(block);
+							//console.log(i);
 							continue;
 						}
 					} else {
@@ -175,11 +201,14 @@
 							recusiveBlock = true;
 							tt = i;
 						}
+						//console.log('push');
+						//console.log(selector);
 						if (selector != "") {
 							objCss.push({'selector': selector});
 						}
 					}
 				} else {
+					//console.log('odd');
 					if (!recusiveBlock) {
 						objCss[objCss.length-1].attributes = cssTextAttributeToObj(block[i].substr(1, block[i].length-2));
 					}
@@ -279,6 +308,8 @@
 				//if (selector.indexOf('::selection') != -1) {
 					selector = selector.replace('::selection', '::-moz-selection');
 				//}
+			} else if(currentPrefix == 'webkit') {
+				selector = selector.replace('@keyframes', '@-webkit-keyframes');
 			}
 			return selector;
 		}
@@ -298,6 +329,12 @@
 										// Selector Rules
 							'selector': selectorRules(block.selector),
 							'attributes' : neededAttributes
+						});
+					} else if (selectorRules(block.selector) != block.selector) {
+						cssFinalize.push({
+										// Selector Rules
+							'selector': selectorRules(block.selector),
+							'attributes' : block.attributes
 						});
 					}
 				}
@@ -319,8 +356,7 @@
 			if ($this.hasClass('css-finalize-read') || $this.hasClass('css-finalized')) {
 				return true;
 			}
-			//console.log(this.href);
-			// // link-tags for firefox, chrome
+			// link-tags
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
 				try {
 					$('<div />').load(this.href, function(data) {
