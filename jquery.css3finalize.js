@@ -3,8 +3,8 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.11 - 2010-11-05
- * @website http://github.com/codler/jQuery-Css3-Finalize
+ * @version 1.12 - 2010-11-12
+ * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
  * Some css3 attributes needs to have a prefix in front 
@@ -132,7 +132,6 @@
 		
 		function cssTextAttributeToObj(text) {
 			var attribute = text.split(/(:[^;]*;?)/);
-			//console.log(attribute);
 			attribute.pop();
 			var objAttribute = {};
 			$.map(attribute, function(n, i) {
@@ -140,13 +139,11 @@
 					objAttribute[$.trim(attribute[i-1])] = $.trim(n.substr(1).replace(';', ''));
 				}
 			});
-			//console.log(objAttribute);
 			return objAttribute;
 		}
 		
 		function cssTextToObj(text) {
 			var block = text.split(/({[^{}]*})/);
-			//console.log(block);
 			// fixes recursive block at end
 			if (block[block.length-1].indexOf('}') == -1) {
 				block.pop();
@@ -156,41 +153,21 @@
 			var t;
 			var tt = 0;
 			var ttt;
-			//for (var i = 0; i < block.length; i++) {
 			var i = 0;
-			while(i < block.length) {			
-			//$.map(block, function(n, i) {
-				//console.log('block');
-				//console.log(block);
+			while(i < block.length) {
 				if (i % 2 == 0) {
 					var selector = $.trim(block[i]);
 					if (recusiveBlock) {
 						if (selector.indexOf('}') != -1) {
-							//console.log(selector);
 							selector = selector.substr(1);
-							//if (selector != "") {
-								block[i] = selector;
-							//}
+							block[i] = selector;
 							
-							//console.log(block);
 							ttt = block.splice(tt, i - tt);
 							ttt.shift()
 							ttt.unshift(t[1]);
-							// console.log(block);
-							//console.log("hge");
-							//console.log(ttt);
-							//console.log(objCss.length-1);
-							//console.log(i);
-							//console.log(tt);
-							//console.log(cssTextToObj(ttt.join(''))); 
 							objCss[objCss.length-1].attributes = cssTextToObj(ttt.join(''));
-							/*console.log("efter");
-							console.log(objCss);*/
 							recusiveBlock = false;
 							i = tt;
-							//console.log(block.length);
-							//console.log(block);
-							//console.log(i);
 							continue;
 						}
 					} else {
@@ -201,21 +178,17 @@
 							recusiveBlock = true;
 							tt = i;
 						}
-						//console.log('push');
-						//console.log(selector);
 						if (selector != "") {
 							objCss.push({'selector': selector});
 						}
 					}
 				} else {
-					//console.log('odd');
 					if (!recusiveBlock) {
 						objCss[objCss.length-1].attributes = cssTextAttributeToObj(block[i].substr(1, block[i].length-2));
 					}
 				}
 				i++;
 			}
-			//});
 			return objCss;
 		}
 		
@@ -316,9 +289,7 @@
 		
 		function parseFinalize(element, cssText) {
 			cssText = cleanCss(cssText);
-			//console.log(cssText);
 			var objCss = cssTextToObj(cssText);
-			//console.log(objCss);
 			var cssFinalize = [];
 			// Look for needed attributes and add to cssFinalize
 			$.each(objCss, function (i, block) {
@@ -372,9 +343,8 @@
 			element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
 		}
 		
-		
 		// Experimental - css hooks - require jquery 1.4.3+
-		if ($().jquery == '1.4.3') {
+		if ($().jquery.replace(/\./g, '') >= 143) {
 			for (property in rules) {
 				//if ($.inArray(currentPrefix, rules[property])!== -1) {
 				if ((newProperty = propertyRules(property)) !== false) {
@@ -397,7 +367,5 @@
 	$(function() {
 		$.cssFinalize('style, link');
 		//$('a').css({'border' : '1px solid #000000', 'border-radius' : 10, 'margin' : 10});
-		//console.log($('a:first').css('border-radius'));
-		//console.log($('a:first').css('margin'));
 	});
 })(jQuery);
