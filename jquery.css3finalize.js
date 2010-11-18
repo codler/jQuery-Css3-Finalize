@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.12 - 2010-11-12
+ * @version 1.13 - 2010-11-18
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -69,11 +69,11 @@
 			'border-bottom-right-image'	: ['moz', 'webkit'],
 			
 			// border-radius
-			'border-radius' 			: ['moz', 'webkit'],
-			'border-top-left-radius'	: [customRule('-moz-border-radius-topleft'), 'webkit'],
-			'border-top-right-radius'	: [customRule('-moz-border-radius-topright'), 'webkit'],
-			'border-bottom-right-radius': [customRule('-moz-border-radius-bottomright'), 'webkit'],
-			'border-bottom-left-radius'	: [customRule('-moz-border-radius-bottomleft'), 'webkit'],
+			'border-radius' 			: ['moz'],
+			'border-top-left-radius'	: [customRule('-moz-border-radius-topleft')],
+			'border-top-right-radius'	: [customRule('-moz-border-radius-topright')],
+			'border-bottom-right-radius': [customRule('-moz-border-radius-bottomright')],
+			'border-bottom-left-radius'	: [customRule('-moz-border-radius-bottomleft')],
 			
 			'box-align'			 : ['moz', 'webkit'],
 			'box-direction'		 : ['moz', 'webkit'],
