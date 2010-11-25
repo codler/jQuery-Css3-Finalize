@@ -25,22 +25,38 @@ Alternative links
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
+#### Manual loading
+If you don't want the script to parse on loading and parse when you want you could set 
+
+<code>
+&lt;script&gt; 
+// Disable autoload
+window.cssFinalize=false; 
+// Start parse
+jQuery(function() { $.cssFinalize('style, link'); });
+&lt;/script&gt;
+<code>
+
 ## Tests
 
-This script has been tested on windows in <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code>
+This script has been tested in <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code> on windows
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain. Except for local files in IE 7.
 * Link-tags cannot be read on Chrome 7 on local files.
 
-## $.fn.Css is extended
+## $.fn.Css is extended (cssHooks)
 
 You can leave out the prefix when setting a style in Jquery css method.
 
 Example
 
-<code>$('a').css({'border' : '1px solid #000000', 'border-radius' : 10});</code>
+<code>$('a').css({'border' : '1px solid #000000', 'column-width' : 10});</code>
 
 In normal case you would have needed to add a prefix
 
-<code>$('a').css({'border' : '1px solid #000000', '-moz-border-radius' : 10});</code>
+<code>$('a').css({'border' : '1px solid #000000', '-moz-column-width' : 10});</code>
+
+## Feedback
+
+I appreciate all feedback.
