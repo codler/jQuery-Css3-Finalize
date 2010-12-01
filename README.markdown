@@ -28,14 +28,12 @@ Once the script is loaded it will search for style-tags and link-tags (within sa
 #### Manual loading
 If you don't want the script to parse on loading and parse when you want you could set 
 
-<code>
-&lt;script&gt; 
-// Disable autoload
-window.cssFinalize=false; 
-// Start parse
-jQuery(function() { $.cssFinalize('style, link'); });
-&lt;/script&gt;
-<code>
+	&lt;script&gt; 
+	// Disable autoload
+	window.cssFinalize=false; 
+	// Start parse
+	jQuery(function() { $.cssFinalize('style, link'); });
+	&lt;/script&gt;
 
 ## Tests
 

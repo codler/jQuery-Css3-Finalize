@@ -12,12 +12,11 @@
 
 <title></title>
 <!-- css -->
-<!--
 <link rel="stylesheet" type="text/css" href="yap-goodies.css" />
 <link rel="stylesheet" type="text/css" href="boilerplate.css" />
 <link rel="stylesheet" type="text/css" href="test.css" />
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/themes/ui-lightness/jquery-ui.css" />
--->
+
 <!-- javascript -->
 <script src="http://ajax.microsoft.com/ajax/jQuery/jquery-1.4.4.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"></script>
@@ -207,7 +206,7 @@ ickbar {}
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.14 - 2010-11-25
+ * @version 1.15 - 2010-12-01
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -479,7 +478,7 @@ ickbar {}
 				if (currentPrefix == 'ms') {
 					// only for version 7 or lower
 					if (parseInt($.browser.version.substr(0,1)) <= 7) {
-						if (property == 'DISPLAY' && value == 'inline-block') {
+						if (property.toUpperCase() == 'DISPLAY' && value == 'inline-block') {
 							return 'inline';
 						}
 					}
@@ -693,9 +692,9 @@ String.prototype.split = function (separator, limit) {
 </script>
 <script>
 window.cssFinalize=false;
-//jQuery(function() { $.cssFinalize('style, link', {'shim': true}); });
+jQuery(function() { $.cssFinalize('style, link', {'shim': true}); });
 
-jQuery(function() { $.cssFinalize('style[data=shim-display]', {'shim': true}); });
+//jQuery(function() { $.cssFinalize('style[data=shim-display]', {'shim': true}); });
 </script>
 </head>
 <body>
