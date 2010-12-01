@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.14 - 2010-11-25
+ * @version 1.15 - 2010-12-01
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -275,7 +275,7 @@
 				if (currentPrefix == 'ms') {
 					// only for version 7 or lower
 					if (parseInt($.browser.version.substr(0,1)) <= 7) {
-						if (property == 'DISPLAY' && value == 'inline-block') {
+						if (property.toUpperCase() == 'DISPLAY' && value == 'inline-block') {
 							return 'inline';
 						}
 					}
@@ -385,9 +385,10 @@
 		if (window.cssFinalize!==false) {
 			$.cssFinalize('style, link');
 		}
-		//$('a').css({'border' : '1px solid #000000', 'border-radius' : 10, 'margin' : 10});
 	});
 })(jQuery);
+
+
 
 /* Cross-Browser Split 1.0.1
 (c) Steven Levithan <stevenlevithan.com>; MIT License

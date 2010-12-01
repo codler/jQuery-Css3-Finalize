@@ -12,21 +12,21 @@
 
 <title></title>
 <!-- css -->
-<link rel="stylesheet" type="text/css" href="yap-goodies.css" />
 <link rel="stylesheet" type="text/css" href="boilerplate.css" />
 <link rel="stylesheet" type="text/css" href="test.css" />
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/themes/ui-lightness/jquery-ui.css" />
 
 <!-- javascript -->
-<script src="http://ajax.microsoft.com/ajax/jQuery/jquery-1.4.4.min.js"></script>
+<script src="libs/jquery-1.4.4.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"></script>
 <!--[if IE]>
 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
-<script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>
+
+<!--<script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>-->
 
 <style data="comment">
-/* Test comment */
+/* Test comment */ /* Parsing test */
 /* /* */ */
 /* /* */
 /* */
@@ -34,14 +34,14 @@
 </style>
 
 <style data="empty">
-/* Test empty blocks */
+/* Test empty blocks */ /* Parsing test */
 #empty {}
 #empty2 { }
 #empty3{}
 </style>
 
 <style data="colon">
-/* Test colon in values */
+/* Test colon in values */ /* Parsing test */
 .box_gradient {
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999'); /* IE6,IE7 */
 	background-color: #444444;
@@ -51,7 +51,7 @@
 }
 </style>
 <style data="semi-colon">
-/* Test with no semi-colon at end */
+/* Test with no semi-colon at end */ /* Parsing test */
 .box_round {
 	border-radius: 12px
 }
@@ -62,14 +62,14 @@
 </style>
 
 <style data="import">
-/* Test import */
+/* Test import */ /* Parsing test */
 @import url("test.css");
 @import url("landscape.css") all and
 	(orientation:landscape);
 </style>
 
 <style data="recursive-blocks">
-/* Test recursive blocks */
+/* Test recursive blocks */ /* Parsing test */
 @keyframes bounce {
 	from {
 		left: 0px;
@@ -81,7 +81,7 @@
 </style>
 <!--[if lt IE 9 ]> 
 <style data="conditional-statements">
-/* Test conditional-statements */
+/* Test conditional-statements */ /* Parsing test */
 .box_round {
 	transform: 12px
 }
@@ -190,16 +190,7 @@ ickbar {}
 (max-device-width:480px);
 /* */
 </style>
-<!--[if lt IE 9 ]> 
-<style>
-#items li.item, #items li.gap {
-	display: inline;
-}
-#items li.gap {
-	width: 40px;
-}
-</style>
-<![endif]-->
+
 <script>
 /**
  * @author Han Lin Yap < http://zencodez.net/ >
@@ -588,9 +579,10 @@ ickbar {}
 		if (window.cssFinalize!==false) {
 			$.cssFinalize('style, link');
 		}
-		//$('a').css({'border' : '1px solid #000000', 'border-radius' : 10, 'margin' : 10});
 	});
 })(jQuery);
+
+
 
 /* Cross-Browser Split 1.0.1
 (c) Steven Levithan <stevenlevithan.com>; MIT License
@@ -690,15 +682,58 @@ String.prototype.split = function (separator, limit) {
     return cbSplit(this, separator, limit);
 };
 </script>
+
+
+
+
+
+
+
+
+
 <script>
 window.cssFinalize=false;
 jQuery(function() { $.cssFinalize('style, link', {'shim': true}); });
-
 //jQuery(function() { $.cssFinalize('style[data=shim-display]', {'shim': true}); });
+
+
+$(function($) { 
+	$('.jquery-round').css({'border-radius' : 10});
+});
 </script>
+<style>
+.box {
+	background-color: #eee;
+	display: inline-block;
+	padding: 10px;
+	margin: 20px;
+	height: 100px;
+	width: 100px;
+}
+.box.round {
+	border-radius: 10px;
+}
+.box.round-top-left {
+	border-top-left-radius: 10px;
+}
+.box.shadow {
+	box-shadow: 10px 10px 5px #888;
+}
+.box.transform {
+	transform: scale(0.7);
+}
+.box.transition:hover {
+	margin-left: 100px;
+	transition: all .5s ease-in-out;
+}
+</style>
 </head>
 <body>
-<div class="box_round">hej</div>
-<a href="" onclick="return false;">test</a>
+<div class="box round">Border radius</div>
+<div class="box round-top-left">Border top left radius</div>
+<div class="box shadow">Box shadow</div>
+<div class="box transform">Transform</div>
+<div class="box transition">Transition:hover</div>
+<div class="box jquery-round">Jquery CssHooks</div>
 </body>
 </html>

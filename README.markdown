@@ -1,6 +1,6 @@
 # CSS 3 Finalize
 
-Some css3 attributes needs to have a prefix in front in order to work in different browser. The plugin takes care of that so you only need to write without the prefix.
+Some css3 attributes need to have a prefix in front (vendor prefix) in order to work in different browser. The plugin takes care of that and will automatically add the prefix so you don't need to write the vendor prefix. With this you will save time and the pain of rewriting same attribute many times.
 
 For example the css3 attribute <code>box-sizing</code> need to have the prefix 
 <ul>
@@ -9,7 +9,6 @@ For example the css3 attribute <code>box-sizing</code> need to have the prefix
 <li><code>-webkit-</code> in Chrome, Safari</li>
 <li><code>-o-</code> in Opera</li>
 </ul>
-If you write without the prefix it won't work in those browser, you need the write each of them. Here is where this jquery plugin comes in. You only need to write it without the prefix and the plugin will automatically add the prefix. With this you will save time and the pain of rewriting same attribute many times.
 
 ## How to use
 
@@ -28,22 +27,22 @@ Once the script is loaded it will search for style-tags and link-tags (within sa
 #### Manual loading
 If you don't want the script to parse on loading and parse when you want you could set 
 
-	&lt;script&gt; 
+	<script> 
 	// Disable autoload
 	window.cssFinalize=false; 
 	// Start parse
 	jQuery(function() { $.cssFinalize('style, link'); });
-	&lt;/script&gt;
+	</script>
 
 ## Tests
 
-This script has been tested in <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code> on windows
+This script has been tested in <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code> on windows and <code>FF 3.6</code> on mac
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain. Except for local files in IE 7.
 * Link-tags cannot be read on Chrome 7 on local files.
 
-## $.fn.Css is extended (cssHooks)
+## cssHooks (jQuery 1.4.3+)
 
 You can leave out the prefix when setting a style in Jquery css method.
 
