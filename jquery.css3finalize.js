@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.15 - 2010-12-01
+ * @version 1.16 - 2010-12-09
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -225,6 +225,12 @@
 				if (newValue) {
 					newAttributes[property] = newValue;
 				}
+				
+				// PropertyValue Rules
+				var newPropertyValue = propertyValuesRules(property, value);
+				if (newPropertyValue) {
+					newAttributes[newPropertyValue.property] = newPropertyValue.value;
+				}
 			});
 			
 			return newAttributes;
@@ -278,6 +284,11 @@
 						if (property.toUpperCase() == 'DISPLAY' && value == 'inline-block') {
 							return 'inline';
 						}
+						
+						// background-color alpha color
+						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
+							return '';
+						}
 					}
 				}
 			}
@@ -285,6 +296,26 @@
 			// TODO : Match background-image: linear-gradient()
 			
 			
+			return false;
+		}
+		
+		function propertyValuesRules(property, value) {
+			if (config.shim) {
+				// Only apply for ie
+				if (currentPrefix == 'ms') {
+					// only for version 7 or lower
+					if (parseInt($.browser.version.substr(0,1)) <= 7) {						
+						// background-color alpha color
+						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
+							value = ac2ah(value);
+							return {
+								'property' 	: 'filter',
+								'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
+							};
+						}
+					}
+				}
+			}
 			return false;
 		}
 		
@@ -299,6 +330,21 @@
 				selector = selector.replace('@keyframes', '@-webkit-keyframes');
 			}
 			return selector;
+		}
+		
+		/* Alpha + Color channels to Alpha + Hexadecimals */
+		function ac2ah(c) {
+			var da = c.replace(/^rgba\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+			var ha = [];
+			var h;
+			for (var i=0; i < da.length; i++) {
+				if (i==3){ da[i] *= 255; } // alpha bit of the rgba!
+				h = '0' + parseInt(da[i], 10).toString(16);
+				ha.push( h.substr(h.length-2,2).toUpperCase() );
+			}
+
+			ha.splice(0, 0, ha.pop());
+			return '#' + ha.join('');
 		}
 		
 		function parseFinalize(element, cssText) {
