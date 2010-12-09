@@ -34,6 +34,9 @@ If you don't want the script to parse on loading and parse when you want you cou
 	jQuery(function() { $.cssFinalize('style, link'); });
 	</script>
 
+See which vendor prefix it looks for https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported
+It do some more then checking for vendor prefix.
+
 ## Tests
 
 This script has been tested in <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code> on windows and <code>FF 3.6</code> on mac

@@ -478,11 +478,6 @@ ickbar {}
 						if (property.toUpperCase() == 'DISPLAY' && value == 'inline-block') {
 							return 'inline';
 						}
-						
-						// background-color alpha color
-						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
-							return '';
-						}
 					}
 				}
 			}
