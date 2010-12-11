@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.17 - 2010-12-11
+ * @version 1.18 - 2010-12-11
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -53,10 +53,33 @@
 				return newAttr;
 			}
 		}
+		// PropertyRules
+			// Animation
 		var supportRules = 'animation animation-delay animation-direction animation-duration animation-iteration-count animation-name animation-timing-function';
-
-		supportRules += ' border-radius transform';
-		supportRules = supportRules.split(' ');
+		
+			supportRules += ' backface-visibility';
+			// Background
+			supportRules += ' background-clip background-origin background-size';
+			// Border - corner/image/radius
+			supportRules += ' border-corner-image border-image border-top-image border-right-image border-bottom-image border-left-image border-top-left-image border-top-right-image border-bottom-left-image border-bottom-right-image border-radius';
+			// Box
+			supportRules += ' box-align box-direction box-flex box-flex-group box-lines box-ordinal-group box-orient box-pack box-shadow box-sizing';
+			// Column
+			supportRules += ' column-count column-gap column-rule column-rule-color column-rule-style column-rule-width column-width columns';
+			// Marquee
+			supportRules += ' marquee marquee-direction marquee-speed marquee-style';
+			
+			supportRules += ' perspective perspective-origin tab-size text-overflow text-size-adjust';
+			
+			// Transform
+			supportRules += ' transform transform-origin transform-style';
+			
+			// Transition
+			supportRules += ' transition transition-delay transition-duration transition-property transition-timing-function';
+			
+			supportRules += ' user-modify user-select';
+			
+			supportRules = supportRules.split(' ');
 		
 		var rules = {
 			/*
@@ -68,15 +91,15 @@
 			'animation-name'		 : ['webkit'],
 			'animation-timing-function' : ['webkit'],
 			*/
-			'backface-visibility' : ['webkit'],
+			//'backface-visibility' : ['webkit'],
 		
 			// moz is comment out because the rule lies on "valueRule"
-			'background-clip'		 : [/*'moz',*/ 'webkit', 'khtml'],
-			'background-origin'		 : [/*'moz',*/ 'webkit', 'khtml'],
-			'background-size'		 : ['moz', 'webkit', 'khtml'],
+			//'background-clip'		 : [/*'moz',*/ 'webkit', 'khtml'],
+			//'background-origin'		 : [/*'moz',*/ 'webkit', 'khtml'],
+			//'background-size'		 : ['moz', 'webkit', 'khtml'],
 			
 			// border image
-			'border-image'				: ['moz', 'webkit'],
+			/* 'border-image'				: ['moz', 'webkit'],
 			'border-top-image'			: ['moz', 'webkit'],
 			'border-right-image'		: ['moz', 'webkit'],
 			'border-bottom-image'		: ['moz', 'webkit'],
@@ -85,16 +108,16 @@
 			'border-top-left-image'		: ['moz', 'webkit'],
 			'border-top-right-image'	: ['moz', 'webkit'],
 			'border-bottom-left-image'	: ['moz', 'webkit'],
-			'border-bottom-right-image'	: ['moz', 'webkit'],
+			'border-bottom-right-image'	: ['moz', 'webkit'], */
 			
 			// border-radius
 			//'border-radius' 			: ['moz'],
 			'border-top-left-radius'	: [customRule('-moz-border-radius-topleft')],
 			'border-top-right-radius'	: [customRule('-moz-border-radius-topright')],
 			'border-bottom-right-radius': [customRule('-moz-border-radius-bottomright')],
-			'border-bottom-left-radius'	: [customRule('-moz-border-radius-bottomleft')],
+			'border-bottom-left-radius'	: [customRule('-moz-border-radius-bottomleft')]
 			
-			'box-align'			 : ['moz', 'webkit'],
+			/*'box-align'			 : ['moz', 'webkit'],
 			'box-direction'		 : ['moz', 'webkit'],
 			'box-flex'			 : ['moz', 'webkit'],
 			'box-flex-group'	 : ['moz', 'webkit'],
@@ -103,8 +126,8 @@
 			'box-orient'		 : ['moz', 'webkit'],
 			'box-pack'			 : ['moz', 'webkit'],
 			'box-shadow'		 : ['moz', 'webkit'],
-			'box-sizing'		 : ['moz', 'webkit'],
-			'column-count'		 : ['moz', 'webkit'],
+			'box-sizing'		 : ['moz', 'webkit'],*/
+			/*'column-count'		 : ['moz', 'webkit'],
 			'column-gap'		 : ['moz', 'webkit'],
 			'column-rule'		 : ['moz', 'webkit'],
 			'column-rule-color'	 : ['moz', 'webkit'],
@@ -120,9 +143,9 @@
 			'perspective-origin' : ['webkit'],
 			'tab-size'			 : ['moz', 'o'],
 			'text-overflow'		 : ['o'],
-			'text-size-adjust'	 : ['webkit', 'ms'],
+			'text-size-adjust'	 : ['webkit', 'ms'],*/
 			//'transform'			 : ['moz', 'webkit', 'o', 'ms'],
-			'transform-origin'	 : ['moz', 'webkit', 'o', 'ms'],
+			/*'transform-origin'	 : ['moz', 'webkit', 'o', 'ms'],
 			'transform-style'	 : ['webkit'],
 			'transition'		 : ['moz', 'webkit', 'o'],
 			'transition-delay'	 : ['moz', 'webkit', 'o'],
@@ -130,7 +153,7 @@
 			'transition-property' : ['moz', 'webkit', 'o'],
 			'transition-timing-function' : ['moz', 'webkit', 'o'],
 			'user-modify'		 : ['moz', 'webkit', 'khtml'],
-			'user-select'		 : ['moz', 'webkit', 'khtml']
+			'user-select'		 : ['moz', 'webkit', 'khtml']*/
 		}
 	
 		function cssObjToText(obj) {

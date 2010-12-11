@@ -12,7 +12,7 @@ For example the css3 attribute <code>box-sizing</code> need to have the prefix
 
 See which vendor prefix it looks for <code>https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported</code>
 
-It do some more then checking for vendor prefix.
+It also do some more then checking for vendor prefix. Eg. it support alpha color (rgba) in background-color for IE7.
 
 ## How to use
 
