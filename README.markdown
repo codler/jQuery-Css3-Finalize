@@ -10,6 +10,10 @@ For example the css3 attribute <code>box-sizing</code> need to have the prefix
 <li><code>-o-</code> in Opera</li>
 </ul>
 
+See which vendor prefix it looks for <code>https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported</code>
+
+It do some more then checking for vendor prefix.
+
 ## How to use
 
 Simply add this code to your site
@@ -33,9 +37,6 @@ If you don't want the script to parse on loading and parse when you want you cou
 	// Start parse
 	jQuery(function() { $.cssFinalize('style, link'); });
 	</script>
-
-See which vendor prefix it looks for https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported
-It do some more then checking for vendor prefix.
 
 ## Tests
 

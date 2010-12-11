@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.16 - 2010-12-09
+ * @version 1.17 - 2010-12-11
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -13,23 +13,34 @@
  *
  * == Example Usage ==
  * // This will look for all style-tags and parse them.
- * $.cssFinalize('style');
+ * $('style').cssFinalize();
  */
 (function ($) {
+	$.cssFinalizeSetup = {
+		shim : true,
+		defaultNode : 'style,link'
+	}
 
-	$.cssFinalize = function(node, config) {
-		var currentPrefix = false;
-		if (!config) {
-			config = {};
-		}
+	$.fn.cssFinalize = function(options) {
+		$.cssFinalize(this, options);
+		return this;
+	}
+	
+	$.cssFinalize = function(node, options) {
+		var div = document.createElement('div');
 		
+		options = $.extend({}, $.cssFinalizeSetup, options);
+		node = node || options.defaultNode;
+		
+		// Get current vendor prefix
+		var currentPrefix = false;
 		if ($.browser.webkit || $.browser.safari) {
 			currentPrefix = 'webkit';
 		} else if ($.browser.mozilla) {
 			currentPrefix = 'moz'
 		} else if ($.browser.msie) {
 			// No vendor prefix in ie 7
-			if (parseInt($.browser.version.substr(0,1)) <= 7 && !config.shim) {	
+			if ($.browser.version <= 7 && !options.shim) {	
 				return true;
 			}
 			currentPrefix = 'ms';
@@ -42,8 +53,13 @@
 				return newAttr;
 			}
 		}
+		var supportRules = 'animation animation-delay animation-direction animation-duration animation-iteration-count animation-name animation-timing-function';
+
+		supportRules += ' border-radius transform';
+		supportRules = supportRules.split(' ');
 		
 		var rules = {
+			/*
 			'animation'				 : ['webkit'],
 			'animation-delay'		 : ['webkit'],
 			'animation-direction'	 : ['webkit'],
@@ -51,7 +67,7 @@
 			'animation-iteration-count' : ['webkit'],
 			'animation-name'		 : ['webkit'],
 			'animation-timing-function' : ['webkit'],
-			
+			*/
 			'backface-visibility' : ['webkit'],
 		
 			// moz is comment out because the rule lies on "valueRule"
@@ -72,7 +88,7 @@
 			'border-bottom-right-image'	: ['moz', 'webkit'],
 			
 			// border-radius
-			'border-radius' 			: ['moz'],
+			//'border-radius' 			: ['moz'],
 			'border-top-left-radius'	: [customRule('-moz-border-radius-topleft')],
 			'border-top-right-radius'	: [customRule('-moz-border-radius-topright')],
 			'border-bottom-right-radius': [customRule('-moz-border-radius-bottomright')],
@@ -105,7 +121,7 @@
 			'tab-size'			 : ['moz', 'o'],
 			'text-overflow'		 : ['o'],
 			'text-size-adjust'	 : ['webkit', 'ms'],
-			'transform'			 : ['moz', 'webkit', 'o', 'ms'],
+			//'transform'			 : ['moz', 'webkit', 'o', 'ms'],
 			'transform-origin'	 : ['moz', 'webkit', 'o', 'ms'],
 			'transform-style'	 : ['webkit'],
 			'transition'		 : ['moz', 'webkit', 'o'],
@@ -249,6 +265,17 @@
 				}
 			}
 			
+			if ($.inArray(property, supportRules) > -1) {
+				// Checks if the property exists in style
+				if (!($.camelCase(property) in div.style)
+					// Checks if vendor prefix property exists in style
+					// is this needed?
+					//&& $.camelCase('-' + currentPrefix + '-' + property) in div.style
+				) {
+					return '-' + currentPrefix + '-' + property;
+				}
+			}
+			
 			return false;
 		}
 		
@@ -261,7 +288,7 @@
 				}
 				
 				// only for version 3.6 or lower
-				if (parseInt($.browser.version.substr(0,1)) < 4) {
+				if (parseInt($.browser.version.substr(0,1)) < 2) {
 					// background-clip or background-origin
 					if (property == 'background-clip' || 
 						property == 'background-origin') {
@@ -276,18 +303,13 @@
 				}
 			}
 			
-			if (config.shim) {
+			if (options.shim) {
 				// Only apply for ie
 				if (currentPrefix == 'ms') {
 					// only for version 7 or lower
-					if (parseInt($.browser.version.substr(0,1)) <= 7) {
+					if ($.browser.version <= 7) {
 						if (property.toUpperCase() == 'DISPLAY' && value == 'inline-block') {
 							return 'inline';
-						}
-						
-						// background-color alpha color
-						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
-							return '';
 						}
 					}
 				}
@@ -300,11 +322,11 @@
 		}
 		
 		function propertyValuesRules(property, value) {
-			if (config.shim) {
+			if (options.shim) {
 				// Only apply for ie
 				if (currentPrefix == 'ms') {
 					// only for version 7 or lower
-					if (parseInt($.browser.version.substr(0,1)) <= 7) {						
+					if (parseInt($.browser.version) <= 7) {
 						// background-color alpha color
 						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
 							value = ac2ah(value);
@@ -350,6 +372,7 @@
 		function parseFinalize(element, cssText) {
 			cssText = cleanCss(cssText);
 			if ($.trim(cssText) == '') return;
+			
 			var objCss = cssTextToObj(cssText);
 			var cssFinalize = [];
 			// Look for needed attributes and add to cssFinalize
@@ -390,15 +413,19 @@
 			}
 			// link-tags
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
-				try {
-					$('<div />').load(this.href, function(data) {
-						parseFinalize($this, data);
-					});
-				} catch(e){}
+				load(this.href, $this);
 			} else {
 				parseFinalize($this, $this.html());
 			}
 		});
+		
+		function load(url, element) {
+			try {
+				$('<div />').load(url, function(data) {
+					parseFinalize(element, data);
+				});
+			} catch(e){}
+		}
 		
 		function appendStyle(element, cssObj) {
 			element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
@@ -411,6 +438,12 @@
 				//if ($.inArray(currentPrefix, rules[property])!== -1) {
 				if ((newProperty = propertyRules(property)) !== false) {
 					setCssHook(property, newProperty);
+				}
+			}
+			
+			for (property in supportRules) {
+				if ((newProperty = propertyRules(supportRules[property])) !== false) {
+					setCssHook(supportRules[property], newProperty);
 				}
 			}
 		}
@@ -429,7 +462,7 @@
 	$(function() {
 		// Let user decide to parse on load or not.
 		if (window.cssFinalize!==false) {
-			$.cssFinalize('style, link');
+			$.cssFinalize();
 		}
 	});
 })(jQuery);
