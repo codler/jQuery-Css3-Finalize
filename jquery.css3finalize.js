@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.19 - 2010-12-11
+ * @version 1.20 - 2010-12-14
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -18,7 +18,8 @@
 (function ($) {
 	$.cssFinalizeSetup = {
 		shim : true,
-		defaultNode : 'style,link'
+		node : 'style,link',
+		checkMedia : true
 	}
 
 	$.fn.cssFinalize = function(options) {
@@ -30,7 +31,7 @@
 		var div = document.createElement('div');
 		
 		options = $.extend({}, $.cssFinalizeSetup, options);
-		node = node || options.defaultNode;
+		node = node || options.node;
 		
 		// Get current vendor prefix
 		var currentPrefix = false;
@@ -488,7 +489,9 @@
 			}
 			// link-tags
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
-				load(this.href, $this);
+				if (!options.checkMedia || ($this.attr('media').length > 0 && media.matchMedium($this.attr('media'))) || $this.attr('media').length == 0) {
+					load(this.href, $this);
+				}
 			} else {
 				parseFinalize($this, $this.html());
 			}
@@ -538,6 +541,7 @@
 				}
 			}
 		}
+		
 	}
 	$(function() {
 		// Let user decide to parse on load or not.
@@ -546,3 +550,56 @@
 		}
 	});
 })(jQuery);
+
+/*
+ * media.matchMedium()- test whether a CSS media type or media query applies
+ * primary author: Scott Jehl
+ * Copyright (c) 2010 Filament Group, Inc
+ * MIT license
+ 
+ * adapted by Paul Irish to use the matchMedium API
+ *    http://www.w3.org/TR/cssom-view/#media
+ * Doesn't implement media.type as there's no way for crossbrowser property
+ *    getters. instead of media.type == 'tv' just use media.matchMedium('tv')
+ 
+ * Developed as a feature of the EnhanceJS Framework (enhancejs.googlecode.com)
+ * thx to: 
+   - phpied.com/dynamic-script-and-style-elements-in-ie for inner css text trick 
+   - @paul_irish for fakeBody trick 
+*/
+if ( !(window.media && media.matchMedium) ){
+  
+  window.media = window.media || {};
+  media.matchMedium = (function(doc,undefined){
+    
+    var cache = {},
+        docElem = doc.documentElement,
+        fakeBody = doc.createElement('body'), 
+        testDiv = doc.createElement('div');
+    
+    testDiv.setAttribute('id','ejs-qtest'); 
+    fakeBody.appendChild(testDiv);
+    
+    return function(q){
+      if (cache[q] === undefined) {
+        var styleBlock = doc.createElement('style');
+        styleBlock.type = 'text/css';
+        var cssrule = '@media '+q+' { #ejs-qtest { position: absolute; } }';
+        if (styleBlock.styleSheet){ 
+            styleBlock.styleSheet.cssText = cssrule;
+        } 
+        else {
+            styleBlock.appendChild(doc.createTextNode(cssrule));
+        }      
+        docElem.insertBefore(fakeBody, docElem.firstChild);
+        docElem.insertBefore(styleBlock, docElem.firstChild);
+        cache[q] = ((window.getComputedStyle ? window.getComputedStyle(testDiv,null) : testDiv.currentStyle)['position'] == 'absolute');
+        docElem.removeChild(fakeBody);
+        docElem.removeChild(styleBlock);
+      }
+      return cache[q];
+    };
+    
+  })(document);
+
+}

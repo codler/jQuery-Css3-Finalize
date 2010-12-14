@@ -10,9 +10,9 @@ For example the css3 attribute <code>box-sizing</code> need to have the prefix
 <li><code>-o-</code> in Opera</li>
 </ul>
 
-See which vendor prefix it looks for <code>https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported</code>
+See which vendor prefix CSS3 Finalize supports [[https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported]]
 
-It also do some more then checking for vendor prefix. Eg. it support alpha color (rgba) in background-color for IE7.
+It also do some more then checking for vendor prefix. Eg. it add support for alpha color (rgba) in background-color in IE7.
 
 ## How to use
 
@@ -24,12 +24,12 @@ Simply add this code to your site
 
 Alternative links
 
-<code>http://bsy.se/jquery.css3finalize-latest.min.js</code> or <code>http://static.zencodez.net/js/jquery.css3finalize-latest.min.js</code>
+[[http://bsy.se/jquery.css3finalize-latest.min.js]] or [[http://static.zencodez.net/js/jquery.css3finalize-latest.min.js]]
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
 #### Manual loading
-If you don't want the script to parse on loading and parse when you want you could set 
+If you don't want the script to automatically load and parse then you could set this code
 
 	<script> 
 	// Disable autoload
@@ -40,11 +40,11 @@ If you don't want the script to parse on loading and parse when you want you cou
 
 ## Tests
 
-This script has been tested in <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome 7</code>, <code>Safari 5</code>, <code>Opera 10.6</code> on windows and <code>FF 3.6</code> on mac
+This script has been tested in <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera 10.6</code> on windows and <code>FF 3.6</code> on mac
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain. Except for local files in IE 7.
-* Link-tags cannot be read on Chrome 7 on local files.
+* Link-tags cannot be read on Chrome on local files.
 
 ## cssHooks (jQuery 1.4.3+)
 
