@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.20 - 2010-12-14
+ * @version 1.21 - 2010-12-16
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -174,7 +174,7 @@
 		}
 		
 		function cssTextAttributeToObj(text) {
-			if (currentPrefix == 'ms' && $.browser.version <= 7) {
+			if (currentPrefix == 'ms' && $.browser.version <= 8) {
 				var attribute = ieSplit(text, '(:[^;]*;?)');
 			} else {
 				var attribute = text.split(/(:[^;]*;?)/);
@@ -203,7 +203,7 @@
 		}
 		
 		function cssTextToObj(text) {
-			if (currentPrefix == 'ms' && $.browser.version <= 7) {
+			if (currentPrefix == 'ms' && $.browser.version <= 8) {
 				var block = ieSplit(text, '({[^{}]*})');
 			} else {
 				var block = text.split(/({[^{}]*})/);
@@ -400,7 +400,6 @@
 								'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
 							};
 						}
-					// Has not been tested yet
 					// only for version 8 
 					} else if ($.browser.version == 8) {
 						// background-color alpha color

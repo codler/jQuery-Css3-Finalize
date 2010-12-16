@@ -10,9 +10,9 @@ For example the css3 attribute <code>box-sizing</code> need to have the prefix
 <li><code>-o-</code> in Opera</li>
 </ul>
 
-See which vendor prefix CSS3 Finalize supports [[https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported]]
+See which vendor prefix CSS3 Finalize supports <https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported>
 
-It also do some more then checking for vendor prefix. Eg. it add support for alpha color (rgba) in background-color in IE7.
+It also do some more then checking for vendor prefix. Eg. it add support for alpha color (rgba) in background-color in IE7-8.
 
 ## How to use
 
@@ -24,7 +24,7 @@ Simply add this code to your site
 
 Alternative links
 
-[[http://bsy.se/jquery.css3finalize-latest.min.js]] or [[http://static.zencodez.net/js/jquery.css3finalize-latest.min.js]]
+<http://bsy.se/jquery.css3finalize-latest.min.js> or <http://static.zencodez.net/js/jquery.css3finalize-latest.min.js>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
@@ -40,11 +40,12 @@ If you don't want the script to automatically load and parse then you could set 
 
 ## Tests
 
-This script has been tested in <code>IE 7</code>, <code>FF 3.6</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera 10.6</code> on windows and <code>FF 3.6</code> on mac
+This script has been tested in <code>IE 7-8</code>, <code>FF 3.6</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera 10.6</code> on windows and <code>FF 3.6</code> on mac
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain. Except for local files in IE 7.
 * Link-tags cannot be read on Chrome on local files.
+* It seems IE8 strips out attributes on invalid value on known property in style-tag.
 
 ## cssHooks (jQuery 1.4.3+)
 
