@@ -1,3 +1,33 @@
+.link.box {
+	background-origin: padding-box;
+	display: inline-block;
+	padding: 10px;
+	margin: 20px;
+	background-color: rgba(0,0,0, 0.3);
+	height: 100px;
+	width: 100px;
+}
+.link.box.round {
+	border-radius: 10px;
+}
+.link.box.round-top-left {
+	border-top-left-radius: 10px;
+}
+.link.box.shadow {
+	box-shadow: 10px 10px 5px #888;
+}
+.link.box.transform {
+	transform: scale(0.7);
+}
+.link.box.transition:hover {
+	margin-left: 100px;
+	transition: all .5s ease-in-out;
+}
+.link.box.gradient {
+	 background-image: linear-gradient(#000000, #ffffff); 
+	/* filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#000000',EndColorStr='#ffffff'); */
+}
+
 
 /* colors for form validity */
  input:valid, textarea:valid { } 

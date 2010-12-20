@@ -40,11 +40,11 @@ If you don't want the script to automatically load and parse then you could set 
 
 ## Tests
 
-This script has been tested in <code>IE 7-8</code>, <code>FF 3.6</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera 10.6</code> on windows and <code>FF 3.6</code> on mac
+This script has been tested in <code>IE 7-8</code>, <code>FF 3.6</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera 11</code> on windows
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain. Except for local files in IE 7.
-* Link-tags cannot be read on Chrome on local files.
+* Link-tags cannot be read on webkit and opera on local files.
 * It seems IE8 strips out attributes on invalid value on known property in style-tag.
 
 ## cssHooks (jQuery 1.4.3+)

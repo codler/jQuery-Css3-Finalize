@@ -197,7 +197,7 @@ ickbar {}
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.21 - 2010-12-16
+ * @version 1.22 - 2010-12-20
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -529,7 +529,7 @@ ickbar {}
 		}
 		
 		function valuesRules(property, value, newProperty) {
-			newProperty = newProperty || property
+			newProperty = newProperty || property;
 			if (property == 'background-clip' || 
 				property == 'background-origin') {
 				// value can be padding-box/border-box/content-box
@@ -574,8 +574,23 @@ ickbar {}
 				}
 			}
 			
-			// TODO : Match background-image: linear-gradient()
-			
+			// // TODO : Match background-image: linear-gradient()
+			if (property == 'background-image' && value.indexOf('linear-gradient') == 0) {
+				if (currentPrefix == 'moz') {
+					return '-moz-' + value;
+				} else if (currentPrefix == 'webkit') {
+					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+					if (da.length == 2) {
+						return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '));';
+					}					
+				} else if (currentPrefix == 'o') {
+					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+					if (da.length == 2) {
+						var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
+						return 'url(data:image/svg+xml,' + escape(g) + ')';
+					}
+				}
+			}
 			
 			return false;
 		}
@@ -594,6 +609,20 @@ ickbar {}
 								'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
 							};
 						}
+						/*	// Disabled untill this bug is solved 
+							// http://jsfiddle.net/Zhvpy
+							// http://jsfiddle.net/Zhvpy/1
+							
+						// background-image gradient
+						if (property.toUpperCase() == 'BACKGROUND-IMAGE' && value.indexOf('linear-gradient') == 0) {
+							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+							if (da.length == 2) {
+								return {
+									'property' 	: 'filter',
+									'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')"
+								};
+							}
+						} */
 					// only for version 8 
 					} else if ($.browser.version == 8) {
 						// background-color alpha color
@@ -603,6 +632,16 @@ ickbar {}
 								'property' 	: '-ms-filter',
 								'value'		: "\"progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')\""
 							};
+						}
+						// background-image gradient
+						if (property.toUpperCase() == 'BACKGROUND-IMAGE' && value.indexOf('linear-gradient') == 0) {
+							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+							if (da.length == 2) {
+								return {
+									'property' 	: '-ms-filter',
+									'value'		: "\"progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')\""
+								};
+							}
 						}
 					}
 				}
@@ -699,6 +738,7 @@ ickbar {}
 		}
 		
 		function appendStyle(element, cssObj) {
+			//$('#a').append($('<span/>').text(cssObjToText(cssObj)));
 			element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
 		}
 		
@@ -822,40 +862,54 @@ $(function($) {
 body {
 	background-image: url("bg.jpg");
 }
-.box {
-	/* background-color: #eee; */
+.style.box {
 	background-origin: padding-box;
 	display: inline-block;
 	padding: 10px;
 	margin: 20px;
-	background-color: rgba(0,0,0, 0.3);
+	background-color: rgba(255,255,255, 0.3);
 	height: 100px;
 	width: 100px;
 }
-.box.round {
+.style.box.round {
 	border-radius: 10px;
 }
-.box.round-top-left {
+.style.box.round-top-left {
 	border-top-left-radius: 10px;
 }
-.box.shadow {
+.style.box.shadow {
 	box-shadow: 10px 10px 5px #888;
 }
-.box.transform {
+.style.box.transform {
 	transform: scale(0.7);
 }
-.box.transition:hover {
+.style.box.transition:hover {
 	margin-left: 100px;
 	transition: all .5s ease-in-out;
+}
+.style.box.gradient {
+	background-image: linear-gradient(#ffffff, #000000);
+	/* filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff',EndColorStr='#000000'); */
 }
 </style>
 </head>
 <body>
-<div class="box round">Border radius</div>
-<div class="box round-top-left">Border top left radius</div>
-<div class="box shadow">Box shadow</div>
-<div class="box transform">Transform</div>
-<div class="box transition">Transition:hover</div>
-<div class="box jquery-round">Jquery CssHooks</div>
+<div id="a" class="style box round">Border radius (style-tag)</div>
+<div class="style box round-top-left">Border top left radius (style-tag)</div>
+<div class="style box shadow">Box shadow (style-tag)</div>
+<div class="style box transform">Transform (style-tag)</div>
+<div class="style box transition">Transition:hover (style-tag)</div>
+<div class="style box jquery-round">Jquery CssHooks (style-tag)</div>
+<div class="style box gradient">Gradient (style-tag)</div>
+
+<hr />
+
+<div class="link box round">Border radius (link-tag)</div>
+<div class="link box round-top-left">Border top left radius (link-tag)</div>
+<div class="link box shadow">Box shadow (link-tag)</div>
+<div class="link box transform">Transform (link-tag)</div>
+<div class="link box transition">Transition:hover (link-tag)</div>
+<div class="link box jquery-round">Jquery CssHooks (link-tag)</div>
+<div class="link box gradient">Gradient (link-tag)</div>
 </body>
 </html>

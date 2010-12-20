@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.21 - 2010-12-16
+ * @version 1.22 - 2010-12-20
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -335,7 +335,7 @@
 		}
 		
 		function valuesRules(property, value, newProperty) {
-			newProperty = newProperty || property
+			newProperty = newProperty || property;
 			if (property == 'background-clip' || 
 				property == 'background-origin') {
 				// value can be padding-box/border-box/content-box
@@ -380,8 +380,23 @@
 				}
 			}
 			
-			// TODO : Match background-image: linear-gradient()
-			
+			// // TODO : Match background-image: linear-gradient()
+			if (property == 'background-image' && value.indexOf('linear-gradient') == 0) {
+				if (currentPrefix == 'moz') {
+					return '-moz-' + value;
+				} else if (currentPrefix == 'webkit') {
+					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+					if (da.length == 2) {
+						return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '));';
+					}					
+				} else if (currentPrefix == 'o') {
+					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+					if (da.length == 2) {
+						var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
+						return 'url(data:image/svg+xml,' + escape(g) + ')';
+					}
+				}
+			}
 			
 			return false;
 		}
@@ -400,6 +415,20 @@
 								'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
 							};
 						}
+						/*	// Disabled untill this bug is solved 
+							// http://jsfiddle.net/Zhvpy
+							// http://jsfiddle.net/Zhvpy/1
+							
+						// background-image gradient
+						if (property.toUpperCase() == 'BACKGROUND-IMAGE' && value.indexOf('linear-gradient') == 0) {
+							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+							if (da.length == 2) {
+								return {
+									'property' 	: 'filter',
+									'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')"
+								};
+							}
+						} */
 					// only for version 8 
 					} else if ($.browser.version == 8) {
 						// background-color alpha color
@@ -409,6 +438,16 @@
 								'property' 	: '-ms-filter',
 								'value'		: "\"progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')\""
 							};
+						}
+						// background-image gradient
+						if (property.toUpperCase() == 'BACKGROUND-IMAGE' && value.indexOf('linear-gradient') == 0) {
+							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+							if (da.length == 2) {
+								return {
+									'property' 	: '-ms-filter',
+									'value'		: "\"progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')\""
+								};
+							}
 						}
 					}
 				}
@@ -505,6 +544,7 @@
 		}
 		
 		function appendStyle(element, cssObj) {
+			//$('#a').append($('<span/>').text(cssObjToText(cssObj)));
 			element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
 		}
 		
