@@ -44,7 +44,7 @@ This script has been tested in <code>IE 7-8</code>, <code>FF 3.6</code>, <code>C
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain. Except for local files in IE 7.
-* Link-tags cannot be read on webkit and opera on local files.
+* Link-tags cannot be read on webkit and Opera on local files.
 * It seems IE8 strips out attributes on invalid value on known property in style-tag.
 
 ## cssHooks (jQuery 1.4.3+)

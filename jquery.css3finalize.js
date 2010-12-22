@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.22 - 2010-12-20
+ * @version 1.23 - 2010-12-22
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -91,16 +91,15 @@
 			'animation-iteration-count' : ['webkit'],
 			'animation-name'		 : ['webkit'],
 			'animation-timing-function' : ['webkit'],
-			*/
-			//'backface-visibility' : ['webkit'],
-		
-			// moz is comment out because the rule lies on "valueRule"
-			//'background-clip'		 : [/*'moz',*/ 'webkit', 'khtml'],
-			//'background-origin'		 : [/*'moz',*/ 'webkit', 'khtml'],
-			//'background-size'		 : ['moz', 'webkit', 'khtml'],
-			
+
+			'backface-visibility' : ['webkit'],
+
+			'background-clip'		 : ['webkit', 'khtml'],
+			'background-origin'		 : ['webkit', 'khtml'],
+			'background-size'		 : ['moz', 'webkit', 'khtml'],
+
 			// border image
-			/* 'border-image'				: ['moz', 'webkit'],
+			'border-image'				: ['moz', 'webkit'],
 			'border-top-image'			: ['moz', 'webkit'],
 			'border-right-image'		: ['moz', 'webkit'],
 			'border-bottom-image'		: ['moz', 'webkit'],
@@ -127,8 +126,8 @@
 			'box-orient'		 : ['moz', 'webkit'],
 			'box-pack'			 : ['moz', 'webkit'],
 			'box-shadow'		 : ['moz', 'webkit'],
-			'box-sizing'		 : ['moz', 'webkit'],*/
-			/*'column-count'		 : ['moz', 'webkit'],
+			'box-sizing'		 : ['moz', 'webkit'],
+			'column-count'		 : ['moz', 'webkit'],
 			'column-gap'		 : ['moz', 'webkit'],
 			'column-rule'		 : ['moz', 'webkit'],
 			'column-rule-color'	 : ['moz', 'webkit'],
@@ -144,9 +143,9 @@
 			'perspective-origin' : ['webkit'],
 			'tab-size'			 : ['moz', 'o'],
 			'text-overflow'		 : ['o'],
-			'text-size-adjust'	 : ['webkit', 'ms'],*/
-			//'transform'			 : ['moz', 'webkit', 'o', 'ms'],
-			/*'transform-origin'	 : ['moz', 'webkit', 'o', 'ms'],
+			'text-size-adjust'	 : ['webkit', 'ms'],
+			'transform'			 : ['moz', 'webkit', 'o', 'ms'],
+			'transform-origin'	 : ['moz', 'webkit', 'o', 'ms'],
 			'transform-style'	 : ['webkit'],
 			'transition'		 : ['moz', 'webkit', 'o'],
 			'transition-delay'	 : ['moz', 'webkit', 'o'],
@@ -380,7 +379,7 @@
 				}
 			}
 			
-			// // TODO : Match background-image: linear-gradient()
+			// // TODO : more advanced background-image: linear-gradient()
 			if (property == 'background-image' && value.indexOf('linear-gradient') == 0) {
 				if (currentPrefix == 'moz') {
 					return '-moz-' + value;
@@ -415,10 +414,6 @@
 								'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
 							};
 						}
-						/*	// Disabled untill this bug is solved 
-							// http://jsfiddle.net/Zhvpy
-							// http://jsfiddle.net/Zhvpy/1
-							
 						// background-image gradient
 						if (property.toUpperCase() == 'BACKGROUND-IMAGE' && value.indexOf('linear-gradient') == 0) {
 							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
@@ -428,7 +423,7 @@
 									'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')"
 								};
 							}
-						} */
+						}
 					// only for version 8 
 					} else if ($.browser.version == 8) {
 						// background-color alpha color
@@ -544,8 +539,14 @@
 		}
 		
 		function appendStyle(element, cssObj) {
-			//$('#a').append($('<span/>').text(cssObjToText(cssObj)));
-			element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
+			if (currentPrefix == 'ms' && $.browser.version <= 7) {
+				var style = $('<style class="css-finalized" />');
+				$('head:first').append(style);
+				//element.after(style);
+				style[0].styleSheet.cssText = cssObjToText(cssObj)
+			} else {
+				element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
+			}
 		}
 		
 		// Css hooks - require jquery 1.4.3+
