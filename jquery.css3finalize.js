@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.23 - 2010-12-22
+ * @version 1.24 - 2011-01-05
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -404,8 +404,8 @@
 			if (options.shim) {
 				// Only apply for ie
 				if (currentPrefix == 'ms') {
-					// only for version 7 or lower
-					if ($.browser.version <= 7) {
+					// only for version 8 or lower
+					if ($.browser.version <= 8) {
 						// background-color alpha color
 						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
 							value = ac2ah(value);
@@ -425,7 +425,7 @@
 							}
 						}
 					// only for version 8 
-					} else if ($.browser.version == 8) {
+					} /* else if ($.browser.version == 8) {
 						// background-color alpha color
 						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
 							value = ac2ah(value);
@@ -444,7 +444,7 @@
 								};
 							}
 						}
-					}
+					} */
 				}
 			}
 			return false;
