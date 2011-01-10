@@ -197,7 +197,7 @@ ickbar {}
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.24 - 2011-01-05
+ * @version 1.25 - 2011-01-10
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -210,6 +210,15 @@ ickbar {}
  * $('style').cssFinalize();
  */
 (function ($) {
+	// Backward compatible for jquery 1.4.2 and less
+	if (!$.camelCase) {
+		$.camelCase = function( string ) {
+			return string.replace( /-([a-z])/ig, function( all, letter ) {
+				return letter.toUpperCase();
+			});
+		}
+	}
+
 	$.cssFinalizeSetup = {
 		shim : true,
 		node : 'style,link',
@@ -217,15 +226,25 @@ ickbar {}
 	}
 
 	$.fn.cssFinalize = function(options) {
-		$.cssFinalize(this, options);
+		if (!options || typeof options != 'object') {
+			options = {};
+		}
+		options.node = this;
+		$.cssFinalize(options);
 		return this;
 	}
 	
-	$.cssFinalize = function(node, options) {
+	$.cssFinalize = function(options) {
 		var div = document.createElement('div');
 		
+		// Backward compatible for css3finalize 1.24 and less
+		if (typeof options == 'string') {
+			newoptions = arguments[1] || {};
+			newoptions.node = options;
+			options = newoptions;
+		}
+		
 		options = $.extend({}, $.cssFinalizeSetup, options);
-		node = node || options.node;
 		
 		// Get current vendor prefix
 		var currentPrefix = false;
@@ -349,37 +368,19 @@ ickbar {}
 			'user-modify'		 : ['moz', 'webkit', 'khtml'],
 			'user-select'		 : ['moz', 'webkit', 'khtml']*/
 		}
-	
-		function cssObjToText(obj) {
-			var text = '';
-			$.each(obj, function(i, block) {
-				text += block.selector + '{';
-				if ($.isArray(block.attributes)) {
-					text += cssObjToText(block.attributes);
-				} else {
-					$.each(block.attributes, function(property, value) {
-						text += property + ':' + value + ';';
-					});
-				}
-				text += '}';
-			});
-			return text;
-		}
 		
-		function cssTextAttributeToObj(text) {
-			if (currentPrefix == 'ms' && $.browser.version <= 8) {
-				var attribute = ieSplit(text, '(:[^;]*;?)');
-			} else {
-				var attribute = text.split(/(:[^;]*;?)/);
-			}
-			attribute.pop();
-			var objAttribute = {};
-			$.map(attribute, function(n, i) {
-				if (i % 2 == 1) {
-					objAttribute[$.trim(attribute[i-1])] = $.trim(n.substr(1).replace(';', ''));
-				}
-			});
-			return objAttribute;
+		function cleanCss(css) {
+			// strip multiline comment
+			css = css.replace(/\/\*((?:[^\*]|\*[^\/])*)\*\//g, '');
+			
+			// remove newline
+			css = css.replace(/\n/g, '');
+			css = css.replace(/\r/g, '');
+			
+			// remove @import - Future TODO read if css was imported and parse it.
+			css = css.replace(/\@import[^;]*;/g, '');
+			
+			return css;
 		}
 		
 		function ieSplit(str, separator) {
@@ -393,6 +394,50 @@ ickbar {}
 				}
 			}
 			return merge;
+		}
+		
+		// Future TODO: make custom callback for user
+		function appendStyle(element, cssObj) {
+			if (currentPrefix == 'ms' && $.browser.version <= 7) {
+				var style = $('<style class="css-finalized" />');
+				$('head:first').append(style);
+				//element.after(style);
+				style[0].styleSheet.cssText = cssObjToText(cssObj)
+			} else {
+				element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
+			}
+		}
+		
+		function parseFinalize(element, cssText) {
+			cssText = cleanCss(cssText);
+			if ($.trim(cssText) == '') return;
+			
+			var objCss = cssTextToObj(cssText);
+			var cssFinalize = [];
+			// Look for needed attributes and add to cssFinalize
+			$.each(objCss, function (i, block) {
+				if (block.attributes) {
+					var neededAttributes = findNeededAttributes(block.attributes);
+					if (!$.isEmptyObject(neededAttributes)) {
+						cssFinalize.push({
+										// Selector Rules
+							'selector': selectorRules(block.selector),
+							'attributes' : neededAttributes
+						});
+					} else if (selectorRules(block.selector) != block.selector) {
+						cssFinalize.push({
+										// Selector Rules
+							'selector': selectorRules(block.selector),
+							'attributes' : block.attributes
+						});
+					}
+				}
+			});
+
+			element.addClass('css-finalize-read');
+			if (cssFinalize.length > 0) {
+				appendStyle(element, cssFinalize);
+			}
 		}
 		
 		function cssTextToObj(text) {
@@ -449,19 +494,37 @@ ickbar {}
 			return objCss;
 		}
 		
-		function cleanCss(css) {
-			// strip multiline comment
-			css = css.replace(/\/\*((?:[^\*]|\*[^\/])*)\*\//g, '');
-			
-			// remove newline
-			css = css.replace(/\n/g, '');
-			css = css.replace(/\r/g, '');
-			
-			// remove @import - Future TODO read if css was imported and parse it.
-			css = css.replace(/\@import[^;]*;/g, '');
-			
-			return css;
+		function cssTextAttributeToObj(text) {
+			if (currentPrefix == 'ms' && $.browser.version <= 8) {
+				var attribute = ieSplit(text, '(:[^;]*;?)');
+			} else {
+				var attribute = text.split(/(:[^;]*;?)/);
+			}
+			attribute.pop();
+			var objAttribute = {};
+			$.map(attribute, function(n, i) {
+				if (i % 2 == 1) {
+					objAttribute[$.trim(attribute[i-1])] = $.trim(n.substr(1).replace(';', ''));
+				}
+			});
+			return objAttribute;
 		}
+		
+		function cssObjToText(obj) {
+			var text = '';
+			$.each(obj, function(i, block) {
+				text += block.selector + '{';
+				if ($.isArray(block.attributes)) {
+					text += cssObjToText(block.attributes);
+				} else {
+					$.each(block.attributes, function(property, value) {
+						text += property + ':' + value + ';';
+					});
+				}
+				text += '}';
+			});
+			return text;
+		}		
 		
 		function findNeededAttributes(attributes) {
 			// attributes is an array only if it is recursive blocks. skip those attributes.
@@ -544,21 +607,6 @@ ickbar {}
 				if (value.indexOf('calc') == 0) {
 					return '-moz-' + value;
 				}
-				
-				/* // only for version 3.6 or lower
-				if (parseInt($.browser.version.substr(0,1)) < 2) {
-					// background-clip or background-origin
-					if (property == 'background-clip' || 
-						property == 'background-origin') {
-						if (value == 'padding-box') {
-							return 'padding';
-						} else if (value == 'border-box') {
-							return 'border';
-						} else if (value == 'content-box') {
-							return 'content';
-						}							
-					}
-				}*/
 			}
 			
 			if (options.shim) {
@@ -618,27 +666,7 @@ ickbar {}
 								};
 							}
 						}
-					// only for version 8 
-					} /* else if ($.browser.version == 8) {
-						// background-color alpha color
-						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
-							value = ac2ah(value);
-							return {
-								'property' 	: '-ms-filter',
-								'value'		: "\"progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')\""
-							};
-						}
-						// background-image gradient
-						if (property.toUpperCase() == 'BACKGROUND-IMAGE' && value.indexOf('linear-gradient') == 0) {
-							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
-							if (da.length == 2) {
-								return {
-									'property' 	: '-ms-filter',
-									'value'		: "\"progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')\""
-								};
-							}
-						}
-					} */
+					}
 				}
 			}
 			return false;
@@ -672,44 +700,11 @@ ickbar {}
 			return '#' + ha.join('');
 		}
 		
-		function parseFinalize(element, cssText) {
-			cssText = cleanCss(cssText);
-			if ($.trim(cssText) == '') return;
-			
-			var objCss = cssTextToObj(cssText);
-			var cssFinalize = [];
-			// Look for needed attributes and add to cssFinalize
-			$.each(objCss, function (i, block) {
-				if (block.attributes) {
-					var neededAttributes = findNeededAttributes(block.attributes);
-					if (!$.isEmptyObject(neededAttributes)) {
-						cssFinalize.push({
-										// Selector Rules
-							'selector': selectorRules(block.selector),
-							'attributes' : neededAttributes
-						});
-					} else if (selectorRules(block.selector) != block.selector) {
-						cssFinalize.push({
-										// Selector Rules
-							'selector': selectorRules(block.selector),
-							'attributes' : block.attributes
-						});
-					}
-				}
-			});
-
-			element.addClass('css-finalize-read');
-			if (cssFinalize.length > 0) {
-				appendStyle(element, cssFinalize);
-			}
-		}
-	
-	
-		if (!(node instanceof jQuery)) {
-			node = $(node);
+		if (!(options.node instanceof jQuery)) {
+			options.node = $(options.node);
 		}
 		
-		node.each(function(index, element) {
+		options.node.each(function(index, element) {
 			var $this = $(this);
 			if ($this.hasClass('css-finalize-read') || $this.hasClass('css-finalized')) {
 				return true;
@@ -730,17 +725,6 @@ ickbar {}
 					parseFinalize(element, data);
 				});
 			} catch(e){}
-		}
-		
-		function appendStyle(element, cssObj) {
-			if (currentPrefix == 'ms' && $.browser.version <= 7) {
-				var style = $('<style class="css-finalized" />');
-				$('head:first').append(style);
-				//element.after(style);
-				style[0].styleSheet.cssText = cssObjToText(cssObj)
-			} else {
-				element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
-			}
 		}
 		
 		// Css hooks - require jquery 1.4.3+

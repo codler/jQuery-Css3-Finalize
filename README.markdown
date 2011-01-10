@@ -34,13 +34,24 @@ If you don't want the script to automatically load and parse then you could set 
 	<script> 
 	// Disable autoload
 	window.cssFinalize=false; 
-	// Start parse
-	jQuery(function() { $.cssFinalize('style, link'); });
+	// DOM is ready
+	jQuery(function($) { 
+		// Start parse
+		$.cssFinalize('style, link');
+	});
 	</script>
+
+## Options
+
+	node : 'style, link' // Elements to parse css text.
+	
+	shim : true // Enables support of rgba in ie7-8 and more, read Rules-supported section.
 
 ## Tests
 
 This script has been tested in <code>IE 7-8</code>, <code>FF 3.6</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera 11</code> on windows
+
+<http://jsfiddle.net/t2MdC/>
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain. Except for local files in IE 7.
