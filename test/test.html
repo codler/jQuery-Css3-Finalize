@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<!--[if lt IE 7 ]> <html lang="sv" class="no-js ie6"> <![endif]-->
-<!--[if IE 7 ]> <html lang="sv" class="no-js ie7"> <![endif]-->
-<!--[if IE 8 ]> <html lang="sv" class="no-js ie8"> <![endif]-->
-<!--[if IE 9 ]> <html lang="sv" class="no-js ie9"> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--> <html lang="sv" class="no-js"> <!--<![endif]-->
+<!--[if lt IE 8 ]> <html lang="sv" class="ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="sv" class="ie8"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html lang="sv"> <!--<![endif]-->
 <head>
 <!-- meta -->
 <meta charset="utf-8" />
@@ -833,10 +831,10 @@ if ( !(window.media && media.matchMedium) ){
 
 <script>
 window.cssFinalize=false;
-//jQuery(function() { $.cssFinalize('style, link', {'shim': true}); });
+//jQuery(function() { $.cssFinalize({'shim': true}); });
 //jQuery(function() { $('style, link').cssFinalize({'shim': true}); });
 jQuery(function() { $.cssFinalize(); });
-//jQuery(function() { $.cssFinalize('style[data=shim-display]', {'shim': true}); });
+//jQuery(function() { $.cssFinalize('style[data=shim-display]'); });
 
 
 $(function($) { 
@@ -848,11 +846,11 @@ body {
 	background-image: url("bg.jpg");
 }
 .style.box {
+	background-color: rgba(255,255,255, 0.3);
 	background-origin: padding-box;
 	display: inline-block;
 	padding: 10px;
 	margin: 20px;
-	background-color: rgba(255,255,255, 0.3);
 	height: 100px;
 	width: 100px;
 }
@@ -874,7 +872,6 @@ body {
 }
 .style.box.gradient {
 	background-image: linear-gradient(#ffffff, #000000);
-	/* filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff',EndColorStr='#000000'); */
 }
 </style>
 </head>
