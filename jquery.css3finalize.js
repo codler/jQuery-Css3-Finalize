@@ -3,7 +3,7 @@
  * @copyright 2010 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.25 - 2011-01-10
+ * @version 1.26 - 2011-01-14
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -89,7 +89,10 @@
 			// Marquee
 			supportRules += ' marquee marquee-direction marquee-speed marquee-style';
 			
-			supportRules += ' perspective perspective-origin tab-size text-overflow text-size-adjust';
+			supportRules += ' perspective perspective-origin tab-size text-fill-color text-overflow text-size-adjust';
+			
+			// Text-stroke
+			supportRules += ' text-stroke text-stroke-color text-stroke-width';
 			
 			// Transform
 			supportRules += ' transform transform-origin transform-style';
