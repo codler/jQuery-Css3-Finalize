@@ -1,9 +1,9 @@
 /**
  * @author Han Lin Yap < http://zencodez.net/ >
- * @copyright 2010 zencodez.net
+ * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.26 - 2011-01-14
+ * @version 1.27 - 2011-01-19
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -304,6 +304,10 @@
 		}
 		
 		function cssTextAttributeToObj(text) {
+			// Data URI fix
+			text = text.replace( /url\(([^)]+)\)/g, function(url){
+				return url.replace( /;/g, '[cssFinalize]' );
+			});
 			if (currentPrefix == 'ms' && $.browser.version <= 8) {
 				var attribute = ieSplit(text, '(:[^;]*;?)');
 			} else {
@@ -313,7 +317,9 @@
 			var objAttribute = {};
 			$.map(attribute, function(n, i) {
 				if (i % 2 == 1) {
-					objAttribute[$.trim(attribute[i-1])] = $.trim(n.substr(1).replace(';', ''));
+					objAttribute[$.trim(attribute[i-1])] = $.trim(n.substr(1).replace(';', '').replace( /url\(([^)]+)\)/g, function(url){
+						return url.replace( /\[cssFinalize\]/g, ';' );
+					}));
 				}
 			});
 			return objAttribute;
