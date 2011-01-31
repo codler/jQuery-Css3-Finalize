@@ -49,12 +49,12 @@ If you don't want the script to automatically load and parse then you could set 
 
 ## Tests
 
-This script has been tested in <code>IE 7-8</code>, <code>FF 3.6</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera 11</code> on windows
+This script has been tested in <code>IE 8</code>, <code>FF 3.6</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera 11</code> on windows
 
 <http://jsfiddle.net/t2MdC/>
 
 #### Some notes
-* The script can only read link-tags where it source are from same domain. Except for local files in IE 7.
+* The script can only read link-tags where it source are from same domain.
 * Link-tags cannot be read on webkit and Opera on local files.
 * It seems IE8 strips out attributes on invalid value on known property in style-tag.
 

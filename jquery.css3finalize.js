@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.27 - 2011-01-19
+ * @version 1.28 - 2011-01-31
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -60,7 +60,7 @@
 			currentPrefix = 'moz'
 		} else if ($.browser.msie) {
 			// No vendor prefix in ie 7
-			if ($.browser.version <= 7 && !options.shim) {	
+			if ($.browser.version <= 7 && !options.shim) {
 				return true;
 			}
 			currentPrefix = 'ms';
@@ -424,7 +424,7 @@
 				}
 			}
 			
-			if (options.shim) {
+			/* if (options.shim) {
 				// Only apply for ie
 				if (currentPrefix == 'ms') {
 					// only for version 7 or lower
@@ -434,7 +434,7 @@
 						}
 					}
 				}
-			}
+			} */
 			
 			// // TODO : more advanced background-image: linear-gradient()
 			if (property == 'background-image' && value.indexOf('linear-gradient') == 0) {
@@ -535,6 +535,16 @@
 		});
 		
 		function load(url, element) {
+			var loc = document.location,
+				protocol = loc.protocol || "http:";
+			var parts = /^(\w+:)\/\/([^\/?#:]+)(?::(\d+))?/.exec( url.toLowerCase() );
+			var crossDomain = !!( parts &&
+				( parts[ 1 ] != protocol || parts[ 2 ] != loc.hostname ||
+					( parts[ 3 ] || ( parts[ 1 ] === "http:" ? 80 : 443 ) ) !=
+						( loc.port || ( protocol === "http:" ? 80 : 443 ) ) )
+			);
+
+			if (crossDomain) return;
 			try {
 				$('<div />').load(url, function(data) {
 					parseFinalize(element, data);
