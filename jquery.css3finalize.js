@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.28 - 2011-01-31
+ * @version 1.29 - 2011-02-07
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -494,8 +494,15 @@
 				//if (selector.indexOf('::selection') != -1) {
 					selector = selector.replace('::selection', '::-moz-selection');
 				//}
+				
+				// ::placeholder
+				selector = selector.replace('::placeholder', ':-moz-placeholder');
+				
 			} else if(currentPrefix == 'webkit') {
 				selector = selector.replace('@keyframes', '@-webkit-keyframes');
+				
+				// ::placeholder
+				selector = selector.replace('::placeholder', '::-webkit-input-placeholder');
 			}
 			return selector;
 		}
