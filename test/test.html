@@ -195,7 +195,7 @@ ickbar {}
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.30 - 2011-02-17
+ * @version 1.31 - 2011-02-17
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -595,7 +595,7 @@ ickbar {}
 			
 			if ($.inArray(property, supportRules) > -1) {
 				// Checks if the property exists in style
-				if (!($.camelCase(property) in div.style)) {
+				if (!($.camelCase(property) in div.style) || property == 'mask') {
 					// Checks if vendor prefix property exists in style
 					// is this needed?
 					if ($.camelCase('-' + currentPrefix + '-' + property) in div.style) {
