@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.29 - 2011-02-07
+ * @version 1.30 - 2011-02-17
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -75,32 +75,49 @@
 		}
 		// PropertyRules
 			// Animation
-		var supportRules = 'animation animation-delay animation-direction animation-duration animation-iteration-count animation-name animation-timing-function';
+		var supportRules = 'animation animation-delay animation-direction animation-duration animation-fill-mode animation-iteration-count animation-name animation-play-state animation-timing-function';
 		
-			supportRules += ' backface-visibility';
+			supportRules += ' appearance backface-visibility';
+			
 			// Background
-			supportRules += ' background-clip background-origin background-size';
+			supportRules += ' background-clip background-composite background-origin background-size';
+			
 			// Border - corner/image/radius
 			supportRules += ' border-corner-image border-image border-top-image border-right-image border-bottom-image border-left-image border-top-left-image border-top-right-image border-bottom-left-image border-bottom-right-image border-radius';
+			
 			// Box
-			supportRules += ' box-align box-direction box-flex box-flex-group box-lines box-ordinal-group box-orient box-pack box-shadow box-sizing';
+			supportRules += ' box-align box-direction box-flex box-flex-group box-lines box-ordinal-group box-orient box-pack box-reflect box-shadow box-sizing';
+						
 			// Column
 			supportRules += ' column-count column-gap column-rule column-rule-color column-rule-style column-rule-width column-width columns';
-			// Marquee
-			supportRules += ' marquee marquee-direction marquee-speed marquee-style';
 			
-			supportRules += ' perspective perspective-origin tab-size text-fill-color text-overflow text-size-adjust';
+			supportRules += ' dashboard-region line-break';
+			
+			// Marquee
+			supportRules += ' marquee marquee-direction marquee-increment marquee-repetition marquee-speed marquee-style';
+			
+			// Mask
+			supportRules += ' mask mask-attachment mask-box-image mask-clip mask-composite mask-image mask-origin mask-position mask-position-x mask-position-y mask-repeat mask-size';
+			
+			supportRules += ' nbsp-mode';
+			
+			// Perspective
+			supportRules += ' perspective perspective-origin';
+			
+			supportRules += ' tab-size tap-highlight-color text-fill-color text-overflow text-security text-size-adjust';
 			
 			// Text-stroke
 			supportRules += ' text-stroke text-stroke-color text-stroke-width';
 			
+			supportRules += ' touch-callout';
+			
 			// Transform
-			supportRules += ' transform transform-origin transform-style';
+			supportRules += ' transform transform-origin transform-origin-x transform-origin-y transform-origin-z transform-style';
 			
 			// Transition
 			supportRules += ' transition transition-delay transition-duration transition-property transition-timing-function';
 			
-			supportRules += ' user-modify user-select';
+			supportRules += ' user-drag user-modify user-select';
 			
 			supportRules = supportRules.split(' ');
 		
