@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.31 - 2011-02-17
+ * @version 1.32 - 2011-02-18
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -239,26 +239,42 @@
 			if ($.trim(cssText) == '') return;
 			
 			var objCss = cssTextToObj(cssText);
+			
 			var cssFinalize = [];
-			// Look for needed attributes and add to cssFinalize
-			$.each(objCss, function (i, block) {
-				if (block.attributes) {
-					var neededAttributes = findNeededAttributes(block.attributes);
-					if (!$.isEmptyObject(neededAttributes)) {
-						cssFinalize.push({
-										// Selector Rules
-							'selector': selectorRules(block.selector),
-							'attributes' : neededAttributes
-						});
-					} else if (selectorRules(block.selector) != block.selector) {
-						cssFinalize.push({
-										// Selector Rules
-							'selector': selectorRules(block.selector),
-							'attributes' : block.attributes
-						});
+			cssFinalize = addNeededAttributes(objCss);
+			function addNeededAttributes(objCss) {
+				var cssFinalize = [];
+				// Look for needed attributes and add to cssFinalize
+				$.each(objCss, function (i, block) {
+					if (block.attributes) {
+						var neededAttributes = findNeededAttributes(block.attributes);
+						if (!$.isEmptyObject(neededAttributes)) {
+							cssFinalize.push({
+											// Selector Rules
+								'selector': selectorRules(block.selector),
+								'attributes' : neededAttributes
+							});
+						} else if (selectorRules(block.selector) != block.selector) {
+							cssFinalize.push({
+											// Selector Rules
+								'selector': selectorRules(block.selector),
+								'attributes' : block.attributes
+							});
+						
+						// @media
+						} else if (options.checkMedia && 
+							block.selector.indexOf('@media') == 0 && 
+							media.matchMedium(block.selector.substr(7))) {
+							
+							cssFinalize.push({
+								'selector': block.selector,
+								'attributes' : addNeededAttributes(block.attributes)
+							});
+						}
 					}
-				}
-			});
+				});
+				return cssFinalize;
+			}
 
 			element.addClass('css-finalize-read');
 			if (cssFinalize.length > 0) {
@@ -460,7 +476,7 @@
 				} else if (currentPrefix == 'webkit') {
 					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 					if (da.length == 2) {
-						return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '));';
+						return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '))';
 					}					
 				} else if (currentPrefix == 'o') {
 					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);

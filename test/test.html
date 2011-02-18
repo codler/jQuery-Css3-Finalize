@@ -12,6 +12,7 @@
 <!-- css -->
 <link rel="stylesheet" type="text/css" href="boilerplate.css" />
 <link rel="stylesheet" type="text/css" media="screen" href="test.css" />
+<link rel="stylesheet" type="text/css" media="print" href="test.css" />
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/themes/ui-lightness/jquery-ui.css" />
 
 <!-- javascript -->
@@ -85,12 +86,6 @@
 }
 </style>
 <![endif]-->
-<style data="shim-display">
-a {
-	display: inline-block;
-}
-</style>
-
 <style>
 
 @font-face {
@@ -117,18 +112,8 @@ div {
   content: "\0020"; display: block; height: 0; visibility: hidden;
 }
 ickbar {}
-@media print {
-  * { background: transparent !important; color: #444 !important; text-shadow: none !important; }
-  a, a:visited { color: #444 !important; text-decoration: underline; }
-  a[href]:after { content: " (" attr(href) ")"; }
-  abbr[title]:after { content: " (" attr(title) ")"; }
-  .ir a:after { content: ""; }  /* Don't show links for images */
-  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
-  thead { display: table-header-group; } /* css-discuss.incutio.com/wiki/Printing_Tables */ 
-  tr, img { page-break-inside: avoid; }
-  @page { margin: 0.5cm; }
-  p, h2, h3 { orphans: 3; widows: 3; }
-  h2, h3{ page-break-after: avoid; }
+@media screen {
+  * { transform: scale(0.9);  }
 }
 .clearfix:after { clear: both; }
 /* Fix clearfix: blueprintcss.lighthouseapp.com/projects/15318/tickets/5-extra-margin-padding-bottom-of-page */
@@ -195,7 +180,7 @@ ickbar {}
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.31 - 2011-02-17
+ * @version 1.32 - 2011-02-18
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -431,26 +416,42 @@ ickbar {}
 			if ($.trim(cssText) == '') return;
 			
 			var objCss = cssTextToObj(cssText);
+			
 			var cssFinalize = [];
-			// Look for needed attributes and add to cssFinalize
-			$.each(objCss, function (i, block) {
-				if (block.attributes) {
-					var neededAttributes = findNeededAttributes(block.attributes);
-					if (!$.isEmptyObject(neededAttributes)) {
-						cssFinalize.push({
-										// Selector Rules
-							'selector': selectorRules(block.selector),
-							'attributes' : neededAttributes
-						});
-					} else if (selectorRules(block.selector) != block.selector) {
-						cssFinalize.push({
-										// Selector Rules
-							'selector': selectorRules(block.selector),
-							'attributes' : block.attributes
-						});
+			cssFinalize = addNeededAttributes(objCss);
+			function addNeededAttributes(objCss) {
+				var cssFinalize = [];
+				// Look for needed attributes and add to cssFinalize
+				$.each(objCss, function (i, block) {
+					if (block.attributes) {
+						var neededAttributes = findNeededAttributes(block.attributes);
+						if (!$.isEmptyObject(neededAttributes)) {
+							cssFinalize.push({
+											// Selector Rules
+								'selector': selectorRules(block.selector),
+								'attributes' : neededAttributes
+							});
+						} else if (selectorRules(block.selector) != block.selector) {
+							cssFinalize.push({
+											// Selector Rules
+								'selector': selectorRules(block.selector),
+								'attributes' : block.attributes
+							});
+						
+						// @media
+						} else if (options.checkMedia && 
+							block.selector.indexOf('@media') == 0 && 
+							media.matchMedium(block.selector.substr(7))) {
+							
+							cssFinalize.push({
+								'selector': block.selector,
+								'attributes' : addNeededAttributes(block.attributes)
+							});
+						}
 					}
-				}
-			});
+				});
+				return cssFinalize;
+			}
 
 			element.addClass('css-finalize-read');
 			if (cssFinalize.length > 0) {
@@ -652,7 +653,7 @@ ickbar {}
 				} else if (currentPrefix == 'webkit') {
 					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 					if (da.length == 2) {
-						return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '));';
+						return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '))';
 					}					
 				} else if (currentPrefix == 'o') {
 					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
