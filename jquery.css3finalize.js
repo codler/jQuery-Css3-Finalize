@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.32 - 2011-02-18
+ * @version 1.33 - 2011-02-19
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -447,6 +447,27 @@
 				if (div.style[$.camelCase(newProperty)] !== undefined && ''+div.style[$.camelCase(newProperty)].indexOf(value) == -1) {
 					return value.split('-')[0];
 				}
+			}
+			
+			if (property == 'transition' ||
+				property == 'transition-property') {
+				var keys = value.split(/\s?,\s?/);
+				var newValue = [];
+				for (var keyProperty in keys) {
+					var v, t;
+					if (property == 'transition') {
+						v = keys[keyProperty].split(' ')[0];
+					} else {
+						v = keys[keyProperty];
+					}
+					if ((t = propertyRules(v)) !== false) {
+						newValue.push(t + keys[keyProperty].substr(v.length));
+					} else {
+						newValue.push(keys[keyProperty]);
+					}
+				}
+				
+				return newValue.join(',');
 			}
 			
 			// Only apply for firefox

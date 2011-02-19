@@ -102,13 +102,19 @@ div {
 }
 .visuallyhidden { position: absolute !important;
   clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-  clip: rect(1px, 1px, 1px, 1px) }
+  clip: rect(1px, 1px, 1px, 1px) ;
+  
+  transition:transform 0.5s ease-in-out, color 1.5s ease;  
+  }
 
 /* Hide visually and from screenreaders, but maintain layout */
-.invisible { visibility: hidden; }
-
+.invisible { visibility: hidden; 
+  transition-property: transform;  
+}
 /* >> The Magnificent CLEARFIX: Updated to prevent margin-collapsing on child elements << j.mp/bestclearfix */
 .clearfix:before, .clearfix:after {
+	transition-property: transform , animation; 
+
   content: "\0020"; display: block; height: 0; visibility: hidden;
 }
 ickbar {}
@@ -116,7 +122,6 @@ ickbar {}
   * { transform: scale(0.9);  }
 }
 .clearfix:after { clear: both; }
-/* Fix clearfix: blueprintcss.lighthouseapp.com/projects/15318/tickets/5-extra-margin-padding-bottom-of-page */
 .clearfix { zoom: 1; }
 
 @import url("landscape.css") all and
@@ -180,7 +185,7 @@ ickbar {}
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.32 - 2011-02-18
+ * @version 1.33 - 2011-02-19
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -624,6 +629,27 @@ ickbar {}
 				if (div.style[$.camelCase(newProperty)] !== undefined && ''+div.style[$.camelCase(newProperty)].indexOf(value) == -1) {
 					return value.split('-')[0];
 				}
+			}
+			
+			if (property == 'transition' ||
+				property == 'transition-property') {
+				var keys = value.split(/\s?,\s?/);
+				var newValue = [];
+				for (var keyProperty in keys) {
+					var v, t;
+					if (property == 'transition') {
+						v = keys[keyProperty].split(' ')[0];
+					} else {
+						v = keys[keyProperty];
+					}
+					if ((t = propertyRules(v)) !== false) {
+						newValue.push(t + keys[keyProperty].substr(v.length));
+					} else {
+						newValue.push(keys[keyProperty]);
+					}
+				}
+				
+				return newValue.join(',');
 			}
 			
 			// Only apply for firefox
