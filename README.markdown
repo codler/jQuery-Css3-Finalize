@@ -24,7 +24,7 @@ Simply add this code to your site
 
 Alternative links
 
-<http://bsy.se/jquery.css3finalize-latest.min.js> or <http://static.zencodez.net/js/jquery.css3finalize-latest.min.js>
+<http://static.zencodez.net/js/jquery.css3finalize-latest.min.js>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 

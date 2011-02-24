@@ -13,11 +13,11 @@
 <link rel="stylesheet" type="text/css" href="boilerplate.css" />
 <link rel="stylesheet" type="text/css" media="screen" href="test.css" />
 <link rel="stylesheet" type="text/css" media="print" href="test.css" />
-<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/themes/ui-lightness/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-lightness/jquery-ui.css" />
 
 <!-- javascript -->
 <script src="libs/jquery-1.5.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/jquery-ui.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <!--[if IE]>
 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
@@ -185,7 +185,7 @@ ickbar {}
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.33 - 2011-02-19
+ * @version 1.34 - 2011-02-24
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -673,20 +673,23 @@ ickbar {}
 			} */
 			
 			// // TODO : more advanced background-image: linear-gradient()
-			if (property == 'background-image' && value.indexOf('linear-gradient') == 0) {
-				if (currentPrefix == 'moz') {
-					return '-moz-' + value;
-				} else if (currentPrefix == 'webkit') {
-					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
-					if (da.length == 2) {
-						return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '))';
-					}					
-				} else if (currentPrefix == 'o') {
-					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
-					if (da.length == 2) {
-						var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
-						return 'url(data:image/svg+xml,' + escape(g) + ')';
+			if (property == 'background-image') {
+				if (value.indexOf('linear-gradient') == 0) {
+					if (currentPrefix == 'webkit') {
+						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+						if (da.length == 2) {
+							return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '))';
+						}					
+					} else if (currentPrefix == 'o') {
+						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+						if (da.length == 2) {
+							var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
+							return 'url(data:image/svg+xml,' + escape(g) + ')';
+						}
 					}
+					return '-' + currentPrefix + '-' + value;
+				} else if (value.indexOf('radial-gradient') == 0) {
+					return '-' + currentPrefix + '-' + value;
 				}
 			}
 			

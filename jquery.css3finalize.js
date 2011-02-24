@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.33 - 2011-02-19
+ * @version 1.34 - 2011-02-24
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -491,20 +491,23 @@
 			} */
 			
 			// // TODO : more advanced background-image: linear-gradient()
-			if (property == 'background-image' && value.indexOf('linear-gradient') == 0) {
-				if (currentPrefix == 'moz') {
-					return '-moz-' + value;
-				} else if (currentPrefix == 'webkit') {
-					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
-					if (da.length == 2) {
-						return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '))';
-					}					
-				} else if (currentPrefix == 'o') {
-					var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
-					if (da.length == 2) {
-						var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
-						return 'url(data:image/svg+xml,' + escape(g) + ')';
+			if (property == 'background-image') {
+				if (value.indexOf('linear-gradient') == 0) {
+					if (currentPrefix == 'webkit') {
+						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+						if (da.length == 2) {
+							return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '))';
+						}					
+					} else if (currentPrefix == 'o') {
+						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+						if (da.length == 2) {
+							var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
+							return 'url(data:image/svg+xml,' + escape(g) + ')';
+						}
 					}
+					return '-' + currentPrefix + '-' + value;
+				} else if (value.indexOf('radial-gradient') == 0) {
+					return '-' + currentPrefix + '-' + value;
 				}
 			}
 			
