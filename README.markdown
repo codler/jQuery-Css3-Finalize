@@ -49,7 +49,7 @@ If you don't want the script to automatically load and parse then you could set 
 
 ## Tests
 
-This script has been tested in <code>IE 8</code>, <code>FF 3.6</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera 11</code> on windows
+This script has been tested in <code>IE 8-9</code>, <code>FF 3.6-4</code>, <code>Chrome stable-dev</code>, <code>Safari 5</code>, <code>Opera 11</code> on windows
 
 <http://jsfiddle.net/t2MdC/>
 
