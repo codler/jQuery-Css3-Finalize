@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.34 - 2011-02-24
+ * @version 1.35 - 2011-02-25
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -518,7 +518,7 @@
 			if (options.shim) {
 				// Only apply for ie
 				if (currentPrefix == 'ms') {
-					// only for version 8 or lower
+					// only for version 8 and lower
 					if ($.browser.version <= 8) {
 						// background-color alpha color
 						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
@@ -528,6 +528,9 @@
 								'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
 							};
 						}
+					}
+					// only for version 9 and lower
+					if ($.browser.version <= 9) {
 						// background-image gradient
 						if (property.toUpperCase() == 'BACKGROUND-IMAGE' && value.indexOf('linear-gradient') == 0) {
 							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
