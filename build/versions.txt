@@ -1,2 +1,3 @@
-jquery:1.5.1:jquery-1.5.1.min.js
-css3finalize:1.35:jquery.css3finalize-latest.min.js
+js:jquery:1.5.1:jquery-1.5.1.min.js
+js:css3finalize:1.35:jquery.css3finalize-latest.min.js
+rar:kirby:0.4:kirby.rar
