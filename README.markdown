@@ -19,12 +19,8 @@ It also do some more then checking for vendor prefix. Eg. it add support for alp
 Simply add this code to your site
 
 <code>
-&lt;script src=&quot;https://github.com/codler/jQuery-Css3-Finalize/raw/master/static/jquery.css3finalize-latest.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;http://static.zencodez.net/js/jquery.css3finalize-latest.min.js&quot;&gt;&lt;/script&gt;
 </code>
-
-Alternative links
-
-<http://static.zencodez.net/js/jquery.css3finalize-latest.min.js>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
@@ -51,7 +47,7 @@ If you don't want the script to automatically load and parse then you could set 
 
 This script has been tested in <code>IE 8-9</code>, <code>FF 3.6-4</code>, <code>Chrome stable-dev</code>, <code>Safari 5</code>, <code>Opera 11</code> on windows
 
-<http://jsfiddle.net/t2MdC/>
+<http://jsfiddle.net/AqsXb/>
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain.
