@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.35 - 2011-02-25
+ * @version 1.36 - 2011-03-06
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -18,10 +18,13 @@
 (function ($) {
 	// Backward compatible for jquery 1.4.2 and less
 	if (!$.camelCase) {
-		$.camelCase = function( string ) {
-			return string.replace( /-([a-z])/ig, function( all, letter ) {
+		var rdashAlpha = /-([a-z])/ig,
+			fcamelCase = function( all, letter ) {
 				return letter.toUpperCase();
-			});
+			};
+			
+		$.camelCase = function( string ) {
+			return string.replace( rdashAlpha, fcamelCase );
 		}
 	}
 
@@ -122,77 +125,12 @@
 			supportRules = supportRules.split(' ');
 		
 		var rules = {
-			/*
-			'animation'				 : ['webkit'],
-			'animation-delay'		 : ['webkit'],
-			'animation-direction'	 : ['webkit'],
-			'animation-duration'	 : ['webkit'],
-			'animation-iteration-count' : ['webkit'],
-			'animation-name'		 : ['webkit'],
-			'animation-timing-function' : ['webkit'],
-
-			'backface-visibility' : ['webkit'],
-
-			'background-clip'		 : ['webkit', 'khtml'],
-			'background-origin'		 : ['webkit', 'khtml'],
-			'background-size'		 : ['moz', 'webkit', 'khtml'],
-
-			// border image
-			'border-image'				: ['moz', 'webkit'],
-			'border-top-image'			: ['moz', 'webkit'],
-			'border-right-image'		: ['moz', 'webkit'],
-			'border-bottom-image'		: ['moz', 'webkit'],
-			'border-left-image'			: ['moz', 'webkit'],
-			'border-corner-image'		: ['moz', 'webkit'],
-			'border-top-left-image'		: ['moz', 'webkit'],
-			'border-top-right-image'	: ['moz', 'webkit'],
-			'border-bottom-left-image'	: ['moz', 'webkit'],
-			'border-bottom-right-image'	: ['moz', 'webkit'], */
-			
 			// border-radius
 			//'border-radius' 			: ['moz'],
 			'border-top-left-radius'	: [customRule('moz', '-moz-border-radius-topleft')],
 			'border-top-right-radius'	: [customRule('moz', '-moz-border-radius-topright')],
 			'border-bottom-right-radius': [customRule('moz', '-moz-border-radius-bottomright')],
 			'border-bottom-left-radius'	: [customRule('moz', '-moz-border-radius-bottomleft')]
-			
-			/*'box-align'			 : ['moz', 'webkit'],
-			'box-direction'		 : ['moz', 'webkit'],
-			'box-flex'			 : ['moz', 'webkit'],
-			'box-flex-group'	 : ['moz', 'webkit'],
-			'box-lines'			 : ['moz', 'webkit'],
-			'box-ordinal-group'	 : ['moz', 'webkit'],
-			'box-orient'		 : ['moz', 'webkit'],
-			'box-pack'			 : ['moz', 'webkit'],
-			'box-shadow'		 : ['moz', 'webkit'],
-			'box-sizing'		 : ['moz', 'webkit'],
-			'column-count'		 : ['moz', 'webkit'],
-			'column-gap'		 : ['moz', 'webkit'],
-			'column-rule'		 : ['moz', 'webkit'],
-			'column-rule-color'	 : ['moz', 'webkit'],
-			'column-rule-style'	 : ['moz', 'webkit'],
-			'column-rule-width'	 : ['moz', 'webkit'],
-			'column-width'		 : ['moz', 'webkit'],
-			'columns'			 : ['webkit'],
-			'marquee'			 : ['webkit'],
-			'marquee-direction'	 : ['webkit'],
-			'marquee-speed'		 : ['webkit'],
-			'marquee-style'		 : ['webkit'],
-			'perspective'		 : ['webkit'],
-			'perspective-origin' : ['webkit'],
-			'tab-size'			 : ['moz', 'o'],
-			'text-overflow'		 : ['o'],
-			'text-size-adjust'	 : ['webkit', 'ms'],
-			'transform'			 : ['moz', 'webkit', 'o', 'ms'],
-			'transform-origin'	 : ['moz', 'webkit', 'o', 'ms'],
-			'transform-style'	 : ['webkit'],
-			'transition'		 : ['moz', 'webkit', 'o'],
-			'transition-delay'	 : ['moz', 'webkit', 'o'],
-			'transition-duration' : ['moz', 'webkit', 'o'],
-			'transition-property' : ['moz', 'webkit', 'o'],
-			'transition-timing-function' : ['moz', 'webkit', 'o'],
-			'user-modify'		 : ['moz', 'webkit', 'khtml'],
-			'user-select'		 : ['moz', 'webkit', 'khtml']*/
 		}
 		
 		function cleanCss(css) {
@@ -394,7 +332,13 @@
 				// PropertyValue Rules
 				var newPropertyValue = propertyValuesRules(property, value);
 				if (newPropertyValue) {
-					newAttributes[newPropertyValue.property] = newPropertyValue.value;
+					$.each(newPropertyValue, function(key, value) {
+						if (key == 'filter' && newAttributes[key]) {
+							newAttributes[key] += ' ' + value;
+						} else {
+							newAttributes[key] = value;
+						}
+					});
 				}
 			});
 			
@@ -478,18 +422,6 @@
 				}
 			}
 			
-			/* if (options.shim) {
-				// Only apply for ie
-				if (currentPrefix == 'ms') {
-					// only for version 7 or lower
-					if ($.browser.version <= 7) {
-						if (property.toUpperCase() == 'DISPLAY' && value == 'inline-block') {
-							return 'inline';
-						}
-					}
-				}
-			} */
-			
 			// // TODO : more advanced background-image: linear-gradient()
 			if (property == 'background-image') {
 				if (value.indexOf('linear-gradient') == 0) {
@@ -518,14 +450,20 @@
 			if (options.shim) {
 				// Only apply for ie
 				if (currentPrefix == 'ms') {
+					// Opacity
+					if (property.toUpperCase() == 'OPACITY' && !$.support.opacity && !$.isNaN(value)) {
+						return {
+							'filter' : 'alpha(opacity=' + value * 100 + ')',
+							'zoom' : 1
+						}
+					}
 					// only for version 8 and lower
 					if ($.browser.version <= 8) {
 						// background-color alpha color
 						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
 							value = ac2ah(value);
 							return {
-								'property' 	: 'filter',
-								'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
+								'filter' : "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
 							};
 						}
 					}
@@ -536,8 +474,7 @@
 							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 							if (da.length == 2) {
 								return {
-									'property' 	: 'filter',
-									'value'		: "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')"
+									'filter' : "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')"
 								};
 							}
 						}
