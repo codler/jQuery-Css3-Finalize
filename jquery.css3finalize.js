@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.36 - 2011-03-06
+ * @version 1.37 - 2011-03-15
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -16,6 +16,9 @@
  * $('style').cssFinalize();
  */
 (function ($) {
+	// Prevent to read twice
+	if ($.cssFinalize) return;
+
 	// Backward compatible for jquery 1.4.2 and less
 	if (!$.camelCase) {
 		var rdashAlpha = /-([a-z])/ig,
@@ -423,7 +426,8 @@
 			}
 			
 			// // TODO : more advanced background-image: linear-gradient()
-			if (property == 'background-image') {
+			if (property == 'background' ||
+				property == 'background-image') {
 				if (value.indexOf('linear-gradient') == 0) {
 					if (currentPrefix == 'webkit') {
 						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
@@ -470,7 +474,7 @@
 					// only for version 9 and lower
 					if ($.browser.version <= 9) {
 						// background-image gradient
-						if (property.toUpperCase() == 'BACKGROUND-IMAGE' && value.indexOf('linear-gradient') == 0) {
+						if ((property.toUpperCase() == 'BACKGROUND' || property.toUpperCase() == 'BACKGROUND-IMAGE') && value.indexOf('linear-gradient') == 0) {
 							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 							if (da.length == 2) {
 								return {

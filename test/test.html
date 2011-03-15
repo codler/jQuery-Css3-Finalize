@@ -185,7 +185,7 @@ ickbar {}
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.36 - 2011-03-06
+ * @version 1.37 - 2011-03-15
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -198,6 +198,9 @@ ickbar {}
  * $('style').cssFinalize();
  */
 (function ($) {
+	// Prevent to read twice
+	if ($.cssFinalize) return;
+
 	// Backward compatible for jquery 1.4.2 and less
 	if (!$.camelCase) {
 		var rdashAlpha = /-([a-z])/ig,
@@ -605,7 +608,8 @@ ickbar {}
 			}
 			
 			// // TODO : more advanced background-image: linear-gradient()
-			if (property == 'background-image') {
+			if (property == 'background' ||
+				property == 'background-image') {
 				if (value.indexOf('linear-gradient') == 0) {
 					if (currentPrefix == 'webkit') {
 						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
@@ -652,7 +656,7 @@ ickbar {}
 					// only for version 9 and lower
 					if ($.browser.version <= 9) {
 						// background-image gradient
-						if (property.toUpperCase() == 'BACKGROUND-IMAGE' && value.indexOf('linear-gradient') == 0) {
+						if ((property.toUpperCase() == 'BACKGROUND' || property.toUpperCase() == 'BACKGROUND-IMAGE') && value.indexOf('linear-gradient') == 0) {
 							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 							if (da.length == 2) {
 								return {
@@ -890,7 +894,7 @@ body {
 </style>
 </head>
 <body>
-<!--[if lt IE 8]> <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;'> <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx?ocid=ie6_countdown_bannercode"><img src="http://www.theie6countdown.com/images/upgrade.jpg" border="0" height="42" width="820" alt="" /></a></div> <![endif]-->
+<!--[if lt IE 9]> <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;'> <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx?ocid=ie6_countdown_bannercode"><img src="http://www.theie6countdown.com/images/upgrade.jpg" border="0" height="42" width="820" alt="" /></a></div> <![endif]-->
 
 
 <div id="a" class="style box round">Border radius (style-tag)</div>
