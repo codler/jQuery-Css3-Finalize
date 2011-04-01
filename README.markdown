@@ -2,7 +2,7 @@
 
 Some css3 attributes need to have a prefix in front (vendor prefix) in order to work in different browser. The plugin takes care of that and will automatically add the prefix so you don't need to write the vendor prefix. With this you will save time and the pain of rewriting same attribute many times.
 
-For example the css3 attribute <code>box-sizing</code> need to have the prefix 
+For example the css3 attribute <code>transform</code> need to have the prefix 
 <ul>
 <li><code>-moz-</code> in Firefox</li>
 <li><code>-ms-</code> in Internet explorer</li>
