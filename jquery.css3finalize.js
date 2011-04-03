@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.37 - 2011-03-15
+ * @version 1.38 - 2011-04-03
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -57,6 +57,9 @@
 		}
 		
 		options = $.extend({}, $.cssFinalizeSetup, options);
+		
+		// Check if browser support matchMedia
+		options.checkMedia = options.checkMedia && window.matchMedia;
 		
 		// Get current vendor prefix
 		var currentPrefix = false;
@@ -136,6 +139,11 @@
 			'border-bottom-left-radius'	: [customRule('moz', '-moz-border-radius-bottomleft')]
 		}
 		
+		function cssCamelCase(css) {
+			var s = $.camelCase(css);
+			return (currentPrefix == 'ms') ? s[0].toLowerCase() + s.substr(1) : s;
+		}
+		
 		function cleanCss(css) {
 			// strip multiline comment
 			css = css.replace(/\/\*((?:[^\*]|\*[^\/])*)\*\//g, '');
@@ -165,13 +173,14 @@
 		
 		// Future TODO: make custom callback for user
 		function appendStyle(element, cssObj) {
+			
 			if (currentPrefix == 'ms' && $.browser.version <= 7) {
-				var style = $('<style class="css-finalized" />');
+				var style = $('<style class="css-finalized" ' + ((element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '/>');
 				$('head:first').append(style);
 				//element.after(style);
 				style[0].styleSheet.cssText = cssObjToText(cssObj)
 			} else {
-				element.after('<style class="css-finalized">' + cssObjToText(cssObj) + '</style>');
+				element.after('<style class="css-finalized" ' + ((element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + cssObjToText(cssObj) + '</style>');
 			}
 		}
 		
@@ -203,9 +212,9 @@
 							});
 						
 						// @media
-						} else if (options.checkMedia && 
+						} else if (!options.checkMedia || (options.checkMedia && 
 							block.selector.indexOf('@media') == 0 && 
-							media.matchMedium(block.selector.substr(7))) {
+							matchMedia(block.selector.substr(7)).matches)) {
 							
 							cssFinalize.push({
 								'selector': block.selector,
@@ -366,10 +375,10 @@
 			
 			if ($.inArray(property, supportRules) > -1) {
 				// Checks if the property exists in style
-				if (!($.camelCase(property) in div.style) || property == 'mask') {
+				if (!(cssCamelCase(property) in div.style) || property == 'mask') {
 					// Checks if vendor prefix property exists in style
 					// is this needed?
-					if ($.camelCase('-' + currentPrefix + '-' + property) in div.style) {
+					if (cssCamelCase('-' + currentPrefix + '-' + property) in div.style) {
 						return '-' + currentPrefix + '-' + property;
 					} /*else if (property in rules) {
 						for (prefix in rules[property]) {
@@ -391,7 +400,7 @@
 				property == 'background-origin') {
 				// value can be padding-box/border-box/content-box
 				div.style.cssText = newProperty + ':' + value;
-				if (div.style[$.camelCase(newProperty)] !== undefined && ''+div.style[$.camelCase(newProperty)].indexOf(value) == -1) {
+				if (div.style[cssCamelCase(newProperty)] !== undefined && ''+div.style[cssCamelCase(newProperty)].indexOf(value) == -1) {
 					return value.split('-')[0];
 				}
 			}
@@ -534,7 +543,7 @@
 			}
 			// link-tags
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
-				if (!options.checkMedia || ($this.attr('media').length > 0 && media.matchMedium($this.attr('media'))) || $this.attr('media').length == 0) {
+				if (!options.checkMedia || ($this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || $this.attr('media').length == 0) {
 					load(this.href, $this);
 				}
 			} else {
@@ -603,54 +612,34 @@
 })(jQuery);
 
 /*
- * media.matchMedium()- test whether a CSS media type or media query applies
- * primary author: Scott Jehl
- * Copyright (c) 2010 Filament Group, Inc
- * MIT license
- 
- * adapted by Paul Irish to use the matchMedium API
- *    http://www.w3.org/TR/cssom-view/#media
- * Doesn't implement media.type as there's no way for crossbrowser property
- *    getters. instead of media.type == 'tv' just use media.matchMedium('tv')
- 
- * Developed as a feature of the EnhanceJS Framework (enhancejs.googlecode.com)
- * thx to: 
-   - phpied.com/dynamic-script-and-style-elements-in-ie for inner css text trick 
-   - @paul_irish for fakeBody trick 
+* matchMedia() polyfill - test whether a CSS media type or media query applies
+* authors: Scott Jehl, Paul Irish, Nicholas Zakas
+* Copyright (c) 2011 Scott, Paul and Nicholas.
+* Dual MIT/BSD license
 */
-if ( !(window.media && media.matchMedium) ){
+window.matchMedia = window.matchMedia || (function(doc, undefined){
   
-  window.media = window.media || {};
-  media.matchMedium = (function(doc,undefined){
+  var bool,
+      docElem = doc.documentElement,
+      refNode = docElem.firstElementChild || docElem.firstChild,
+      // fakeBody required for <FF4 when executed in <head>
+      fakeBody = doc.createElement('body'),
+      div = doc.createElement('div');
+  
+  div.id = 'mq-test-1';
+  div.style.cssText = "position:absolute;top:-100em";
+  fakeBody.appendChild(div);
+  
+  return function(q){
     
-    var cache = {},
-        docElem = doc.documentElement,
-        fakeBody = doc.createElement('body'), 
-        testDiv = doc.createElement('div');
+    div.innerHTML = '_<style media="'+q+'"> #mq-test-1 { width: 42px; }</style>';
     
-    testDiv.setAttribute('id','ejs-qtest'); 
-    fakeBody.appendChild(testDiv);
+    docElem.insertBefore(fakeBody, refNode);
+    div.removeChild(div.firstChild);
+    bool = div.offsetWidth == 42;
+    docElem.removeChild(fakeBody);
     
-    return function(q){
-      if (cache[q] === undefined) {
-        var styleBlock = doc.createElement('style');
-        styleBlock.type = 'text/css';
-        var cssrule = '@media '+q+' { #ejs-qtest { position: absolute; } }';
-        if (styleBlock.styleSheet){ 
-            styleBlock.styleSheet.cssText = cssrule;
-        } 
-        else {
-            styleBlock.appendChild(doc.createTextNode(cssrule));
-        }      
-        docElem.insertBefore(fakeBody, docElem.firstChild);
-        docElem.insertBefore(styleBlock, docElem.firstChild);
-        cache[q] = ((window.getComputedStyle ? window.getComputedStyle(testDiv,null) : testDiv.currentStyle)['position'] == 'absolute');
-        docElem.removeChild(fakeBody);
-        docElem.removeChild(styleBlock);
-      }
-      return cache[q];
-    };
-    
-  })(document);
-
-}
+    return { matches: bool, media: q };
+  };
+  
+})(document);
