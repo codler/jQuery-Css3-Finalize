@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.38 - 2011-04-03
+ * @version 1.39 - 2011-04-13
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -89,7 +89,7 @@
 			supportRules += ' appearance backface-visibility';
 			
 			// Background
-			supportRules += ' background-clip background-composite background-origin background-size';
+			supportRules += ' background-clip background-composite background-origin background-position-x background-position-y background-size';
 			
 			// Border - corner/image/radius
 			supportRules += ' border-corner-image border-image border-top-image border-right-image border-bottom-image border-left-image border-top-left-image border-top-right-image border-bottom-left-image border-bottom-right-image border-radius';
@@ -100,7 +100,10 @@
 			// Column
 			supportRules += ' column-count column-gap column-rule column-rule-color column-rule-style column-rule-width column-width columns';
 			
-			supportRules += ' dashboard-region line-break';
+			supportRules += ' dashboard-region hyphenate-character hyphens line-break';
+			
+			// Grid
+			supportRules += ' grid-columns grid-rows';
 			
 			// Marquee
 			supportRules += ' marquee marquee-direction marquee-increment marquee-repetition marquee-speed marquee-style';
@@ -620,11 +623,11 @@
 window.matchMedia = window.matchMedia || (function(doc, undefined){
   
   var bool,
-      docElem = doc.documentElement,
-      refNode = docElem.firstElementChild || docElem.firstChild,
+      docElem  = doc.documentElement,
+      refNode  = docElem.firstElementChild || docElem.firstChild,
       // fakeBody required for <FF4 when executed in <head>
       fakeBody = doc.createElement('body'),
-      div = doc.createElement('div');
+      div      = doc.createElement('div');
   
   div.id = 'mq-test-1';
   div.style.cssText = "position:absolute;top:-100em";
@@ -632,11 +635,10 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
   
   return function(q){
     
-    div.innerHTML = '_<style media="'+q+'"> #mq-test-1 { width: 42px; }</style>';
+    div.innerHTML = '&shy;<style media="'+q+'"> #mq-test-1 { width: 42px; }</style>';
     
     docElem.insertBefore(fakeBody, refNode);
-    div.removeChild(div.firstChild);
-    bool = div.offsetWidth == 42;
+    bool = div.offsetWidth == 42;  
     docElem.removeChild(fakeBody);
     
     return { matches: bool, media: q };
