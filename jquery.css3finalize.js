@@ -17,7 +17,9 @@
  */
 (function ($) {
 	// Prevent to read twice
-	if ($.cssFinalize) return;
+	if ($.cssFinalize){
+		return;
+	}
 
 	// Backward compatible for jquery 1.4.2 and less
 	if (!$.camelCase) {
@@ -28,14 +30,14 @@
 			
 		$.camelCase = function( string ) {
 			return string.replace( rdashAlpha, fcamelCase );
-		}
+		};
 	}
 
 	$.cssFinalizeSetup = {
 		shim : true,
 		node : 'style,link',
 		checkMedia : true
-	}
+	};
 
 	$.fn.cssFinalize = function(options) {
 		if (!options || typeof options != 'object') {
@@ -44,7 +46,7 @@
 		options.node = this;
 		$.cssFinalize(options);
 		return this;
-	}
+	};
 	
 	$.cssFinalize = function(options) {
 		var div = document.createElement('div');
@@ -66,7 +68,7 @@
 		if ($.browser.webkit || $.browser.safari) {
 			currentPrefix = 'webkit';
 		} else if ($.browser.mozilla) {
-			currentPrefix = 'moz'
+			currentPrefix = 'moz';
 		} else if ($.browser.msie) {
 			// No vendor prefix in ie 7
 			if ($.browser.version <= 7 && !options.shim) {
@@ -76,11 +78,29 @@
 		} else if ($.browser.opera) {
 			currentPrefix = 'o';
 		}
+		options.needWebkitGradients = true;
+		if (currentPrefix === 'webkit') {
+			// In webkit r75772 (14-01-2011) the way other adopted has been adopted, so, do not need weird things anymore
+			var navDet = navigator.userAgent.match(/(?:AppleWebKit|Safari)\/(\d*).(\d*)/);
+			if (navDet && navDet.length === 3) {
+				var maj = parseInt(navDet[1], 10);
+				var min = parseInt(navDet[2], 10);
+				if (maj > 533) {
+					options.needWebkitGradients = false;
+				}
+				else 
+					if (maj == 533) {
+						if (min > 19) {
+							options.needWebkitGradients = false;
+						}
+					}
+			}
+		}
 	
 		function customRule(prefix, newAttr) {
 			return function(attr) {
 				return (currentPrefix == prefix) ? newAttr : false;
-			}
+			};
 		}
 		// PropertyRules
 			// Animation
@@ -140,7 +160,7 @@
 			'border-top-right-radius'	: [customRule('moz', '-moz-border-radius-topright')],
 			'border-bottom-right-radius': [customRule('moz', '-moz-border-radius-bottomright')],
 			'border-bottom-left-radius'	: [customRule('moz', '-moz-border-radius-bottomleft')]
-		}
+		};
 		
 		function cssCamelCase(css) {
 			var s = $.camelCase(css);
@@ -167,7 +187,7 @@
 			var merge = [];
 			for(i in notmatch) {
 				merge.push(notmatch[i]);
-				if (match != null && match[i] != undefined) {
+				if (match && match[i]) {
 					merge.push(match[i]);
 				}
 			}
@@ -181,7 +201,7 @@
 				var style = $('<style class="css-finalized" ' + ((element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '/>');
 				$('head:first').append(style);
 				//element.after(style);
-				style[0].styleSheet.cssText = cssObjToText(cssObj)
+				style[0].styleSheet.cssText = cssObjToText(cssObj);
 			} else {
 				element.after('<style class="css-finalized" ' + ((element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + cssObjToText(cssObj) + '</style>');
 			}
@@ -189,7 +209,9 @@
 		
 		function parseFinalize(element, cssText) {
 			cssText = cleanCss(cssText);
-			if ($.trim(cssText) == '') return;
+			if ($.trim(cssText) === '') {
+				return;
+			}
 			
 			var objCss = cssTextToObj(cssText);
 			
@@ -216,7 +238,7 @@
 						
 						// @media
 						} else if (!options.checkMedia || (options.checkMedia && 
-							block.selector.indexOf('@media') == 0 && 
+							block.selector.indexOf('@media') === 0 && 
 							matchMedia(block.selector.substr(7)).matches)) {
 							
 							cssFinalize.push({
@@ -236,10 +258,11 @@
 		}
 		
 		function cssTextToObj(text) {
+			var block;
 			if (currentPrefix == 'ms' && $.browser.version <= 8) {
-				var block = ieSplit(text, '({[^{}]*})');
+				block = ieSplit(text, '({[^{}]*})');
 			} else {
-				var block = text.split(/({[^{}]*})/);
+				block = text.split(/({[^{}]*})/);
 			}
 			// fixes recursive block at end
 			if (block[block.length-1].indexOf('}') == -1) {
@@ -252,7 +275,7 @@
 			var ttt;
 			var i = 0;
 			while(i < block.length) {
-				if (i % 2 == 0) {
+				if (i % 2 === 0) {
 					var selector = $.trim(block[i]);
 					if (recusiveBlock) {
 						if (selector.indexOf('}') != -1) {
@@ -260,7 +283,7 @@
 							block[i] = selector;
 							
 							ttt = block.splice(tt, i - tt);
-							ttt.shift()
+							ttt.shift();
 							ttt.unshift(t[1]);
 							objCss[objCss.length-1].attributes = cssTextToObj(ttt.join(''));
 							recusiveBlock = false;
@@ -275,7 +298,7 @@
 							recusiveBlock = true;
 							tt = i;
 						}
-						if (selector != "") {
+						if (selector !== "") {
 							objCss.push({'selector': selector});
 						}
 					}
@@ -291,13 +314,14 @@
 		
 		function cssTextAttributeToObj(text) {
 			// Data URI fix
+			var attribute;
 			text = text.replace( /url\(([^)]+)\)/g, function(url){
 				return url.replace( /;/g, '[cssFinalize]' );
 			});
 			if (currentPrefix == 'ms' && $.browser.version <= 8) {
-				var attribute = ieSplit(text, '(:[^;]*;?)');
+				attribute = ieSplit(text, '(:[^;]*;?)');
 			} else {
-				var attribute = text.split(/(:[^;]*;?)/);
+				attribute = text.split(/(:[^;]*;?)/);
 			}
 			attribute.pop();
 			var objAttribute = {};
@@ -329,7 +353,9 @@
 		
 		function findNeededAttributes(attributes) {
 			// attributes is an array only if it is recursive blocks. skip those attributes.
-			if ($.isArray(attributes)) return {};
+			if ($.isArray(attributes)) {
+				return {};
+			}
 			var newAttributes = {};
 			$.each(attributes, function(property, value) {
 				// Property Rules
@@ -432,29 +458,44 @@
 			// Only apply for firefox
 			if (currentPrefix == 'moz') {
 				// calc
-				if (value.indexOf('calc') == 0) {
+				if (value.indexOf('calc') === 0) {
 					return '-moz-' + value;
 				}
 			}
 			
+			var da;
 			// // TODO : more advanced background-image: linear-gradient()
 			if (property == 'background' ||
 				property == 'background-image') {
-				if (value.indexOf('linear-gradient') == 0) {
-					if (currentPrefix == 'webkit') {
-						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
-						if (da.length == 2) {
-							return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '))';
-						}					
+				if (value.indexOf('linear-gradient') === 0) {
+					if (currentPrefix == 'webkit' && options.needWebkitGradients) {
+						da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+						var middle = "";
+						if (da.length >= 3) {
+							var position = "0% 0%, 0% 100%";
+							if(da[0] === "left"){
+								position = "0% 0%, 100% 0%";
+							}
+							if(da.length > 3){
+								var middleArray = da.slice(2, da.length -1);
+								$.each(middleArray, function(i, item){
+									var split = item.split(/ /);
+									if(split.length === 2){
+										middle += 'color-stop('+split[1]+', '+split[0]+'),';
+									}
+								});
+							}
+							return '-webkit-gradient(linear, '+position+', from(' + da[1] + '), '+middle+' to(' + da[da.length -1 ] + '))';
+						}
 					} else if (currentPrefix == 'o') {
-						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+						da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 						if (da.length == 2) {
 							var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
 							return 'url(data:image/svg+xml,' + escape(g) + ')';
 						}
 					}
 					return '-' + currentPrefix + '-' + value;
-				} else if (value.indexOf('radial-gradient') == 0) {
+				} else if (value.indexOf('radial-gradient') === 0) {
 					return '-' + currentPrefix + '-' + value;
 				}
 			}
@@ -471,12 +512,12 @@
 						return {
 							'filter' : 'alpha(opacity=' + value * 100 + ')',
 							'zoom' : 1
-						}
+						};
 					}
 					// only for version 8 and lower
 					if ($.browser.version <= 8) {
 						// background-color alpha color
-						if (property.toUpperCase() == 'BACKGROUND-COLOR' && value.indexOf('rgba') == 0) {
+						if (property.toUpperCase() === 'BACKGROUND-COLOR' && value.indexOf('rgba') === 0) {
 							value = ac2ah(value);
 							return {
 								'filter' : "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
@@ -486,7 +527,7 @@
 					// only for version 9 and lower
 					if ($.browser.version <= 9) {
 						// background-image gradient
-						if ((property.toUpperCase() == 'BACKGROUND' || property.toUpperCase() == 'BACKGROUND-IMAGE') && value.indexOf('linear-gradient') == 0) {
+						if ((property.toUpperCase() == 'BACKGROUND' || property.toUpperCase() === 'BACKGROUND-IMAGE') && value.indexOf('linear-gradient') === 0) {
 							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 							if (da.length == 2) {
 								return {
@@ -546,7 +587,7 @@
 			}
 			// link-tags
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
-				if (!options.checkMedia || ($this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || $this.attr('media').length == 0) {
+				if (!options.checkMedia || ($this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || $this.attr('media').length === 0) {
 					load(this.href, $this);
 				}
 			} else {
@@ -564,7 +605,9 @@
 						( loc.port || ( protocol === "http:" ? 80 : 443 ) ) )
 			);
 
-			if (crossDomain) return;
+			if (crossDomain) {
+				return;
+			}
 			try {
 				$('<div />').load(url, function(data) {
 					parseFinalize(element, data);
@@ -593,7 +636,7 @@
 			newProperty = $.camelCase(newProperty);
 			if (currentPrefix == 'ms' && 
 				$.browser.version <= 8) {
-				newProperty = newProperty.charAt(0).toLowerCase() + newProperty.substr(1)
+				newProperty = newProperty.charAt(0).toLowerCase() + newProperty.substr(1);
 			}
 			$.cssHooks[$.camelCase(property)] = {
 				get: function( elem, computed, extra ) {
@@ -602,10 +645,10 @@
 				set: function( elem, value ) {
 					elem.style[newProperty] = value;
 				}
-			}
+			};
 		}
 		
-	}
+	};
 	$(function() {
 		// Let user decide to parse on load or not.
 		if (window.cssFinalize!==false) {
