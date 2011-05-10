@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.39 - 2011-04-13
+ * @version 1.40 - 2011-05-10
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -78,6 +78,7 @@
 		} else if ($.browser.opera) {
 			currentPrefix = 'o';
 		}
+		/*
 		options.needWebkitGradients = true;
 		if (currentPrefix === 'webkit') {
 			// In webkit r75772 (14-01-2011) the way other adopted has been adopted, so, do not need weird things anymore
@@ -95,7 +96,7 @@
 						}
 					}
 			}
-		}
+		}*/
 	
 		function customRule(prefix, newAttr) {
 			return function(attr) {
@@ -153,15 +154,18 @@
 			
 			supportRules = supportRules.split(' ');
 		
-		var rules = {
-			// border-radius
-			//'border-radius' 			: ['moz'],
-			'border-top-left-radius'	: [customRule('moz', '-moz-border-radius-topleft')],
-			'border-top-right-radius'	: [customRule('moz', '-moz-border-radius-topright')],
-			'border-bottom-right-radius': [customRule('moz', '-moz-border-radius-bottomright')],
-			'border-bottom-left-radius'	: [customRule('moz', '-moz-border-radius-bottomleft')]
-		};
-		
+		var rules = {};
+		// only for version 3.6 or lower
+		if (parseInt($.browser.version.substr(0,1)) < 2) {
+			rules = {
+				// border-radius
+				//'border-radius' 			: ['moz'],
+				'border-top-left-radius'	: [customRule('moz', '-moz-border-radius-topleft')],
+				'border-top-right-radius'	: [customRule('moz', '-moz-border-radius-topright')],
+				'border-bottom-right-radius': [customRule('moz', '-moz-border-radius-bottomright')],
+				'border-bottom-left-radius'	: [customRule('moz', '-moz-border-radius-bottomleft')]
+			};
+		}
 		function cssCamelCase(css) {
 			var s = $.camelCase(css);
 			return (currentPrefix == 'ms') ? s[0].toLowerCase() + s.substr(1) : s;
@@ -198,12 +202,12 @@
 		function appendStyle(element, cssObj) {
 			
 			if (currentPrefix == 'ms' && $.browser.version <= 7) {
-				var style = $('<style class="css-finalized" ' + ((element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '/>');
+				var style = $('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '/>');
 				$('head:first').append(style);
 				//element.after(style);
 				style[0].styleSheet.cssText = cssObjToText(cssObj);
 			} else {
-				element.after('<style class="css-finalized" ' + ((element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + cssObjToText(cssObj) + '</style>');
+				element.after('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + cssObjToText(cssObj) + '</style>');
 			}
 		}
 		
@@ -468,8 +472,11 @@
 			if (property == 'background' ||
 				property == 'background-image') {
 				if (value.indexOf('linear-gradient') === 0) {
-					if (currentPrefix == 'webkit' && options.needWebkitGradients) {
+					if (currentPrefix == 'webkit'/* && options.needWebkitGradients*/) {
 						da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+						if (da.length == 2) {
+							return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '))';
+						}
 						var middle = "";
 						if (da.length >= 3) {
 							var position = "0% 0%, 0% 100%";
@@ -487,13 +494,15 @@
 							}
 							return '-webkit-gradient(linear, '+position+', from(' + da[1] + '), '+middle+' to(' + da[da.length -1 ] + '))';
 						}
-					} else if (currentPrefix == 'o') {
+					} 
+					// Opera 10.01 and less
+					/* else if (currentPrefix == 'o') {
 						da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 						if (da.length == 2) {
 							var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
 							return 'url(data:image/svg+xml,' + escape(g) + ')';
 						}
-					}
+					} */
 					return '-' + currentPrefix + '-' + value;
 				} else if (value.indexOf('radial-gradient') === 0) {
 					return '-' + currentPrefix + '-' + value;
@@ -587,7 +596,7 @@
 			}
 			// link-tags
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
-				if (!options.checkMedia || ($this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || $this.attr('media').length === 0) {
+				if (!options.checkMedia || ($this.attr('media') && $this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || ($this.attr('media') && $this.attr('media').length === 0)) {
 					load(this.href, $this);
 				}
 			} else {

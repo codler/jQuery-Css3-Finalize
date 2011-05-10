@@ -16,7 +16,7 @@
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-lightness/jquery-ui.css" />
 
 <!-- javascript -->
-<script src="libs/jquery-1.5.2.min.js"></script>
+<script src="libs/jquery-1.6.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <!--[if IE]>
 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -185,7 +185,7 @@ ickbar {}
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.39 - 2011-04-13
+ * @version 1.40 - 2011-05-10
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -336,15 +336,18 @@ ickbar {}
 			
 			supportRules = supportRules.split(' ');
 		
-		var rules = {
-			// border-radius
-			//'border-radius' 			: ['moz'],
-			'border-top-left-radius'	: [customRule('moz', '-moz-border-radius-topleft')],
-			'border-top-right-radius'	: [customRule('moz', '-moz-border-radius-topright')],
-			'border-bottom-right-radius': [customRule('moz', '-moz-border-radius-bottomright')],
-			'border-bottom-left-radius'	: [customRule('moz', '-moz-border-radius-bottomleft')]
-		};
-		
+		var rules = {};
+		// only for version 3.6 or lower
+		if (parseInt($.browser.version.substr(0,1)) < 2) {
+			rules = {
+				// border-radius
+				//'border-radius' 			: ['moz'],
+				'border-top-left-radius'	: [customRule('moz', '-moz-border-radius-topleft')],
+				'border-top-right-radius'	: [customRule('moz', '-moz-border-radius-topright')],
+				'border-bottom-right-radius': [customRule('moz', '-moz-border-radius-bottomright')],
+				'border-bottom-left-radius'	: [customRule('moz', '-moz-border-radius-bottomleft')]
+			};
+		}
 		function cssCamelCase(css) {
 			var s = $.camelCase(css);
 			return (currentPrefix == 'ms') ? s[0].toLowerCase() + s.substr(1) : s;
@@ -381,12 +384,12 @@ ickbar {}
 		function appendStyle(element, cssObj) {
 			
 			if (currentPrefix == 'ms' && $.browser.version <= 7) {
-				var style = $('<style class="css-finalized" ' + ((element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '/>');
+				var style = $('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '/>');
 				$('head:first').append(style);
 				//element.after(style);
 				style[0].styleSheet.cssText = cssObjToText(cssObj);
 			} else {
-				element.after('<style class="css-finalized" ' + ((element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + cssObjToText(cssObj) + '</style>');
+				element.after('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + cssObjToText(cssObj) + '</style>');
 			}
 		}
 		
@@ -775,7 +778,7 @@ ickbar {}
 			}
 			// link-tags
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
-				if (!options.checkMedia || ($this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || $this.attr('media').length === 0) {
+				if (!options.checkMedia || ($this.attr('media') && $this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || ($this.attr('media') && $this.attr('media').length === 0)) {
 					load(this.href, $this);
 				}
 			} else {
