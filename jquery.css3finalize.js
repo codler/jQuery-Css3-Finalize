@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.40 - 2011-05-10
+ * @version 1.41 - 2011-05-29
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -642,12 +642,8 @@
 		}
 		
 		function setCssHook(property, newProperty) {
-			newProperty = $.camelCase(newProperty);
-			if (currentPrefix == 'ms' && 
-				$.browser.version <= 8) {
-				newProperty = newProperty.charAt(0).toLowerCase() + newProperty.substr(1);
-			}
-			$.cssHooks[$.camelCase(property)] = {
+			newProperty = cssCamelCase(newProperty);
+			$.cssHooks[cssCamelCase(property)] = {
 				get: function( elem, computed, extra ) {
 					return elem.style[newProperty];
 				},

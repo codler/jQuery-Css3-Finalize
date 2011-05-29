@@ -16,7 +16,7 @@
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-lightness/jquery-ui.css" />
 
 <!-- javascript -->
-<script src="libs/jquery-1.6.min.js"></script>
+<script src="libs/jquery-1.6.1.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <!--[if IE]>
 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -185,7 +185,7 @@ ickbar {}
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.40 - 2011-05-10
+ * @version 1.41 - 2011-05-29
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -824,12 +824,8 @@ ickbar {}
 		}
 		
 		function setCssHook(property, newProperty) {
-			newProperty = $.camelCase(newProperty);
-			if (currentPrefix == 'ms' && 
-				$.browser.version <= 8) {
-				newProperty = newProperty.charAt(0).toLowerCase() + newProperty.substr(1);
-			}
-			$.cssHooks[$.camelCase(property)] = {
+			newProperty = cssCamelCase(newProperty);
+			$.cssHooks[cssCamelCase(property)] = {
 				get: function( elem, computed, extra ) {
 					return elem.style[newProperty];
 				},
@@ -898,7 +894,7 @@ jQuery(function() { $.cssFinalize(); });
 
 
 $(function($) { 
-	$('.jquery-round').css({'border-radius' : 10});
+	$('.jquery-transform').css({'transform' : 'rotate(45deg)'});
 });
 </script>
 <style>
@@ -945,7 +941,7 @@ body {
 <div class="style box shadow">Box shadow (style-tag)</div>
 <div class="style box transform">Transform (style-tag)</div>
 <div class="style box transition">Transition:hover (style-tag)</div>
-<div class="style box jquery-round">Jquery CssHooks (style-tag)</div>
+<div class="style box jquery-transform">Jquery CssHooks (style-tag)</div>
 <div class="style box gradient">Gradient (style-tag)</div>
 
 <hr />
@@ -955,7 +951,7 @@ body {
 <div class="link box shadow">Box shadow (link-tag)</div>
 <div class="link box transform">Transform (link-tag)</div>
 <div class="link box transition">Transition:hover (link-tag)</div>
-<div class="link box jquery-round">Jquery CssHooks (link-tag)</div>
+<div class="link box jquery-transform">Jquery CssHooks (link-tag)</div>
 <div class="link box gradient">Gradient (link-tag)</div>
 </body>
 </html>
