@@ -18,15 +18,11 @@ It also do some more then checking for vendor prefix. Eg. it add support for alp
 
 Simply add this line of code to your site for latest version
 
-<code>
-&lt;script src=&quot;http://static.zencodez.net/js/jquery.css3finalize-latest.min.js&quot;&gt;&lt;/script&gt;
-</code>
+	<script src="http://static.zencodez.net/js/jquery.css3finalize-latest.min.js"></script>
 
-or this for version 1.40
+or for version 1.40
 
-<code>
-&lt;script src=&quot;http://ajax.cdnjs.com/ajax/libs/css3finalize/1.40/jquery.css3finalize.min.js&quot;&gt;&lt;/script&gt;
-</code>
+	<script src="http://ajax.cdnjs.com/ajax/libs/css3finalize/1.40/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
