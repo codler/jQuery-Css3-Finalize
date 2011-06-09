@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.41 - 2011-05-29
+ * @version 1.42 - 2011-06-09
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -61,7 +61,7 @@
 		options = $.extend({}, $.cssFinalizeSetup, options);
 		
 		// Check if browser support matchMedia
-		options.checkMedia = options.checkMedia && window.matchMedia;
+		options.checkMedia = !!(options.checkMedia && window.matchMedia);
 		
 		// Get current vendor prefix
 		var currentPrefix = false;
@@ -596,7 +596,7 @@
 			}
 			// link-tags
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
-				if (!options.checkMedia || ($this.attr('media') && $this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || ($this.attr('media') && $this.attr('media').length === 0)) {
+				if (!options.checkMedia || ($this.attr('media') && $this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || !$this.attr('media')) {
 					load(this.href, $this);
 				}
 			} else {
