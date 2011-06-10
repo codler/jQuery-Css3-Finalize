@@ -185,7 +185,7 @@ ickbar {}
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.42 - 2011-06-09
+ * @version 1.43 - 2011-06-10
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -677,14 +677,15 @@ ickbar {}
 							return '-webkit-gradient(linear, '+position+', from(' + da[1] + '), '+middle+' to(' + da[da.length -1 ] + '))';
 						}
 					} 
-					// Opera 10.01 and less
-					/* else if (currentPrefix == 'o') {
+					// Only for IE9 - border-radius + gradient bug
+					// http://stackoverflow.com/questions/4692686/ie9-border-radius-and-background-gradient-bleeding
+					 else if (currentPrefix == 'ms' && $.browser.version == 9) {
 						da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 						if (da.length == 2) {
 							var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
 							return 'url(data:image/svg+xml,' + escape(g) + ')';
 						}
-					} */
+					} 
 					return '-' + currentPrefix + '-' + value;
 				} else if (value.indexOf('radial-gradient') === 0) {
 					return '-' + currentPrefix + '-' + value;
@@ -714,9 +715,6 @@ ickbar {}
 								'filter' : "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
 							};
 						}
-					}
-					// only for version 9 and lower
-					if ($.browser.version <= 9) {
 						// background-image gradient
 						if ((property.toUpperCase() == 'BACKGROUND' || property.toUpperCase() === 'BACKGROUND-IMAGE') && value.indexOf('linear-gradient') === 0) {
 							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
