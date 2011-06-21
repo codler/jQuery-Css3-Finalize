@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.43 - 2011-06-10
+ * @version 1.44 - 2011-06-21
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -237,7 +237,7 @@
 							cssFinalize.push({
 											// Selector Rules
 								'selector': selectorRules(block.selector),
-								'attributes' : block.attributes
+								'attributes' : findNeededAttributes(block.attributes, true)
 							});
 						
 						// @media
@@ -355,28 +355,41 @@
 			return text;
 		}		
 		
-		function findNeededAttributes(attributes) {
+		function findNeededAttributes(attributes, returnAll) {
 			// attributes is an array only if it is recursive blocks. skip those attributes.
 			if ($.isArray(attributes)) {
-				return {};
+				if (returnAll) {
+					return $.map(attributes, function (n, i) {
+						return {
+							'selector' : n.selector, 
+							'attributes' : findNeededAttributes(n.attributes, returnAll)
+						}
+					});
+				} else {
+					return {};
+				}
 			}
 			var newAttributes = {};
 			$.each(attributes, function(property, value) {
+				var isset = false;
 				// Property Rules
 				var newProperty = propertyRules(property);
 				if (newProperty) {
+					isset = true;
 					newAttributes[newProperty] = value;
 				}
 				
 				// Value Rules
 				var newValue = valuesRules(property, value, newProperty);
 				if (newValue) {
+					isset = true;
 					newAttributes[(newProperty) ? newProperty : property] = newValue;
 				}
 				
 				// PropertyValue Rules
 				var newPropertyValue = propertyValuesRules(property, value);
 				if (newPropertyValue) {
+					isset = true;
 					$.each(newPropertyValue, function(key, value) {
 						if (key == 'filter' && newAttributes[key]) {
 							newAttributes[key] += ' ' + value;
@@ -384,6 +397,10 @@
 							newAttributes[key] = value;
 						}
 					});
+				}
+				
+				if (returnAll && !isset) {
+					newAttributes[property] = value;
 				}
 			});
 			
@@ -559,7 +576,10 @@
 				// ::placeholder
 				selector = selector.replace('::placeholder', ':-moz-placeholder');
 				
+				// @keyframes
+				selector = selector.replace('@keyframes', '@-moz-keyframes');
 			} else if(currentPrefix == 'webkit') {
+				// @keyframes
 				selector = selector.replace('@keyframes', '@-webkit-keyframes');
 				
 				// ::placeholder
