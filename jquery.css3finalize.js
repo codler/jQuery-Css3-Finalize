@@ -547,6 +547,7 @@
 						if (property.toUpperCase() === 'BACKGROUND-COLOR' && value.indexOf('rgba') === 0) {
 							value = ac2ah(value);
 							return {
+								'background' : "url(#)",
 								'filter' : "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
 							};
 						}
@@ -555,6 +556,7 @@
 							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 							if (da.length == 2) {
 								return {
+									'background' : "url(#)",
 									'filter' : "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')"
 								};
 							}
