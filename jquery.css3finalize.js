@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.44 - 2011-06-21
+ * @version 1.45 - 2011-08-08
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -534,20 +534,23 @@
 			if (options.shim) {
 				// Only apply for ie
 				if (currentPrefix == 'ms') {
-					// Opacity
-					if (property.toUpperCase() == 'OPACITY' && !$.support.opacity && !$.isNaN(value)) {
-						return {
-							'filter' : 'alpha(opacity=' + value * 100 + ')',
-							'zoom' : 1
-						};
-					}
 					// only for version 8 and lower
 					if ($.browser.version <= 8) {
+						// Opacity
+						if (property.toUpperCase() == 'OPACITY' && !$.support.opacity && !$.isNaN(value)) {
+							return {
+								'filter' : 'alpha(opacity=' + value * 100 + ')',
+								'zoom' : 1
+							};
+						}
+
 						// background-color alpha color
 						if (property.toUpperCase() === 'BACKGROUND-COLOR' && value.indexOf('rgba') === 0) {
 							value = ac2ah(value);
 							return {
-								'background' : "url(#)",
+								// Transparency + click bug
+								// http://haslayout.net/css/No-Transparency-Click-Bug 
+								'background' : 'url(#)',
 								'filter' : "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
 							};
 						}
@@ -556,7 +559,7 @@
 							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 							if (da.length == 2) {
 								return {
-									'background' : "url(#)",
+									'background' : 'url(#)',
 									'filter' : "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')"
 								};
 							}
