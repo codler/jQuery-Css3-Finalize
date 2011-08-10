@@ -20,9 +20,9 @@ Simply add this line of code to your site for latest version
 
 	<script src="http://static.zencodez.net/js/jquery.css3finalize-latest.min.js"></script>
 
-or for version 1.43
+or for version 1.45
 
-	<script src="http://ajax.cdnjs.com/ajax/libs/css3finalize/1.43/jquery.css3finalize.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/css3finalize/1.45/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
@@ -49,7 +49,7 @@ If you don't want the script to automatically load and parse then you could set 
 
 This script has been tested in <code>IE 8-9</code>, <code>FF 4</code>, <code>Chrome stable-dev</code>, <code>Safari 5</code>, <code>Opera</code> on windows
 
-<http://jsfiddle.net/AqsXb/>
+<http://jsfiddle.net/BbsaX/>
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain.
@@ -70,4 +70,4 @@ In normal case you would have needed to add a prefix
 
 ## Feedback
 
-I appreciate all feedback, thanks!
+I appreciate all feedback, thanks! If you would like to donate you can send to this Bitcoin address <code>1FCT3xhLBRD1MUxnS1ppcLrbH9SCeZpu6D</code>
