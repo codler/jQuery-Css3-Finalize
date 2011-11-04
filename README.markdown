@@ -35,7 +35,7 @@ If you don't want the script to automatically load and parse then you could set 
 	// DOM is ready
 	jQuery(function($) { 
 		// Start parse
-		$.cssFinalize('style, link');
+		$('style, link').cssFinalize();
 	});
 	</script>
 
@@ -47,7 +47,7 @@ If you don't want the script to automatically load and parse then you could set 
 
 ## Tests
 
-This script has been tested in <code>IE 8-9</code>, <code>FF 4</code>, <code>Chrome stable-dev</code>, <code>Safari 5</code>, <code>Opera</code> on windows
+This script has been tested in <code>IE 8-9</code>, <code>FF</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera</code> on windows
 
 <http://jsfiddle.net/BbsaX/>
 
@@ -56,7 +56,7 @@ This script has been tested in <code>IE 8-9</code>, <code>FF 4</code>, <code>Chr
 * Link-tags cannot be read on webkit and Opera on local files.
 * It seems IE8 strips out attributes on invalid value on known property in style-tag.
 
-## cssHooks (jQuery 1.4.3+)
+## cssHooks
 
 You can leave out the prefix when setting a style in Jquery css method.
 

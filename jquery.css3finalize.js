@@ -3,34 +3,19 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 1.45 - 2011-08-08
+ * @version 2.0 - 2011-11-04
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
- * Some css3 attributes needs to have a prefix in front 
- * in order to work in different browser. The plugin takes 
- * care of that so you only need to write without the prefix.
+ * With this plugin you can write CSS without the vendor prefixes.
  *
  * == Example Usage ==
- * // This will look for all style-tags and parse them.
- * $('style').cssFinalize();
+ * $('style').cssFinalize(); // parse all style-tags
  */
 (function ($) {
 	// Prevent to read twice
 	if ($.cssFinalize){
 		return;
-	}
-
-	// Backward compatible for jquery 1.4.2 and less
-	if (!$.camelCase) {
-		var rdashAlpha = /-([a-z])/ig,
-			fcamelCase = function( all, letter ) {
-				return letter.toUpperCase();
-			};
-			
-		$.camelCase = function( string ) {
-			return string.replace( rdashAlpha, fcamelCase );
-		};
 	}
 
 	$.cssFinalizeSetup = {
@@ -51,109 +36,60 @@
 	$.cssFinalize = function(options) {
 		var div = document.createElement('div');
 		
-		// Backward compatible for css3finalize 1.24 and less
-		if (typeof options == 'string') {
-			newoptions = arguments[1] || {};
-			newoptions.node = options;
-			options = newoptions;
-		}
-		
 		options = $.extend({}, $.cssFinalizeSetup, options);
 		
 		// Check if browser support matchMedia
 		options.checkMedia = !!(options.checkMedia && window.matchMedia);
 		
+		// PropertyRules
+		var supportRules = [];
+
 		// Get current vendor prefix
-		var currentPrefix = false;
-		if ($.browser.webkit || $.browser.safari) {
-			currentPrefix = 'webkit';
-		} else if ($.browser.mozilla) {
-			currentPrefix = 'moz';
-		} else if ($.browser.msie) {
-			// No vendor prefix in ie 7
-			if ($.browser.version <= 7 && !options.shim) {
+		var currentPrefix;
+		if (window.getComputedStyle) {
+			var styles = getComputedStyle(document.documentElement, null);
+
+			if (styles.length) {
+				for(var i = 0; i < styles.length ; i++) {
+					if (styles[i].charAt(0) === '-') {
+						var pos = styles[i].indexOf('-',1);
+						supportRules.push(styles[i].substr(pos+1));
+
+						currentPrefix = styles[i].substr(1, pos-1);
+					}
+				}
+			} else {
+				var deCamelCase = function(str) {
+					return str.replace(/[A-Z]/g, function($0) { return '-' + $0.toLowerCase() });
+				}
+				for(var i in styles) {
+					var style = deCamelCase(i);
+					if (style.indexOf('-o-') === 0) {
+						supportRules.push(style.substr(3));
+					}
+				}
+				currentPrefix = 'o';
+			}
+		} else {
+			// No vendor prefix in ie 8
+			if (!options.shim) {
 				return true;
 			}
 			currentPrefix = 'ms';
-		} else if ($.browser.opera) {
-			currentPrefix = 'o';
 		}
-		/*
-		options.needWebkitGradients = true;
-		if (currentPrefix === 'webkit') {
-			// In webkit r75772 (14-01-2011) the way other adopted has been adopted, so, do not need weird things anymore
-			var navDet = navigator.userAgent.match(/(?:AppleWebKit|Safari)\/(\d*).(\d*)/);
-			if (navDet && navDet.length === 3) {
-				var maj = parseInt(navDet[1], 10);
-				var min = parseInt(navDet[2], 10);
-				if (maj > 533) {
-					options.needWebkitGradients = false;
-				}
-				else 
-					if (maj == 533) {
-						if (min > 19) {
-							options.needWebkitGradients = false;
-						}
-					}
-			}
-		}*/
+
+		if (currentPrefix == 'ms') {
+			supportRules.push('transform');
+			supportRules.push('transform-origin');
+		}		
 	
 		function customRule(prefix, newAttr) {
 			return function(attr) {
 				return (currentPrefix == prefix) ? newAttr : false;
 			};
 		}
-		// PropertyRules
-			// Animation
-		var supportRules = 'animation animation-delay animation-direction animation-duration animation-fill-mode animation-iteration-count animation-name animation-play-state animation-timing-function';
 		
-			supportRules += ' appearance backface-visibility';
-			
-			// Background
-			supportRules += ' background-clip background-composite background-origin background-position-x background-position-y background-size';
-			
-			// Border - corner/image/radius
-			supportRules += ' border-corner-image border-image border-top-image border-right-image border-bottom-image border-left-image border-top-left-image border-top-right-image border-bottom-left-image border-bottom-right-image border-radius';
-			
-			// Box
-			supportRules += ' box-align box-direction box-flex box-flex-group box-lines box-ordinal-group box-orient box-pack box-reflect box-shadow box-sizing';
-						
-			// Column
-			supportRules += ' column-count column-gap column-rule column-rule-color column-rule-style column-rule-width column-width columns';
-			
-			supportRules += ' dashboard-region hyphenate-character hyphens line-break';
-			
-			// Grid
-			supportRules += ' grid-columns grid-rows';
-			
-			// Marquee
-			supportRules += ' marquee marquee-direction marquee-increment marquee-repetition marquee-speed marquee-style';
-			
-			// Mask
-			supportRules += ' mask mask-attachment mask-box-image mask-clip mask-composite mask-image mask-origin mask-position mask-position-x mask-position-y mask-repeat mask-size';
-			
-			supportRules += ' nbsp-mode';
-			
-			// Perspective
-			supportRules += ' perspective perspective-origin';
-			
-			supportRules += ' tab-size tap-highlight-color text-fill-color text-overflow text-security text-size-adjust';
-			
-			// Text-stroke
-			supportRules += ' text-stroke text-stroke-color text-stroke-width';
-			
-			supportRules += ' touch-callout';
-			
-			// Transform
-			supportRules += ' transform transform-origin transform-origin-x transform-origin-y transform-origin-z transform-style';
-			
-			// Transition
-			supportRules += ' transition transition-delay transition-duration transition-property transition-timing-function';
-			
-			supportRules += ' user-drag user-modify user-select';
-			
-			supportRules = supportRules.split(' ');
-		
+
 		var rules = {};
 		// only for version 3.6 or lower
 		if (parseInt($.browser.version.substr(0,1)) < 2) {
@@ -482,6 +418,10 @@
 				if (value.indexOf('calc') === 0) {
 					return '-moz-' + value;
 				}
+				// element
+				if (value.indexOf('element') === 0) {
+					return '-moz-' + value;
+				}
 			}
 			
 			var da;
@@ -489,7 +429,7 @@
 			if (property == 'background' ||
 				property == 'background-image') {
 				if (value.indexOf('linear-gradient') === 0) {
-					if (currentPrefix == 'webkit'/* && options.needWebkitGradients*/) {
+					if (currentPrefix == 'webkit') {
 						da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 						if (da.length == 2) {
 							return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '))';
@@ -537,7 +477,7 @@
 					// only for version 8 and lower
 					if ($.browser.version <= 8) {
 						// Opacity
-						if (property.toUpperCase() == 'OPACITY' && !$.support.opacity && !$.isNaN(value)) {
+						if (property.toUpperCase() == 'OPACITY' && !$.support.opacity && !isNaN(value)) {
 							return {
 								'filter' : 'alpha(opacity=' + value * 100 + ')',
 								'zoom' : 1
@@ -574,9 +514,7 @@
 			// Only apply for firefox
 			if (currentPrefix == 'moz') {
 				// ::selection
-				//if (selector.indexOf('::selection') != -1) {
 					selector = selector.replace('::selection', '::-moz-selection');
-				//}
 				
 				// ::placeholder
 				selector = selector.replace('::placeholder', ':-moz-placeholder');
@@ -646,21 +584,16 @@
 				});
 			} catch(e){}
 		}
-		
-		// Css hooks - require jquery 1.4.3+
-		//if ($().jquery.replace(/\./g, '') >= 143) {
-		if ($.cssHooks) {
-			for (property in rules) {
-				//if ($.inArray(currentPrefix, rules[property])!== -1) {
-				if ((newProperty = propertyRules(property)) !== false) {
-					setCssHook(property, newProperty);
-				}
+
+		for (property in rules) {
+			if ((newProperty = propertyRules(property)) !== false) {
+				setCssHook(property, newProperty);
 			}
-			
-			for (property in supportRules) {
-				if ((newProperty = propertyRules(supportRules[property])) !== false) {
-					setCssHook(supportRules[property], newProperty);
-				}
+		}
+		
+		for (property in supportRules) {
+			if ((newProperty = propertyRules(supportRules[property])) !== false) {
+				setCssHook(supportRules[property], newProperty);
 			}
 		}
 		
