@@ -1,6 +1,6 @@
 # CSS 3 Finalize
 
-Some css3 attributes need to have a prefix in front (vendor prefix) in order to work in different browser. The plugin takes care of that and will automatically add the prefix so you don't need to write the vendor prefix. With this you will save time and the pain of rewriting same attribute many times.
+With this plugin you can write CSS without the vendor prefixes. The plugin takes care of it and will automatically add vendor prefixes. This will save time and the pain of rewriting same attribute many times.
 
 For example the css3 attribute <code>transform</code> need to have the prefix 
 <ul>
@@ -10,9 +10,8 @@ For example the css3 attribute <code>transform</code> need to have the prefix
 <li><code>-o-</code> in Opera</li>
 </ul>
 
-See which vendor prefix CSS3 Finalize supports <https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported>
-
-It also do some more then checking for vendor prefix. Eg. it add support for alpha color (rgba) in background-color in IE7-8.
+In additional besides adding vendor prefix, it can also do some more. Eg. it add support for alpha color (rgba) in background-color in IE7-8.
+See more <https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported>
 
 ## How to use
 
@@ -20,9 +19,9 @@ Simply add this line of code to your site for latest version
 
 	<script src="http://static.zencodez.net/js/jquery.css3finalize-latest.min.js"></script>
 
-or for version 1.45
+or for version 2.0
 
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/css3finalize/1.45/jquery.css3finalize.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/css3finalize/2.0/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
