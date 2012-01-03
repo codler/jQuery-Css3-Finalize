@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<!--[if lt IE 8 ]> <html lang="sv" class="ie7"> <![endif]-->
-<!--[if IE 8 ]>    <html lang="sv" class="ie8"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!--> <html lang="sv"> <!--<![endif]-->
+<html lang="sv">
 <head>
 <!-- meta -->
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title></title>
+<title>jQuery Css3 Finalize</title>
 <!-- css -->
 <link rel="stylesheet" type="text/css" href="boilerplate.css" />
 <link rel="stylesheet" type="text/css" media="screen" href="test.css" />
@@ -16,13 +14,10 @@
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-lightness/jquery-ui.css" />
 
 <!-- javascript -->
-<script src="libs/jquery-1.7.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-<!--[if IE]>
-<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<script src="libs/jquery-1.7.1.min.js"></script>
+<!--[if lt IE 9]>
+<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
-
-<!--<script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>-->
 
 <style data="comment">
 /* Test comment */ /* Parsing test */
@@ -185,7 +180,7 @@ ickbar {}
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 2.0 - 2011-11-04
+ * @version 2.1 - 2012-01-03
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -203,7 +198,9 @@ ickbar {}
 	$.cssFinalizeSetup = {
 		shim : true,
 		node : 'style,link',
-		checkMedia : true
+		checkMedia : true,
+		append : true,
+		callback : function() {}
 	};
 
 	$.fn.cssFinalize = function(options) {
@@ -263,7 +260,10 @@ ickbar {}
 		if (currentPrefix == 'ms') {
 			supportRules.push('transform');
 			supportRules.push('transform-origin');
+			
 		}		
+		supportRules.push('transition');
+		supportRules.push('transition-property');
 	
 		function customRule(prefix, newAttr) {
 			return function(attr) {
@@ -316,16 +316,15 @@ ickbar {}
 			return merge;
 		}
 		
-		// Future TODO: make custom callback for user
 		function appendStyle(element, cssObj) {
 			
 			if (currentPrefix == 'ms' && $.browser.version <= 7) {
 				var style = $('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '/>');
 				$('head:first').append(style);
 				//element.after(style);
-				style[0].styleSheet.cssText = cssObjToText(cssObj);
+				style[0].styleSheet.cssText = $.cssFinalize.cssObjToText(cssObj);
 			} else {
-				element.after('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + cssObjToText(cssObj) + '</style>');
+				element.after('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + $.cssFinalize.cssObjToText(cssObj) + '</style>');
 			}
 		}
 		
@@ -374,8 +373,11 @@ ickbar {}
 			}
 
 			element.addClass('css-finalize-read');
-			if (cssFinalize.length > 0) {
+			if (cssFinalize.length > 0 && options.append) {
 				appendStyle(element, cssFinalize);
+			}
+			if ($.isFunction(options.callback)) {
+				options.callback.call(element, cssFinalize);
 			}
 		}
 		
@@ -456,22 +458,6 @@ ickbar {}
 			});
 			return objAttribute;
 		}
-		
-		function cssObjToText(obj) {
-			var text = '';
-			$.each(obj, function(i, block) {
-				text += block.selector + '{';
-				if ($.isArray(block.attributes)) {
-					text += cssObjToText(block.attributes);
-				} else {
-					$.each(block.attributes, function(property, value) {
-						text += property + ':' + value + ';';
-					});
-				}
-				text += '}';
-			});
-			return text;
-		}		
 		
 		function findNeededAttributes(attributes, returnAll) {
 			// attributes is an array only if it is recursive blocks. skip those attributes.
@@ -603,6 +589,14 @@ ickbar {}
 				// element
 				if (value.indexOf('element') === 0) {
 					return '-moz-' + value;
+				}
+			}
+			
+			if (property == 'display') {
+				if (value.indexOf('box') === 0 ||
+					value.indexOf('flexbox') === 0 ||
+					value.indexOf('inline-flexbox') === 0) {
+					return '-' + currentPrefix + '-' + value;
 				}
 			}
 			
@@ -742,6 +736,8 @@ ickbar {}
 				if (!options.checkMedia || ($this.attr('media') && $this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || !$this.attr('media')) {
 					load(this.href, $this);
 				}
+			} else if(this.tagName == 'TEXTAREA') {
+				parseFinalize($this, $this.val());
 			} else {
 				parseFinalize($this, $this.html());
 			}
@@ -792,6 +788,28 @@ ickbar {}
 		}
 		
 	};
+	
+	$.cssFinalize.cssObjToText = function(obj, prettyfy) {
+		var text = '';
+		prettyfy = prettyfy || false;
+		$.each(obj, function(i, block) {
+			text += block.selector + '{';
+			if ($.isArray(block.attributes)) {
+				if (prettyfy) text += '\r\n';
+				text += $.cssFinalize.cssObjToText(block.attributes, prettyfy);
+			} else {
+				$.each(block.attributes, function(property, value) {
+					if (prettyfy) text += '\r\n  ';
+					text += property + ':' + value + ';';
+				});
+				if (prettyfy) text += '\r\n';
+			}
+			text += '}';
+			if (prettyfy) text += '\r\n';
+		});
+		return text;
+	}
+	
 	$(function() {
 		// Let user decide to parse on load or not.
 		if (window.cssFinalize!==false) {
@@ -846,6 +864,21 @@ window.cssFinalize=false;
 //jQuery(function() { $.cssFinalize({'shim': true}); });
 //jQuery(function() { $('style, link').cssFinalize({'shim': true}); });
 jQuery(function() { $.cssFinalize(); });
+jQuery(function($) { 
+	$('#test').keyup(function () {
+		$.cssFinalize({
+			'node' : this,
+			'append' : false,
+			'callback': function(css) { 
+				this.removeClass('css-finalize-read');
+				$('#output').val($.cssFinalize.cssObjToText(css, true));
+			}
+		
+		}); 
+	
+	}).trigger('keyup');
+
+});
 //jQuery(function() { $.cssFinalize({'style[data=shim-display]'}); });
 
 
@@ -856,6 +889,10 @@ $(function($) {
 <style>
 body {
 	background-image: url("bg.jpg");
+}
+textarea {
+	width: 300px;
+	height: 300px;
 }
 .style.box {
 	background-color: rgba(255,255,255, 0.3);
@@ -889,6 +926,24 @@ body {
 </style>
 </head>
 <body>
+<p>Test your css on the left side, and nessesary prefixes will output on the right side.</p>
+<textarea id="test">
+@keyframes scale {
+  from { transform: scale(1) }
+  to { transform: scale(3) }	
+}
+
+.test::placeholder {
+  border-radius: 1px solid #000;
+  display: box;
+  background-image: linear-gradient(#000000,#ffffff);
+  transform: hej;
+  transition: all 1s;
+}
+</textarea>
+<textarea id="output"></textarea>
+
+<hr />
 
 <div id="a" class="style box round">Border radius (style-tag)</div>
 <div class="style box round-top-left">Border top left radius (style-tag)</div>

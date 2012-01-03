@@ -3,7 +3,7 @@
  * @copyright 2011 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 2.0 - 2011-11-04
+ * @version 2.1 - 2012-01-03
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -21,7 +21,9 @@
 	$.cssFinalizeSetup = {
 		shim : true,
 		node : 'style,link',
-		checkMedia : true
+		checkMedia : true,
+		append : true,
+		callback : function() {}
 	};
 
 	$.fn.cssFinalize = function(options) {
@@ -81,7 +83,10 @@
 		if (currentPrefix == 'ms') {
 			supportRules.push('transform');
 			supportRules.push('transform-origin');
+			
 		}		
+		supportRules.push('transition');
+		supportRules.push('transition-property');
 	
 		function customRule(prefix, newAttr) {
 			return function(attr) {
@@ -134,16 +139,15 @@
 			return merge;
 		}
 		
-		// Future TODO: make custom callback for user
 		function appendStyle(element, cssObj) {
 			
 			if (currentPrefix == 'ms' && $.browser.version <= 7) {
 				var style = $('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '/>');
 				$('head:first').append(style);
 				//element.after(style);
-				style[0].styleSheet.cssText = cssObjToText(cssObj);
+				style[0].styleSheet.cssText = $.cssFinalize.cssObjToText(cssObj);
 			} else {
-				element.after('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + cssObjToText(cssObj) + '</style>');
+				element.after('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + $.cssFinalize.cssObjToText(cssObj) + '</style>');
 			}
 		}
 		
@@ -192,8 +196,11 @@
 			}
 
 			element.addClass('css-finalize-read');
-			if (cssFinalize.length > 0) {
+			if (cssFinalize.length > 0 && options.append) {
 				appendStyle(element, cssFinalize);
+			}
+			if ($.isFunction(options.callback)) {
+				options.callback.call(element, cssFinalize);
 			}
 		}
 		
@@ -274,22 +281,6 @@
 			});
 			return objAttribute;
 		}
-		
-		function cssObjToText(obj) {
-			var text = '';
-			$.each(obj, function(i, block) {
-				text += block.selector + '{';
-				if ($.isArray(block.attributes)) {
-					text += cssObjToText(block.attributes);
-				} else {
-					$.each(block.attributes, function(property, value) {
-						text += property + ':' + value + ';';
-					});
-				}
-				text += '}';
-			});
-			return text;
-		}		
 		
 		function findNeededAttributes(attributes, returnAll) {
 			// attributes is an array only if it is recursive blocks. skip those attributes.
@@ -421,6 +412,14 @@
 				// element
 				if (value.indexOf('element') === 0) {
 					return '-moz-' + value;
+				}
+			}
+			
+			if (property == 'display') {
+				if (value.indexOf('box') === 0 ||
+					value.indexOf('flexbox') === 0 ||
+					value.indexOf('inline-flexbox') === 0) {
+					return '-' + currentPrefix + '-' + value;
 				}
 			}
 			
@@ -560,6 +559,8 @@
 				if (!options.checkMedia || ($this.attr('media') && $this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || !$this.attr('media')) {
 					load(this.href, $this);
 				}
+			} else if(this.tagName == 'TEXTAREA') {
+				parseFinalize($this, $this.val());
 			} else {
 				parseFinalize($this, $this.html());
 			}
@@ -610,6 +611,28 @@
 		}
 		
 	};
+	
+	$.cssFinalize.cssObjToText = function(obj, prettyfy) {
+		var text = '';
+		prettyfy = prettyfy || false;
+		$.each(obj, function(i, block) {
+			text += block.selector + '{';
+			if ($.isArray(block.attributes)) {
+				if (prettyfy) text += '\r\n';
+				text += $.cssFinalize.cssObjToText(block.attributes, prettyfy);
+			} else {
+				$.each(block.attributes, function(property, value) {
+					if (prettyfy) text += '\r\n  ';
+					text += property + ':' + value + ';';
+				});
+				if (prettyfy) text += '\r\n';
+			}
+			text += '}';
+			if (prettyfy) text += '\r\n';
+		});
+		return text;
+	}
+	
 	$(function() {
 		// Let user decide to parse on load or not.
 		if (window.cssFinalize!==false) {
