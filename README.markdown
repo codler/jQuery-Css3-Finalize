@@ -19,9 +19,9 @@ Simply add this line of code to your site for latest version
 
 	<script src="http://static.zencodez.net/js/jquery.css3finalize-latest.min.js"></script>
 
-or for version 2.0
+or for version 2.1
 
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/css3finalize/2.0/jquery.css3finalize.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/css3finalize/2.1/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
@@ -43,12 +43,14 @@ If you don't want the script to automatically load and parse then you could set 
 	node : 'style, link' // Elements to parse css text.
 	
 	shim : true // Enables support of rgba in ie7-8 and more, read Rules-supported section.
+	
+	callback : function() {} // Calls after each node.
 
 ## Tests
 
 This script has been tested in <code>IE 8-9</code>, <code>FF</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera</code> on windows
 
-<http://jsfiddle.net/BbsaX/>
+<http://jsfiddle.net/kuUTU/>
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain.
