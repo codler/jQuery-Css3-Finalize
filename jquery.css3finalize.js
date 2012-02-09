@@ -1,9 +1,9 @@
 /**
  * @author Han Lin Yap < http://zencodez.net/ >
- * @copyright 2011 zencodez.net
+ * @copyright 2012 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 2.1 - 2012-01-03
+ * @version 2.2 - 2012-02-09
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -597,6 +597,13 @@
 				setCssHook(supportRules[property], newProperty);
 			}
 		}
+
+		var valueRules = 'background background-image background-clip background-origin transition transition-property display'.split(' ');
+		for (property in valueRules) {
+			if ($.inArray(valueRules[property], supportRules) === -1) {
+				setCssHook(valueRules[property], valueRules[property]);
+			}
+		}
 		
 		function setCssHook(property, newProperty) {
 			newProperty = cssCamelCase(newProperty);
@@ -605,7 +612,23 @@
 					return elem.style[newProperty];
 				},
 				set: function( elem, value ) {
-					elem.style[newProperty] = value;
+					var newValue = valuesRules(property, value, newProperty);
+					try {
+						elem.style[newProperty] = (newValue) ? newValue : value;
+					} catch (e) {}
+
+					var newPropertyValue = propertyValuesRules(property, value)
+					if (newPropertyValue) {
+						$.each(newPropertyValue, function(key, value) {
+							try {
+								if (key == 'filter' && elem.style[key]) {
+									elem.style[key] += ' ' + value;
+								} else {
+									elem.style[key] = value;
+								}
+							} catch (e) {}
+						});
+					}
 				}
 			};
 		}
