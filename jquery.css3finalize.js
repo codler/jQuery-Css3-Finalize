@@ -3,7 +3,7 @@
  * @copyright 2012 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 2.2 - 2012-02-09
+ * @version 2.3 - 2012-02-14
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -60,6 +60,8 @@
 						currentPrefix = styles[i].substr(1, pos-1);
 					}
 				}
+				// For FF 3.6 and safari 4
+				supportRules.push('border-radius');
 			} else {
 				var deCamelCase = function(str) {
 					return str.replace(/[A-Z]/g, function($0) { return '-' + $0.toLowerCase() });
