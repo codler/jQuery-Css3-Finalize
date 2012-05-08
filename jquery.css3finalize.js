@@ -3,7 +3,7 @@
  * @copyright 2012 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 2.3 - 2012-02-14
+ * @version 2.4 - 2012-05-07
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -111,7 +111,7 @@
 		}
 		function cssCamelCase(css) {
 			var s = $.camelCase(css);
-			return (currentPrefix == 'ms') ? s[0].toLowerCase() + s.substr(1) : s;
+			return (currentPrefix == 'ms') ? s.charAt(0).toLowerCase() + s.substr(1) : s;
 		}
 		
 		function cleanCss(css) {
