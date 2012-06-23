@@ -3,7 +3,7 @@
  * @copyright 2012 zencodez.net
  * @license http://creativecommons.org/licenses/by-sa/3.0/
  * @package Css3-Finalize
- * @version 2.4 - 2012-05-07
+ * @version 2.5 - 2012-06-21
  * @website https://github.com/codler/jQuery-Css3-Finalize
  *
  * == Description == 
@@ -63,6 +63,7 @@
 				// For FF 3.6 and safari 4
 				supportRules.push('border-radius');
 			} else {
+				// In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
 				var deCamelCase = function(str) {
 					return str.replace(/[A-Z]/g, function($0) { return '-' + $0.toLowerCase() });
 				}
@@ -132,12 +133,12 @@
 			var match = str.match(RegExp(separator, 'g'));
 			var notmatch = str.replace(new RegExp(separator, 'g'), '[|]').split('[|]');
 			var merge = [];
-			for(i in notmatch) {
+			$.each(notmatch, function(i) {
 				merge.push(notmatch[i]);
 				if (match && match[i]) {
 					merge.push(match[i]);
 				}
-			}
+			});
 			return merge;
 		}
 		
@@ -338,17 +339,23 @@
 		
 		function propertyRules(property) {
 			if (property in rules) {
-				for (prefix in rules[property]) {
+				var returnValue;
+				$.each(rules[property], function(prefix) {
 					if ($.isFunction(rules[property][prefix])) {
 						var found = rules[property][prefix](property);
 						if (found) {
-							return found;
+							returnValue = found;
+							return false; // break out of iterator
 						}
 					} else {
 						if (currentPrefix == rules[property][prefix] || !currentPrefix) {
-							return '-' + rules[property][prefix] + '-' + property;
+							returnValue = '-' + rules[property][prefix] + '-' + property;
+							return false; // break out of iterator
 						}
 					}
+				});
+				if (returnValue !== undefined) {
+					return returnValue;
 				}
 			}
 			
@@ -360,11 +367,16 @@
 					if (cssCamelCase('-' + currentPrefix + '-' + property) in div.style) {
 						return '-' + currentPrefix + '-' + property;
 					} /*else if (property in rules) {
-						for (prefix in rules[property]) {
+						var returnValue;
+						$.each(rules[property], function(prefix) {
 							var found = rules[property][prefix](property);
 							if (found) {
-								return found;
+								returnValue = found;
+								return false; // break out of iterator
 							}
+						});
+						if (returnValue !== undefined) {
+							return returnValue;
 						}
 					}*/
 				}
@@ -388,7 +400,7 @@
 				property == 'transition-property') {
 				var keys = value.split(/\s?,\s?/);
 				var newValue = [];
-				for (var keyProperty in keys) {
+				$.each(keys, function(keyProperty) {
 					var v, t;
 					if (property == 'transition') {
 						v = keys[keyProperty].split(' ')[0];
@@ -400,7 +412,7 @@
 					} else {
 						newValue.push(keys[keyProperty]);
 					}
-				}
+				});
 				
 				return newValue.join(',');
 			}
@@ -588,24 +600,24 @@
 			} catch(e){}
 		}
 
-		for (property in rules) {
+		$.each(rules, function(property) {
 			if ((newProperty = propertyRules(property)) !== false) {
 				setCssHook(property, newProperty);
 			}
-		}
+		});
 		
-		for (property in supportRules) {
+		$.each(supportRules, function(property) {
 			if ((newProperty = propertyRules(supportRules[property])) !== false) {
 				setCssHook(supportRules[property], newProperty);
 			}
-		}
+		});
 
 		var valueRules = 'background background-image background-clip background-origin transition transition-property display'.split(' ');
-		for (property in valueRules) {
+		$.each(valueRules, function(property) {
 			if ($.inArray(valueRules[property], supportRules) === -1) {
 				setCssHook(valueRules[property], valueRules[property]);
 			}
-		}
+		});
 		
 		function setCssHook(property, newProperty) {
 			newProperty = cssCamelCase(newProperty);
