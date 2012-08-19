@@ -17,11 +17,11 @@ See more <https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported>
 
 Simply add this line of code to your site for latest version
 
-	<script src="http://static.zencodez.net/js/jquery.css3finalize-latest.min.js"></script>
+	<script src="http://static.zencodez.net/js/jquery.css3finalize-v2.x.min.js"></script>
 
-or for version 2.4
+or for version 2.5
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/2.4/jquery.css3finalize.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/2.5/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
@@ -75,8 +75,11 @@ I appreciate all feedback, thanks! If you would like to donate you can send to t
 
 ## Change log ##
 
-2012-05-07 - **v2.4**
+2012-08-19 - **v2.5**
 
+* Allow Array.prototype Augmenting ([mkantor](https://github.com/mkantor) [#16](https://github.com/codler/jQuery-Css3-Finalize/pull/16))
+
+2012-05-07 - **v2.4**
 * Replaced string indexing with call to .charAt() for IE7 compatibility. ([mkantor](https://github.com/mkantor) [#14](https://github.com/codler/jQuery-Css3-Finalize/pull/14))
 
 2012-02-14 - **v2.3**
