@@ -42,20 +42,17 @@ If you don't want the script to automatically load and parse then you could set 
 
 	node : 'style, link' // Elements to parse css text.
 	
-	shim : true // Enables support of rgba in ie7-8 and more, read Rules-supported section.
-	
 	callback : function() {} // Calls after each node.
 
 ## Tests
 
-This script has been tested in <code>IE 8-9</code>, <code>FF</code>, <code>Chrome</code>, <code>Safari 5</code>, <code>Opera</code> on windows
+This script has been tested in <code>IE 9</code>, <code>FF</code>, <code>Chrome</code>, <code>Safari</code>, <code>Opera</code> on windows
 
 <http://jsfiddle.net/kuUTU/>
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain.
 * Link-tags cannot be read on webkit and Opera on local files.
-* It seems IE8 strips out attributes on invalid value on known property in style-tag.
 
 ## cssHooks
 
