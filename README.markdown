@@ -10,7 +10,7 @@ For example the css3 attribute <code>transform</code> need to have the prefix
 <li><code>-o-</code> in Opera</li>
 </ul>
 
-In additional besides adding vendor prefix, it can also add partial support for linear-gradient in IE9.
+In additional besides adding vendor prefix, it have also partial support for linear-gradient in IE9.
 
 ## How to use
 
@@ -50,7 +50,7 @@ If you don't want the script to automatically load and parse then you could set 
 
 This script has been tested in <code>IE 9</code>, <code>FF</code>, <code>Chrome</code>, <code>Safari</code>, <code>Opera</code> on windows
 
-<http://jsfiddle.net/kuUTU/>
+<http://jsfiddle.net/UmquE/>
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain.
@@ -73,6 +73,18 @@ In normal case you would have needed to add a prefix
 I appreciate all feedback, thanks! If you would like to donate you can send to this Bitcoin address <code>1FCT3xhLBRD1MUxnS1ppcLrbH9SCeZpu6D</code>
 
 ## Change log ##
+
+2012-08-21 - **v3.0**
+
+The time has come to drop support for older browser. 
+
+Version 3 have been updated to support IE9+ and latest version of Firefox, Chrome, Safari and Opera since they have auto update.
+
+The minified version is alot smaller now.
+
+Fixes old bugs
+
+([codler](https://github.com/codler))
 
 2012-08-19 - **v2.5**
 

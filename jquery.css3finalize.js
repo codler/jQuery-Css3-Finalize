@@ -346,17 +346,32 @@
 					// Only for IE9 - border-radius + gradient bug
 					// http://stackoverflow.com/questions/4692686/ie9-border-radius-and-background-gradient-bleeding
 					if (currentPrefix == 'ms' && $.browser.version == 9) {
-						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+						// Example
+						// value = linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, .5))
+						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1'),
+							dc = [1, 1];
+						// da = "rgba(0, 0, 0, 1), rgba(0, 0, 0, .5)"
+						if (da.indexOf('rgba') === 0) {
+							da = da.split(/rgba\s?\(\s?(.*?)\s?\)/);
+							// da = ["", "0, 0, 0, 1", ", ", "0, 0, 0, .5", ""]
+							da[1] = da[1].split(/,\s?/);
+							da[3] = da[3].split(/,\s?/);
+							dc[0] = da[1].pop();
+							dc[1] = da[3].pop();
+							da = ['rgb(' + da[1].join(',') + ')', 'rgb(' + da[3].join(',') + ')'];
+						} else {
+							da = da.split(/,\s?/);
+						}
 						if (da.length == 2) {
-							var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
+							var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';stop-opacity:' + dc[0] + '"/><stop offset="100%" style="stop-color: ' + da[1] + ';stop-opacity:' + dc[1] + '"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
 							return 'url(data:image/svg+xml,' + escape(g) + ')';
 						}
 					} else if (currentPrefix == 'webkit') {
 						return '-' + currentPrefix + '-' + value;
 					}
-				} else if (value.indexOf('radial-gradient') === 0) {
+				} else if (value.indexOf('linear-gradient') > -1) {
 					if (currentPrefix == 'webkit') {
-						return '-' + currentPrefix + '-' + value;
+						return value.replace(RegExp('(\\s|:|,)(linear-gradient)\\s*\\(', 'gi'), '$1' + '-webkit-' + '$2(');
 					}
 				}
 			}
