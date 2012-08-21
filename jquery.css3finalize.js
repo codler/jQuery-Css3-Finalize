@@ -1,29 +1,19 @@
-/**
- * @author Han Lin Yap < http://zencodez.net/ >
- * @copyright 2012 zencodez.net
- * @license http://creativecommons.org/licenses/by-sa/3.0/
- * @package Css3-Finalize
- * @version 2.5 - 2012-06-21
- * @website https://github.com/codler/jQuery-Css3-Finalize
- *
- * == Description == 
- * With this plugin you can write CSS without the vendor prefixes.
- *
- * == Example Usage ==
- * $('style').cssFinalize(); // parse all style-tags
- */
+/*! CSS3 Finalize - v3.0 - 2012-08-21 - Automatically add vendor prefixes. 
+* https://github.com/codler/jQuery-Css3-Finalize
+* Copyright (c) 2012 Han Lin Yap http://yap.nu; http://creativecommons.org/licenses/by-sa/3.0/ */
 (function ($) {
 	// Prevent to read twice
-	if ($.cssFinalize){
+	if ($.cssFinalize) {
 		return;
 	}
 
 	$.cssFinalizeSetup = {
-		shim : true,
+		// Which node CSS3 Finalize should read and add vendor prefixes
 		node : 'style,link',
-		checkMedia : true,
+		// If it should add the vendor prefixes
 		append : true,
-		callback : function() {}
+		// This will be called for each nodes after vendor prefixes have been appended
+		callback : function(css) {}
 	};
 
 	$.fn.cssFinalize = function(options) {
@@ -39,9 +29,6 @@
 		var div = document.createElement('div');
 		
 		options = $.extend({}, $.cssFinalizeSetup, options);
-		
-		// Check if browser support matchMedia
-		options.checkMedia = !!(options.checkMedia && window.matchMedia);
 		
 		// PropertyRules
 		var supportRules = [];
@@ -60,8 +47,6 @@
 						currentPrefix = styles[i].substr(1, pos-1);
 					}
 				}
-				// For FF 3.6 and safari 4
-				supportRules.push('border-radius');
 			} else {
 				// In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
 				var deCamelCase = function(str) {
@@ -76,40 +61,20 @@
 				currentPrefix = 'o';
 			}
 		} else {
-			// No vendor prefix in ie 8
-			if (!options.shim) {
-				return true;
-			}
-			currentPrefix = 'ms';
+			// No vendor prefix in <ie 8
+			return true;
 		}
 
-		if (currentPrefix == 'ms') {
+		// IE9 do have transform but the code above didnt detect it so I added manually
+		if (currentPrefix == 'ms' && $.browser.version == 9) {
 			supportRules.push('transform');
 			supportRules.push('transform-origin');
-			
-		}		
-		supportRules.push('transition');
-		supportRules.push('transition-property');
-	
-		function customRule(prefix, newAttr) {
-			return function(attr) {
-				return (currentPrefix == prefix) ? newAttr : false;
-			};
+		} else if (currentPrefix == 'webkit') {
+		// IE9 dont have transition and only webkit need prefixes
+			supportRules.push('transition');
+			supportRules.push('transition-property');
 		}
 		
-
-		var rules = {};
-		// only for version 3.6 or lower
-		if (parseInt($.browser.version.substr(0,1)) < 2) {
-			rules = {
-				// border-radius
-				//'border-radius' 			: ['moz'],
-				'border-top-left-radius'	: [customRule('moz', '-moz-border-radius-topleft')],
-				'border-top-right-radius'	: [customRule('moz', '-moz-border-radius-topright')],
-				'border-bottom-right-radius': [customRule('moz', '-moz-border-radius-bottomright')],
-				'border-bottom-left-radius'	: [customRule('moz', '-moz-border-radius-bottomleft')]
-			};
-		}
 		function cssCamelCase(css) {
 			var s = $.camelCase(css);
 			return (currentPrefix == 'ms') ? s.charAt(0).toLowerCase() + s.substr(1) : s;
@@ -129,29 +94,8 @@
 			return css;
 		}
 		
-		function ieSplit(str, separator) {
-			var match = str.match(RegExp(separator, 'g'));
-			var notmatch = str.replace(new RegExp(separator, 'g'), '[|]').split('[|]');
-			var merge = [];
-			$.each(notmatch, function(i) {
-				merge.push(notmatch[i]);
-				if (match && match[i]) {
-					merge.push(match[i]);
-				}
-			});
-			return merge;
-		}
-		
 		function appendStyle(element, cssObj) {
-			
-			if (currentPrefix == 'ms' && $.browser.version <= 7) {
-				var style = $('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '/>');
-				$('head:first').append(style);
-				//element.after(style);
-				style[0].styleSheet.cssText = $.cssFinalize.cssObjToText(cssObj);
-			} else {
-				element.after('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + $.cssFinalize.cssObjToText(cssObj) + '</style>');
-			}
+			element.after('<style class="css-finalized" ' + ((element.attr('media') && element.attr('media').length > 0) ? 'media="'+element.attr('media')+'"' : '') + '>' + $.cssFinalize.cssObjToText(cssObj) + '</style>');
 		}
 		
 		function parseFinalize(element, cssText) {
@@ -183,14 +127,11 @@
 								'attributes' : findNeededAttributes(block.attributes, true)
 							});
 						
-						// @media
-						} else if (!options.checkMedia || (options.checkMedia && 
-							block.selector.indexOf('@media') === 0 && 
-							matchMedia(block.selector.substr(7)).matches)) {
-							
+						// Recursive
+						} else if ((neededAttributes = addNeededAttributes(block.attributes)) && neededAttributes.length > 0) {
 							cssFinalize.push({
 								'selector': block.selector,
-								'attributes' : addNeededAttributes(block.attributes)
+								'attributes' : neededAttributes
 							});
 						}
 					}
@@ -198,22 +139,23 @@
 				return cssFinalize;
 			}
 
+			// Mark as read
 			element.addClass('css-finalize-read');
+			
+			// Append the prefixes
 			if (cssFinalize.length > 0 && options.append) {
 				appendStyle(element, cssFinalize);
 			}
+			
+			// Callback to user
 			if ($.isFunction(options.callback)) {
 				options.callback.call(element, cssFinalize);
 			}
 		}
 		
 		function cssTextToObj(text) {
-			var block;
-			if (currentPrefix == 'ms' && $.browser.version <= 8) {
-				block = ieSplit(text, '({[^{}]*})');
-			} else {
-				block = text.split(/({[^{}]*})/);
-			}
+			var block = text.split(/({[^{}]*})/);
+			
 			// fixes recursive block at end
 			if (block[block.length-1].indexOf('}') == -1) {
 				block.pop();
@@ -268,11 +210,8 @@
 			text = text.replace( /url\(([^)]+)\)/g, function(url){
 				return url.replace( /;/g, '[cssFinalize]' );
 			});
-			if (currentPrefix == 'ms' && $.browser.version <= 8) {
-				attribute = ieSplit(text, '(:[^;]*;?)');
-			} else {
-				attribute = text.split(/(:[^;]*;?)/);
-			}
+			attribute = text.split(/(:[^;]*;?)/);
+				
 			attribute.pop();
 			var objAttribute = {};
 			$.map(attribute, function(n, i) {
@@ -338,63 +277,20 @@
 		}
 		
 		function propertyRules(property) {
-			if (property in rules) {
-				var returnValue;
-				$.each(rules[property], function(prefix) {
-					if ($.isFunction(rules[property][prefix])) {
-						var found = rules[property][prefix](property);
-						if (found) {
-							returnValue = found;
-							return false; // break out of iterator
-						}
-					} else {
-						if (currentPrefix == rules[property][prefix] || !currentPrefix) {
-							returnValue = '-' + rules[property][prefix] + '-' + property;
-							return false; // break out of iterator
-						}
-					}
-				});
-				if (returnValue !== undefined) {
-					return returnValue;
-				}
-			}
-			
 			if ($.inArray(property, supportRules) > -1) {
 				// Checks if the property exists in style
-				if (!(cssCamelCase(property) in div.style) || property == 'mask') {
+				if (!(cssCamelCase(property) in div.style)) {
 					// Checks if vendor prefix property exists in style
-					// is this needed?
 					if (cssCamelCase('-' + currentPrefix + '-' + property) in div.style) {
 						return '-' + currentPrefix + '-' + property;
-					} /*else if (property in rules) {
-						var returnValue;
-						$.each(rules[property], function(prefix) {
-							var found = rules[property][prefix](property);
-							if (found) {
-								returnValue = found;
-								return false; // break out of iterator
-							}
-						});
-						if (returnValue !== undefined) {
-							return returnValue;
-						}
-					}*/
+					}
 				}
 			}
-			
 			return false;
 		}
 		
 		function valuesRules(property, value, newProperty) {
 			newProperty = newProperty || property;
-			if (property == 'background-clip' || 
-				property == 'background-origin') {
-				// value can be padding-box/border-box/content-box
-				div.style.cssText = newProperty + ':' + value;
-				if (div.style[cssCamelCase(newProperty)] !== undefined && ''+div.style[cssCamelCase(newProperty)].indexOf(value) == -1) {
-					return value.split('-')[0];
-				}
-			}
 			
 			if (property == 'transition' ||
 				property == 'transition-property') {
@@ -417,146 +313,92 @@
 				return newValue.join(',');
 			}
 			
-			// Only apply for firefox
-			if (currentPrefix == 'moz') {
+			// Only apply for webkit
+			if (currentPrefix == 'webkit') {
 				// calc
 				if (value.indexOf('calc') === 0) {
-					return '-moz-' + value;
+					return '-webkit-' + value;
 				}
-				// element
+			}
+			
+			// Only apply for firefox
+			if (currentPrefix == 'moz') {
+				// element - CSS4
 				if (value.indexOf('element') === 0) {
 					return '-moz-' + value;
 				}
 			}
 			
 			if (property == 'display') {
-				if (value.indexOf('box') === 0 ||
-					value.indexOf('flexbox') === 0 ||
-					value.indexOf('inline-flexbox') === 0) {
+				if (value.indexOf('flexbox') === 0 ||
+					value.indexOf('inline-flexbox') === 0 ||
+					// Editor’s Draft, 13th August 2012 - http://dev.w3.org/csswg/css3-flexbox/
+					value.indexOf('flex') === 0 ||
+					value.indexOf('inline-flex') === 0
+					) {
 					return '-' + currentPrefix + '-' + value;
 				}
 			}
 			
-			var da;
-			// // TODO : more advanced background-image: linear-gradient()
 			if (property == 'background' ||
 				property == 'background-image') {
 				if (value.indexOf('linear-gradient') === 0) {
-					if (currentPrefix == 'webkit') {
-						da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
-						if (da.length == 2) {
-							return '-webkit-gradient(linear, 0% 0%, 0% 100%, from(' + da[0] + '), to(' + da[1] + '))';
-						}
-						var middle = "";
-						if (da.length >= 3) {
-							var position = "0% 0%, 0% 100%";
-							if(da[0] === "left"){
-								position = "0% 0%, 100% 0%";
-							}
-							if(da.length > 3){
-								var middleArray = da.slice(2, da.length -1);
-								$.each(middleArray, function(i, item){
-									var split = item.split(/ /);
-									if(split.length === 2){
-										middle += 'color-stop('+split[1]+', '+split[0]+'),';
-									}
-								});
-							}
-							return '-webkit-gradient(linear, '+position+', from(' + da[1] + '), '+middle+' to(' + da[da.length -1 ] + '))';
-						}
-					} 
 					// Only for IE9 - border-radius + gradient bug
 					// http://stackoverflow.com/questions/4692686/ie9-border-radius-and-background-gradient-bleeding
-					 else if (currentPrefix == 'ms' && $.browser.version == 9) {
-						da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
+					if (currentPrefix == 'ms' && $.browser.version == 9) {
+						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
 						if (da.length == 2) {
 							var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';"/><stop offset="100%" style="stop-color: ' + da[1] + ';"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
 							return 'url(data:image/svg+xml,' + escape(g) + ')';
 						}
-					} 
-					return '-' + currentPrefix + '-' + value;
+					} else if (currentPrefix == 'webkit') {
+						return '-' + currentPrefix + '-' + value;
+					}
 				} else if (value.indexOf('radial-gradient') === 0) {
-					return '-' + currentPrefix + '-' + value;
+					if (currentPrefix == 'webkit') {
+						return '-' + currentPrefix + '-' + value;
+					}
 				}
 			}
 			
 			return false;
 		}
 		
+		// return { property : value }
 		function propertyValuesRules(property, value) {
-			if (options.shim) {
-				// Only apply for ie
-				if (currentPrefix == 'ms') {
-					// only for version 8 and lower
-					if ($.browser.version <= 8) {
-						// Opacity
-						if (property.toUpperCase() == 'OPACITY' && !$.support.opacity && !isNaN(value)) {
-							return {
-								'filter' : 'alpha(opacity=' + value * 100 + ')',
-								'zoom' : 1
-							};
-						}
-
-						// background-color alpha color
-						if (property.toUpperCase() === 'BACKGROUND-COLOR' && value.indexOf('rgba') === 0) {
-							value = ac2ah(value);
-							return {
-								// Transparency + click bug
-								// http://haslayout.net/css/No-Transparency-Click-Bug 
-								'background' : 'url(#)',
-								'filter' : "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + value + "',EndColorStr='" + value + "')"
-							};
-						}
-						// background-image gradient
-						if ((property.toUpperCase() == 'BACKGROUND' || property.toUpperCase() === 'BACKGROUND-IMAGE') && value.indexOf('linear-gradient') === 0) {
-							var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
-							if (da.length == 2) {
-								return {
-									'background' : 'url(#)',
-									'filter' : "progid:DXImageTransform.Microsoft.gradient(startColorStr='" + da[0] + "',EndColorStr='" + da[1] + "')"
-								};
-							}
-						}
-					}
-				}
-			}
+			
 			return false;
 		}
 		
 		function selectorRules(selector) {
-			// Only apply for firefox
-			if (currentPrefix == 'moz') {
-				// ::selection
+			switch (currentPrefix) {
+				case 'moz' :
+					// ::selection
 					selector = selector.replace('::selection', '::-moz-selection');
-				
-				// ::placeholder
-				selector = selector.replace('::placeholder', ':-moz-placeholder');
-				
-				// @keyframes
-				selector = selector.replace('@keyframes', '@-moz-keyframes');
-			} else if(currentPrefix == 'webkit') {
-				// @keyframes
-				selector = selector.replace('@keyframes', '@-webkit-keyframes');
-				
-				// ::placeholder
-				selector = selector.replace('::placeholder', '::-webkit-input-placeholder');
+					
+					// :input-placeholder
+					selector = selector.replace(':input-placeholder', ':-moz-placeholder');
+				break;
+				case 'webkit' :
+					// @keyframes
+					selector = selector.replace('@keyframes', '@-webkit-keyframes');
+					
+					// :input-placeholder
+					selector = selector.replace(':input-placeholder', '::-webkit-input-placeholder');
+				break;
+				case 'ms' :
+					// :input-placeholder
+					selector = selector.replace(':input-placeholder', ':-ms-input-placeholder');
+					
+					// @viewport
+					selector = selector.replace('@viewport', '@-ms-viewport');
+				break;
+				case 'o' :
+					// @viewport
+					selector = selector.replace('@viewport', '@-o-viewport');
+				break;
 			}
 			return selector;
-		}
-		
-		/* Alpha + Color channels to Alpha + Hexadecimals */
-		function ac2ah(c) {
-			var da = c.replace(/^rgba\s?\(\s?(.*?)\s?\)$/, '$1').split(/,\s?/);
-			var ha = [];
-			var h;
-			for (var i=0; i < da.length; i++) {
-				if (i==3){ da[i] *= 255; } // alpha bit of the rgba!
-				h = '0' + parseInt(da[i], 10).toString(16);
-				ha.push( h.substr(h.length-2,2).toUpperCase() );
-			}
-
-			ha.splice(0, 0, ha.pop());
-			return '#' + ha.join('');
 		}
 		
 		if (!(options.node instanceof jQuery)) {
@@ -570,9 +412,7 @@
 			}
 			// link-tags
 			if (this.tagName == 'LINK' && $this.attr('rel') == 'stylesheet') {
-				if (!options.checkMedia || ($this.attr('media') && $this.attr('media').length > 0 && matchMedia($this.attr('media')).matches) || !$this.attr('media')) {
-					load(this.href, $this);
-				}
+				load(this.href, $this);
 			} else if(this.tagName == 'TEXTAREA') {
 				parseFinalize($this, $this.val());
 			} else {
@@ -600,19 +440,7 @@
 			} catch(e){}
 		}
 
-		$.each(rules, function(property) {
-			if ((newProperty = propertyRules(property)) !== false) {
-				setCssHook(property, newProperty);
-			}
-		});
-		
-		$.each(supportRules, function(property) {
-			if ((newProperty = propertyRules(supportRules[property])) !== false) {
-				setCssHook(supportRules[property], newProperty);
-			}
-		});
-
-		var valueRules = 'background background-image background-clip background-origin transition transition-property display'.split(' ');
+		var valueRules = 'background background-image transition transition-property display'.split(' ');
 		$.each(valueRules, function(property) {
 			if ($.inArray(valueRules[property], supportRules) === -1) {
 				setCssHook(valueRules[property], valueRules[property]);
@@ -649,20 +477,22 @@
 		
 	};
 	
-	$.cssFinalize.cssObjToText = function(obj, prettyfy) {
+	$.cssFinalize.cssObjToText = function(obj, prettyfy, indentLevel) {
 		var text = '';
 		prettyfy = prettyfy || false;
+		indentLevel = indentLevel || 1; 
 		$.each(obj, function(i, block) {
+			if (prettyfy) text += Array(indentLevel).join('  ');
 			text += block.selector + '{';
 			if ($.isArray(block.attributes)) {
-				if (prettyfy) text += '\r\n';
-				text += $.cssFinalize.cssObjToText(block.attributes, prettyfy);
+				if (prettyfy) text += '\r\n' + Array(indentLevel).join('  ');
+				text += $.cssFinalize.cssObjToText(block.attributes, prettyfy, indentLevel+1);
 			} else {
 				$.each(block.attributes, function(property, value) {
-					if (prettyfy) text += '\r\n  ';
+					if (prettyfy) text += '\r\n' + Array(indentLevel + 1).join('  ');
 					text += property + ':' + value + ';';
 				});
-				if (prettyfy) text += '\r\n';
+				if (prettyfy) text += '\r\n' + Array(indentLevel).join('  ');
 			}
 			text += '}';
 			if (prettyfy) text += '\r\n';
@@ -677,35 +507,3 @@
 		}
 	});
 })(jQuery);
-
-/*
-* matchMedia() polyfill - test whether a CSS media type or media query applies
-* authors: Scott Jehl, Paul Irish, Nicholas Zakas
-* Copyright (c) 2011 Scott, Paul and Nicholas.
-* Dual MIT/BSD license
-*/
-window.matchMedia = window.matchMedia || (function(doc, undefined){
-  
-  var bool,
-      docElem  = doc.documentElement,
-      refNode  = docElem.firstElementChild || docElem.firstChild,
-      // fakeBody required for <FF4 when executed in <head>
-      fakeBody = doc.createElement('body'),
-      div      = doc.createElement('div');
-  
-  div.id = 'mq-test-1';
-  div.style.cssText = "position:absolute;top:-100em";
-  fakeBody.appendChild(div);
-  
-  return function(q){
-    
-    div.innerHTML = '&shy;<style media="'+q+'"> #mq-test-1 { width: 42px; }</style>';
-    
-    docElem.insertBefore(fakeBody, refNode);
-    bool = div.offsetWidth == 42;  
-    docElem.removeChild(fakeBody);
-    
-    return { matches: bool, media: q };
-  };
-  
-})(document);

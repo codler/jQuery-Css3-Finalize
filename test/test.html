@@ -13,124 +13,8 @@
 <!-- javascript -->
 <script src="libs/jquery-1.8.0.min.js"></script>
 
-<style data="semi-colon">
-/* Test with no semi-colon at end */ /* Parsing test */
-.box_round {
-	border-radius: 12px
-}
-.box_round2 {
-	border: 12px;
-	border-radius: 12px
-}
-</style>
-
-<style data="import">
-/* Test import */ /* Parsing test */
-@import url("test.css");
-@import url("landscape.css") all and
-	(orientation:landscape);
-</style>
-
-<style data="recursive-blocks">
-/* Test recursive blocks */ /* Parsing test */
-@keyframes bounce {
-	from {
-		left: 0px;
-	}
-	to {
-		left: 200px;
-	}
-}
-</style>
-<style>
-
-@font-face {
-	font-family: 'MisoBold';
-	src: url('css/fonts/miso-bold-webfont.eot');
-	src: local('☺'), url('css/fonts/miso-bold-webfont.woff') format('woff'), url('css/fonts/miso-bold-webfont.ttf') format('truetype'), url('css/fonts/miso-bold-webfont.svg#webfontWPKh07R7') format('svg');
-	font-weight: normal;
-	font-style: normal;
-}
-
-
-.visuallyhidden { position: absolute !important;
-  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-  clip: rect(1px, 1px, 1px, 1px) ;
-  
-  transition:transform 0.5s ease-in-out, color 1.5s ease;  
-  }
-
-/* Hide visually and from screenreaders, but maintain layout */
-.invisible { visibility: hidden; 
-  transition-property: transform;  
-}
-/* >> The Magnificent CLEARFIX: Updated to prevent margin-collapsing on child elements << j.mp/bestclearfix */
-.clearfix:before, .clearfix:after {
-	transition-property: transform , animation; 
-
-  content: "\0020"; display: block; height: 0; visibility: hidden;
-}
-ickbar {}
-.clearfix:after { clear: both; }
-.clearfix { zoom: 1; }
-
-@import url("landscape.css") all and
-4	(orientation:landscape);
-
-
-/* 
- * print styles
- * inlined to avoid required HTTP connection www.phpied.com/delay-loading-your-print-css/ 
- */
-@media print {
-  * { background: transparent !important; color: #444 !important; text-shadow: none !important; }
-  a, a:visited { color: #444 !important; text-decoration: underline; }
-  a[href]:after { content: " (" attr(href) ")"; }
-  abbr[title]:after { content: " (" attr(title) ")"; }
-  .ir a:after { content: ""; }  /* Don't show links for images */
-  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
-  thead { display: table-header-group; } /* css-discuss.incutio.com/wiki/Printing_Tables */ 
-  tr, img { page-break-inside: avoid; }
-  @page { margin: 0.5cm; }
-  p, h2, h3 { orphans: 3; widows: 3; }
-  h2, h3{ page-break-after: avoid; }
-}
- @keyframes 'bounce' {
-
-    from {
-      top: 100px;
-      animation-timing-function: ease-out;
-    }
-
-    25% {
-      top: 50px;
-      animation-timing-function: ease-in;
-    }
-
-    50% {
-      top: 100px;
-      animation-timing-function: ease-out;
-    }
-
-    75% {
-      top: 75px;
-      animation-timing-function: ease-in;
-    }
-
-    too {
-      top: 100px;
-    }
-
-  }
-  @import url("screen.css");
-@import url("antiscreen.css") handheld;
-@import url("antiscreen.css") only screen and
-(max-device-width:480px);
-/* */
-</style>
-
 <script>
-/*! CSS3 Finalize - v3.0 - 2012-08-20 - Automatically add vendor prefixes. 
+/*! CSS3 Finalize - v3.0 - 2012-08-21 - Automatically add vendor prefixes. 
 * https://github.com/codler/jQuery-Css3-Finalize
 * Copyright (c) 2012 Han Lin Yap http://yap.nu; http://creativecommons.org/licenses/by-sa/3.0/ */
 (function ($) {
@@ -201,8 +85,8 @@ ickbar {}
 		if (currentPrefix == 'ms' && $.browser.version == 9) {
 			supportRules.push('transform');
 			supportRules.push('transform-origin');
-		} else {
-		// IE9 dont have transition and IE10 dont need prefixes
+		} else if (currentPrefix == 'webkit') {
+		// IE9 dont have transition and only webkit need prefixes
 			supportRules.push('transition');
 			supportRules.push('transition-property');
 		}
@@ -418,7 +302,6 @@ ickbar {}
 					}
 				}
 			}
-			
 			return false;
 		}
 		
@@ -504,22 +387,32 @@ ickbar {}
 		}
 		
 		function selectorRules(selector) {
-			// Only apply for firefox
-			if (currentPrefix == 'moz') {
-				// ::selection
+			switch (currentPrefix) {
+				case 'moz' :
+					// ::selection
 					selector = selector.replace('::selection', '::-moz-selection');
-				
-				// :input-placeholder
-				selector = selector.replace(':input-placeholder', ':-moz-placeholder');
-			} else if(currentPrefix == 'webkit') {
-				// @keyframes
-				selector = selector.replace('@keyframes', '@-webkit-keyframes');
-				
-				// :input-placeholder
-				selector = selector.replace(':input-placeholder', '::-webkit-input-placeholder');
-			} else if(currentPrefix == 'ms') {
-				// :input-placeholder
-				selector = selector.replace(':input-placeholder', ':-ms-input-placeholder');
+					
+					// :input-placeholder
+					selector = selector.replace(':input-placeholder', ':-moz-placeholder');
+				break;
+				case 'webkit' :
+					// @keyframes
+					selector = selector.replace('@keyframes', '@-webkit-keyframes');
+					
+					// :input-placeholder
+					selector = selector.replace(':input-placeholder', '::-webkit-input-placeholder');
+				break;
+				case 'ms' :
+					// :input-placeholder
+					selector = selector.replace(':input-placeholder', ':-ms-input-placeholder');
+					
+					// @viewport
+					selector = selector.replace('@viewport', '@-ms-viewport');
+				break;
+				case 'o' :
+					// @viewport
+					selector = selector.replace('@viewport', '@-o-viewport');
+				break;
 			}
 			return selector;
 		}
@@ -657,6 +550,12 @@ jQuery(function($) {
 	
 	}).trigger('keyup');
 
+	$('.test').cssFinalize({
+		'append' : false,
+		'callback': function(css) {
+			$('<textarea>').insertAfter(this).val($.cssFinalize.cssObjToText(css, true));
+		}
+	}); 
 });
 
 
@@ -671,6 +570,10 @@ body {
 	background-image: url("bg.jpg");
 }
 textarea {
+	width: 300px;
+	height: 100px;
+}
+.live-test {
 	width: 300px;
 	height: 300px;
 }
@@ -707,53 +610,23 @@ textarea {
 </head>
 <body>
 <p>Test your css on the left side, and nessesary prefixes will output on the right side.</p>
-<textarea id="test">
-/* Test comment */ /* Parsing test */
-/* /* 
-*/
-/* */
-/**/
-
-/* Test empty blocks */ /* Parsing test */
-#empty {}
-#empty2 { }
-#empty3{}
-
-/* Test colon in values */ /* Parsing test */
-.box_gradient {
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999'); /* IE6,IE7 */
-	background-color: #444444;
-	background-image: -moz-linear-gradient(top, #444444, #999999); /* FF3.6 */
-	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #444444),color-stop(1, #999999)); /* Saf4+, Chrome */
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999')"; /* IE8 */
-}
-
+<textarea id="test" class="live-test">
 @keyframes scale {
   from { transform: scale(1) }
   to { transform: scale(3) }	
 }
-vds  { }
 .test:input-placeholder {
 content: "transform";
   border-radius: 1px solid #000;
-  display: box;
+  display: flex;
   background-image: linear-gradient(#000000,#ffffff);
   transform: hej;
-box-shadow: 0px 0px 5px red; 
-content: "\0020" ;
-transition: all 1s;
+  content: "\0020" ;
+  transition: all 1s !important;
 }
 @media all and (orientation:portrait) {
-  /* Style adjustments for portrait mode goes here */
-
-/* Hack retained to preserve specificity */
-body { transform: eh; }
-} 
-
-* { transform: transparent !important; color: black !important; text-shadow: none !important; filter:none !important;
-  -ms-filter: none !important;
-
- }
+  body { transform: eh; }
+}
 
 a[href]:after { 
 transform:g;
@@ -764,9 +637,11 @@ transform:d;
 @page { margin: 0.5cm; }
 .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; } 
 </textarea>
-<textarea id="output"></textarea>
+<textarea id="output" class="live-test"></textarea>
 
 <hr />
+
+<p>Test from style-tag</p>
 
 <div id="a" class="style box round">Border radius (style-tag)</div>
 <div class="style box round-top-left">Border top left radius (style-tag)</div>
@@ -778,6 +653,8 @@ transform:d;
 
 <hr />
 
+<p>Test from link-tag</p>
+
 <div class="link box round">Border radius (link-tag)</div>
 <div class="link box round-top-left">Border top left radius (link-tag)</div>
 <div class="link box shadow">Box shadow (link-tag)</div>
@@ -785,5 +662,114 @@ transform:d;
 <div class="link box transition">Transition:hover (link-tag)</div>
 <div class="link box jquery-transform">Jquery CssHooks (link-tag)</div>
 <div class="link box gradient">Gradient (link-tag)</div>
+
+<hr />
+
+<p>Test parse</p>
+<textarea class="test">
+/* Test comment */
+/* /* 
+*/
+/* */
+/**/
+</textarea>
+<br />
+<textarea class="test">
+/* Test empty blocks */
+#empty {}
+#empty2 { }
+#empty3{}
+</textarea>
+<br />
+<textarea class="test">
+/* Test colon in values */
+.box_gradient {
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999'); /* IE6,IE7 */
+	background-color: #444444;
+	background-image: -moz-linear-gradient(top, #444444, #999999); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #444444),color-stop(1, #999999)); /* Saf4+, Chrome */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#444444', EndColorStr='#999999')"; /* IE8 */
+}
+</textarea>
+<br />
+<textarea class="test">
+/* Test with no semi-colon at end */
+.box_round {
+	border-radius: 12px
+}
+.box_round2 {
+	border: 12px;
+	border-radius: 12px
+}
+</textarea>
+<br />
+<textarea class="test">
+/* Test import */
+@import url("test.css") all and
+	(orientation:landscape);
+</textarea>
+<br />
+<textarea class="test">
+/* Test recursive blocks */
+@keyframes bounce {
+	from {
+		left: 0px;
+	}
+	to {
+		left: 200px;
+	}
+}
+</textarea>
+<br />
+<textarea class="test">
+@font-face {
+	font-family: 'MisoBold';
+	src: url('css/fonts/miso-bold-webfont.eot');
+	src: local('☺'), url('css/fonts/miso-bold-webfont.woff') format('woff'), url('css/fonts/miso-bold-webfont.ttf') format('truetype'), url('css/fonts/miso-bold-webfont.svg#webfontWPKh07R7') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+.visuallyhidden { position: absolute !important;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px) ;
+  
+  transition:transform 0.5s ease-in-out, color 1.5s ease;  
+  }
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible { visibility: hidden; 
+  transition-property: transform;  
+}
+/* >> The Magnificent CLEARFIX: Updated to prevent margin-collapsing on child elements << j.mp/bestclearfix */
+.clearfix:before, .clearfix:after {
+	transition-property: transform , animation; 
+
+  content: "\0020"; display: block; height: 0; visibility: hidden;
+}
+.clearfix:after { clear: both; }
+
+
+
+/* 
+ * print styles
+ * inlined to avoid required HTTP connection www.phpied.com/delay-loading-your-print-css/ 
+ */
+@media print {
+  * { background: transparent !important; color: #444 !important; text-shadow: none !important; }
+  a, a:visited { color: #444 !important; text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after { content: ""; }  /* Don't show links for images */
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; } /* css-discuss.incutio.com/wiki/Printing_Tables */ 
+  tr, img { page-break-inside: avoid; }
+  @page { margin: 0.5cm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3{ page-break-after: avoid; }
+}
+</textarea>
+
 </body>
 </html>

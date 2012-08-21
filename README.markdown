@@ -10,18 +10,17 @@ For example the css3 attribute <code>transform</code> need to have the prefix
 <li><code>-o-</code> in Opera</li>
 </ul>
 
-In additional besides adding vendor prefix, it can also do some more. Eg. it add support for alpha color (rgba) in background-color in IE7-8.
-See more <https://github.com/codler/jQuery-Css3-Finalize/wiki/Rules-supported>
+In additional besides adding vendor prefix, it can also add partial support for linear-gradient in IE9.
 
 ## How to use
 
 Simply add this line of code to your site for latest version
 
-	<script src="http://static.zencodez.net/js/jquery.css3finalize-v2.x.min.js"></script>
+	<script src="http://static.zencodez.net/js/jquery.css3finalize-v3.x.min.js"></script>
 
-or for version 2.5
+or for version 3.0
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/2.5/jquery.css3finalize.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/3.0/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
@@ -40,9 +39,12 @@ If you don't want the script to automatically load and parse then you could set 
 
 ## Options
 
-	node : 'style, link' // Elements to parse css text.
-	
-	callback : function() {} // Calls after each node.
+	// Which node CSS3 Finalize should read and add vendor prefixes
+	node : 'style,link',
+	// If it should add the vendor prefixes
+	append : true,
+	// This will be called for each nodes after vendor prefixes have been appended
+	callback : function(css) {}
 
 ## Tests
 
@@ -56,15 +58,15 @@ This script has been tested in <code>IE 9</code>, <code>FF</code>, <code>Chrome<
 
 ## cssHooks
 
-You can leave out the prefix when setting a style in Jquery css method.
+You can leave out the prefix when setting a style in jQuery css method.
 
 Example
 
-<code>$('a').css({'border' : '1px solid #000000', 'column-width' : 10});</code>
+<code>$('a').css({'width' : 'calc(100% - 80px)', 'column-width' : 10});</code>
 
 In normal case you would have needed to add a prefix
 
-<code>$('a').css({'border' : '1px solid #000000', '-moz-column-width' : 10});</code>
+<code>$('a').css({'width' : '-webkit-calc(100% - 80px)', '-moz-column-width' : 10});</code>
 
 ## Feedback
 
