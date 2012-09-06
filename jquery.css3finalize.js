@@ -1,4 +1,4 @@
-/*! CSS3 Finalize - v3.0 - 2012-08-21 - Automatically add vendor prefixes. 
+/*! CSS3 Finalize - v3.1 - 2012-09-06 - Automatically add vendor prefixes. 
 * https://github.com/codler/jQuery-Css3-Finalize
 * Copyright (c) 2012 Han Lin Yap http://yap.nu; http://creativecommons.org/licenses/by-sa/3.0/ */
 (function ($) {
@@ -455,7 +455,7 @@
 			} catch(e){}
 		}
 
-		var valueRules = 'background background-image transition transition-property display'.split(' ');
+		var valueRules = 'background background-image transition transition-property'.split(' ');
 		$.each(valueRules, function(property) {
 			if ($.inArray(valueRules[property], supportRules) === -1) {
 				setCssHook(valueRules[property], valueRules[property]);

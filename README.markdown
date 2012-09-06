@@ -20,7 +20,7 @@ Simply add this line of code to your site for latest version
 
 or for version 3.0
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/3.0/jquery.css3finalize.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/3.1/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
@@ -73,6 +73,10 @@ In normal case you would have needed to add a prefix
 I appreciate all feedback, thanks! If you would like to donate you can send to this Bitcoin address <code>1FCT3xhLBRD1MUxnS1ppcLrbH9SCeZpu6D</code>
 
 ## Change log ##
+
+2012-09-06 - **v3.1**
+
+* Remove prefixing flex in cssHooks. ([codler](https://github.com/codler) [#18](https://github.com/codler/jQuery-Css3-Finalize/issues/18))
 
 2012-08-21 - **v3.0**
 
