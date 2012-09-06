@@ -18,7 +18,7 @@ Simply add this line of code to your site for latest version
 
 	<script src="http://static.zencodez.net/js/jquery.css3finalize-v3.x.min.js"></script>
 
-or for version 3.0
+or for version 3.1
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/3.1/jquery.css3finalize.min.js"></script>
 
