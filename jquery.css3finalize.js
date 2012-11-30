@@ -1,4 +1,4 @@
-/*! CSS3 Finalize - v3.1 - 2012-09-06 - Automatically add vendor prefixes. 
+/*! CSS3 Finalize - v3.2 - 2012-11-30 - Automatically add vendor prefixes. 
 * https://github.com/codler/jQuery-Css3-Finalize
 * Copyright (c) 2012 Han Lin Yap http://yap.nu; http://creativecommons.org/licenses/by-sa/3.0/ */
 (function ($) {
@@ -30,6 +30,10 @@
 		
 		options = $.extend({}, $.cssFinalizeSetup, options);
 		
+		var deCamelCase = function(str) {
+			return str.replace(/[A-Z]/g, function($0) { return '-' + $0.toLowerCase() });
+		}
+		
 		// PropertyRules
 		var supportRules = [];
 
@@ -49,9 +53,6 @@
 				}
 			} else {
 				// In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
-				var deCamelCase = function(str) {
-					return str.replace(/[A-Z]/g, function($0) { return '-' + $0.toLowerCase() });
-				}
 				for(var i in styles) {
 					var style = deCamelCase(i);
 					if (style.indexOf('-o-') === 0) {
@@ -71,8 +72,21 @@
 			supportRules.push('transform-origin');
 		} else if (currentPrefix == 'webkit') {
 		// IE9 dont have transition and only webkit need prefixes
+		/*
+			supportRules.push('animation');
+			supportRules.push('marquee');
+			supportRules.push('text-stroke');
 			supportRules.push('transition');
 			supportRules.push('transition-property');
+			*/
+			for (var i in div.style) {
+				if (i.indexOf('webkit') === 0) {
+					var style = deCamelCase(i);
+					if ($.inArray(style.substr(7), supportRules) === -1) {
+						supportRules.push(style.substr(7));
+					}
+				}
+			}
 		}
 		
 		function cssCamelCase(css) {
@@ -330,7 +344,20 @@
 			}
 			
 			if (property == 'display') {
-				if (value.indexOf('flexbox') === 0 ||
+				// flex
+				if (currentPrefix == 'ms' && $.browser.version == 10) {
+					if (value.indexOf('flex') === 0) {
+						return '-ms-flexbox';
+					}
+					if (value.indexOf('inline-flex') === 0) {
+						return '-ms-inline-flexbox';
+					}
+				}
+
+				if (value.indexOf('grid') === 0 ||
+					value.indexOf('inline-grid') === 0 ||
+					// Old
+					value.indexOf('flexbox') === 0 ||
 					value.indexOf('inline-flexbox') === 0 ||
 					// Editor’s Draft, 13th August 2012 - http://dev.w3.org/csswg/css3-flexbox/
 					value.indexOf('flex') === 0 ||
@@ -466,7 +493,9 @@
 			newProperty = cssCamelCase(newProperty);
 			$.cssHooks[cssCamelCase(property)] = {
 				get: function( elem, computed, extra ) {
-					return elem.style[newProperty];
+					if (!computed) {
+						return elem.style[newProperty];
+					}
 				},
 				set: function( elem, value ) {
 					var newValue = valuesRules(property, value, newProperty);

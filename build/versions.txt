@@ -1,5 +1,5 @@
-js:jquery:1.8.0:jquery-1.8.0.min.js
-js:css3finalize:2.5:jquery.css3finalize-v2.x.min.js
+js:jquery:1.8.3:jquery-1.8.3.min.js
+js:css3finalize:3.1:jquery.css3finalize-v3.x.min.js
 rar:kirby:0.7:kirby.rar
 php:smush:1.0:smush.php
 php:fetch_url:1.1:fetch_url.class.php
