@@ -18,9 +18,9 @@ Simply add this line of code to your site for latest version
 
 	<script src="http://static.zencodez.net/js/jquery.css3finalize-v3.x.min.js"></script>
 
-or for version 3.1
+or for version 3.2
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/3.1/jquery.css3finalize.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/3.2/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
@@ -73,6 +73,11 @@ In normal case you would have needed to add a prefix
 I appreciate all feedback, thanks! If you would like to donate you can send to this Bitcoin address <code>1FCT3xhLBRD1MUxnS1ppcLrbH9SCeZpu6D</code>
 
 ## Change log ##
+
+2012-11-30 - **v3.2**
+
+* Fix detect shorthand properties in webkit. ([codler](https://github.com/codler) [#20](https://github.com/codler/jQuery-Css3-Finalize/issues/20))
+* Fix flex for IE10 ([codler](https://github.com/codler))
 
 2012-09-06 - **v3.1**
 
