@@ -18,9 +18,9 @@ Simply add this line of code to your site for latest version
 
 	<script src="http://static.zencodez.net/js/jquery.css3finalize-v3.x.min.js"></script>
 
-or for version 3.2
+or for version 3.3
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/3.2/jquery.css3finalize.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/3.3/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
