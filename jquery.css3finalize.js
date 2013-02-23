@@ -1,6 +1,6 @@
-/*! CSS3 Finalize - v3.2 - 2012-11-30 - Automatically add vendor prefixes. 
+/*! CSS3 Finalize - v3.3 - 2013-02-23 - Automatically add vendor prefixes. 
 * https://github.com/codler/jQuery-Css3-Finalize
-* Copyright (c) 2012 Han Lin Yap http://yap.nu; http://creativecommons.org/licenses/by-sa/3.0/ */
+* Copyright (c) 2013 Han Lin Yap http://yap.nu; http://creativecommons.org/licenses/by-sa/3.0/ */
 (function ($) {
 	// Prevent to read twice
 	if ($.cssFinalize) {
@@ -27,7 +27,8 @@
 	
 	$.cssFinalize = function(options) {
 		var div = document.createElement('div');
-		
+		div.style.cssText = 'background-image:linear-gradient(#9f9, white);';
+
 		options = $.extend({}, $.cssFinalizeSetup, options);
 		
 		var deCamelCase = function(str) {
@@ -67,7 +68,7 @@
 		}
 
 		// IE9 do have transform but the code above didnt detect it so I added manually
-		if (currentPrefix == 'ms' && $.browser.version == 9) {
+		if (currentPrefix == 'ms' && supportRules.indexOf('transform') === -1) {
 			supportRules.push('transform');
 			supportRules.push('transform-origin');
 		} else if (currentPrefix == 'webkit') {
@@ -344,8 +345,8 @@
 			}
 			
 			if (property == 'display') {
-				// flex
-				if (currentPrefix == 'ms' && $.browser.version == 10) {
+				// flex - Convert newer standard to IE compability
+				if (currentPrefix == 'ms' && 'msFlexWrap' in div.style) {
 					if (value.indexOf('flex') === 0) {
 						return '-ms-flexbox';
 					}
@@ -356,10 +357,10 @@
 
 				if (value.indexOf('grid') === 0 ||
 					value.indexOf('inline-grid') === 0 ||
-					// Old
+					// Old - IE10 - http://www.w3.org/TR/2012/WD-css3-flexbox-20120322/
 					value.indexOf('flexbox') === 0 ||
 					value.indexOf('inline-flexbox') === 0 ||
-					// Editor’s Draft, 13th August 2012 - http://dev.w3.org/csswg/css3-flexbox/
+					// W3C Candidate Recommendation, 18 September 2012 - http://www.w3.org/TR/2012/CR-css3-flexbox-20120918/
 					value.indexOf('flex') === 0 ||
 					value.indexOf('inline-flex') === 0
 					) {
@@ -372,7 +373,7 @@
 				if (value.indexOf('linear-gradient') === 0) {
 					// Only for IE9 - border-radius + gradient bug
 					// http://stackoverflow.com/questions/4692686/ie9-border-radius-and-background-gradient-bleeding
-					if (currentPrefix == 'ms' && $.browser.version == 9) {
+					if (currentPrefix == 'ms' && div.style.backgroundImage.indexOf('gradient') === -1) {
 						// Example
 						// value = linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, .5))
 						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1'),

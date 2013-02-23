@@ -48,7 +48,7 @@ If you don't want the script to automatically load and parse then you could set 
 
 ## Tests
 
-This script has been tested in <code>IE 9</code>, <code>FF</code>, <code>Chrome</code>, <code>Safari</code>, <code>Opera</code> on windows
+This script has been tested in <code>IE 9-10</code>, <code>FF</code>, <code>Webkit</code>
 
 <http://jsfiddle.net/UmquE/>
 
@@ -73,6 +73,10 @@ In normal case you would have needed to add a prefix
 I appreciate all feedback, thanks! If you would like to donate you can send to this Bitcoin address <code>1FCT3xhLBRD1MUxnS1ppcLrbH9SCeZpu6D</code>
 
 ## Change log ##
+
+2013-02-23 - **v3.3**
+
+* Fix for jQuery 1.9 ([codler](https://github.com/codler) [#22](https://github.com/codler/jQuery-Css3-Finalize/issues/22))
 
 2012-11-30 - **v3.2**
 
