@@ -1,4 +1,4 @@
-/*! CSS3 Finalize - v3.3 - 2013-02-23 - Automatically add vendor prefixes. 
+/*! CSS3 Finalize - v3.4.0 - 2013-03-29 - Automatically add vendor prefixes. 
 * https://github.com/codler/jQuery-Css3-Finalize
 * Copyright (c) 2013 Han Lin Yap http://yap.nu; http://creativecommons.org/licenses/by-sa/3.0/ */
 (function ($) {
@@ -478,7 +478,9 @@
 			}
 			try {
 				$('<div />').load(url, function(data) {
-					parseFinalize(element, data);
+					if (data) {
+						parseFinalize(element, data);
+					}
 				});
 			} catch(e){}
 		}
