@@ -74,7 +74,7 @@ I appreciate all feedback, thanks! If you would like to donate you can send to t
 
 ## Change log ##
 
-2013-02-23 - **v3.4.0**
+2013-03-29 - **v3.4.0**
 
 * Fix for jQuery 2.0b2 ([codler](https://github.com/codler))
 
