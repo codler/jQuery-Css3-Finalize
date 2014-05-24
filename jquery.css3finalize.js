@@ -1,7 +1,9 @@
-/*! CSS3 Finalize - v3.4.0 - 2013-03-29 - Automatically add vendor prefixes. 
+/*! CSS3 Finalize - v4.0.0 - 2014-05-24 - Automatically add vendor prefixes. 
 * https://github.com/codler/jQuery-Css3-Finalize
-* Copyright (c) 2013 Han Lin Yap http://yap.nu; http://creativecommons.org/licenses/by-sa/3.0/ */
+* Copyright (c) 2014 Han Lin Yap http://yap.nu; MIT license */
 (function ($) {
+	'use strict';
+
 	// Prevent to read twice
 	if ($.cssFinalize) {
 		return;
@@ -26,6 +28,10 @@
 	};
 	
 	$.cssFinalize = function(options) {
+		if (document.documentMode && document.documentMode <= 9) {
+			return true;
+		}
+
 		var div = document.createElement('div');
 		div.style.cssText = 'background-image:linear-gradient(#9f9, white);';
 
@@ -40,38 +46,18 @@
 
 		// Get current vendor prefix
 		var currentPrefix;
-		if (window.getComputedStyle) {
-			var styles = getComputedStyle(document.documentElement, null);
+		var styles = window.getComputedStyle(document.documentElement, null);
 
-			if (styles.length) {
-				for(var i = 0; i < styles.length ; i++) {
-					if (styles[i].charAt(0) === '-') {
-						var pos = styles[i].indexOf('-',1);
-						supportRules.push(styles[i].substr(pos+1));
+		for(var i = 0; i < styles.length ; i++) {
+			if (styles[i].charAt(0) === '-') {
+				var pos = styles[i].indexOf('-',1);
+				supportRules.push(styles[i].substr(pos+1));
 
-						currentPrefix = styles[i].substr(1, pos-1);
-					}
-				}
-			} else {
-				// In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
-				for(var i in styles) {
-					var style = deCamelCase(i);
-					if (style.indexOf('-o-') === 0) {
-						supportRules.push(style.substr(3));
-					}
-				}
-				currentPrefix = 'o';
+				currentPrefix = styles[i].substr(1, pos-1);
 			}
-		} else {
-			// No vendor prefix in <ie 8
-			return true;
 		}
 
-		// IE9 do have transform but the code above didnt detect it so I added manually
-		if (currentPrefix == 'ms' && supportRules.indexOf('transform') === -1) {
-			supportRules.push('transform');
-			supportRules.push('transform-origin');
-		} else if (currentPrefix == 'webkit') {
+		if (currentPrefix == 'webkit') {
 		// IE9 dont have transition and only webkit need prefixes
 		/*
 			supportRules.push('animation');
@@ -328,14 +314,6 @@
 				return newValue.join(',');
 			}
 			
-			// Only apply for webkit
-			if (currentPrefix == 'webkit') {
-				// calc
-				if (value.indexOf('calc') === 0) {
-					return '-webkit-' + value;
-				}
-			}
-			
 			// Only apply for firefox
 			if (currentPrefix == 'moz') {
 				// element - CSS4
@@ -345,62 +323,25 @@
 			}
 			
 			if (property == 'display') {
-				// flex - Convert newer standard to IE compability
-				if (currentPrefix == 'ms' && 'msFlexWrap' in div.style) {
-					if (value.indexOf('flex') === 0) {
-						return '-ms-flexbox';
+				if (!('flexBasis' in div.style)) {
+					// Only for IE10
+					if (currentPrefix == 'ms') {
+						if (value.indexOf('flex') === 0) {
+							return '-ms-flexbox';
+						} else if (value.indexOf('inline-flex') === 0) {
+							return '-ms-inline-flexbox';
+						}
 					}
-					if (value.indexOf('inline-flex') === 0) {
-						return '-ms-inline-flexbox';
+				
+					if (value.indexOf('flex') === 0 ||
+						value.indexOf('inline-flex') === 0) {
+						return '-' + currentPrefix + '-' + value;
 					}
 				}
 
 				if (value.indexOf('grid') === 0 ||
-					value.indexOf('inline-grid') === 0 ||
-					// Old - IE10 - http://www.w3.org/TR/2012/WD-css3-flexbox-20120322/
-					value.indexOf('flexbox') === 0 ||
-					value.indexOf('inline-flexbox') === 0 ||
-					// W3C Candidate Recommendation, 18 September 2012 - http://www.w3.org/TR/2012/CR-css3-flexbox-20120918/
-					value.indexOf('flex') === 0 ||
-					value.indexOf('inline-flex') === 0
-					) {
+					value.indexOf('inline-grid') === 0) {
 					return '-' + currentPrefix + '-' + value;
-				}
-			}
-			
-			if (property == 'background' ||
-				property == 'background-image') {
-				if (value.indexOf('linear-gradient') === 0) {
-					// Only for IE9 - border-radius + gradient bug
-					// http://stackoverflow.com/questions/4692686/ie9-border-radius-and-background-gradient-bleeding
-					if (currentPrefix == 'ms' && div.style.backgroundImage.indexOf('gradient') === -1) {
-						// Example
-						// value = linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, .5))
-						var da = value.replace(/^linear-gradient\s?\(\s?(.*?)\s?\)$/, '$1'),
-							dc = [1, 1];
-						// da = "rgba(0, 0, 0, 1), rgba(0, 0, 0, .5)"
-						if (da.indexOf('rgba') === 0) {
-							da = da.split(/rgba\s?\(\s?(.*?)\s?\)/);
-							// da = ["", "0, 0, 0, 1", ", ", "0, 0, 0, .5", ""]
-							da[1] = da[1].split(/,\s?/);
-							da[3] = da[3].split(/,\s?/);
-							dc[0] = da[1].pop();
-							dc[1] = da[3].pop();
-							da = ['rgb(' + da[1].join(',') + ')', 'rgb(' + da[3].join(',') + ')'];
-						} else {
-							da = da.split(/,\s?/);
-						}
-						if (da.length == 2) {
-							var g = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient id="gradient" x1="0" y1="0" x2="0" y2="100%"><stop offset="0%" style="stop-color: ' + da[0] + ';stop-opacity:' + dc[0] + '"/><stop offset="100%" style="stop-color: ' + da[1] + ';stop-opacity:' + dc[1] + '"/></linearGradient></defs><rect x="0" y="0" fill="url(#gradient)" width="100%" height="100%" /></svg>';
-							return 'url(data:image/svg+xml,' + escape(g) + ')';
-						}
-					} else if (currentPrefix == 'webkit') {
-						return '-' + currentPrefix + '-' + value;
-					}
-				} else if (value.indexOf('linear-gradient') > -1) {
-					if (currentPrefix == 'webkit') {
-						return value.replace(RegExp('(\\s|:|,)(linear-gradient)\\s*\\(', 'gi'), '$1' + '-webkit-' + '$2(');
-					}
 				}
 			}
 			
@@ -409,7 +350,63 @@
 		
 		// return { property : value }
 		function propertyValuesRules(property, value) {
-			
+			// Flex for IE10
+			if (currentPrefix == 'ms' && !('flexBasis' in div.style)) {
+				if (property == 'justify-content' ||
+					property == 'align-content' ||
+					property == 'align-items' ||
+					property == 'align-self') {
+					var newValue = value;
+
+					if (value == 'space-between') {
+						newValue = 'justify';
+					} else if (value == 'space-around') {
+						newValue = 'distribute';
+					} else if (value == 'flex-start') {
+						newValue = 'start';
+					} else if (value == 'flex-end') {
+						newValue = 'end';
+					}
+
+					if (property == 'justify-content') {
+						return {
+							'-ms-flex-pack': newValue
+						};
+					} else if (property == 'align-content') {
+						return {
+							'-ms-flex-line-pack': newValue
+						};
+					} else if (property == 'align-items') {
+						return {
+							'-ms-flex-align': newValue
+						};
+					} else if (property == 'align-self') {
+						return {
+							'-ms-flex-item-align': newValue
+						};
+					}
+				}
+
+				if (property == 'order') {
+					return {
+						'-ms-flex-order': value
+					}
+				}
+
+				if (property == 'flex-wrap') {
+					var newValue = value;
+
+					if (value == 'nowrap') {
+						newValue = 'none';
+					}
+
+					return {
+						'-ms-flex-wrap': newValue
+					}
+				}
+
+			}
+
 			return false;
 		}
 		
@@ -420,7 +417,7 @@
 					selector = selector.replace('::selection', '::-moz-selection');
 					
 					// :input-placeholder
-					selector = selector.replace(':input-placeholder', ':-moz-placeholder');
+					selector = selector.replace(':input-placeholder', '::-moz-placeholder');
 				break;
 				case 'webkit' :
 					// @keyframes
@@ -435,10 +432,6 @@
 					
 					// @viewport
 					selector = selector.replace('@viewport', '@-ms-viewport');
-				break;
-				case 'o' :
-					// @viewport
-					selector = selector.replace('@viewport', '@-o-viewport');
 				break;
 			}
 			return selector;

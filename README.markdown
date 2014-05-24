@@ -7,20 +7,13 @@ For example the css3 attribute <code>transform</code> need to have the prefix
 <li><code>-moz-</code> in Firefox</li>
 <li><code>-ms-</code> in Internet explorer</li>
 <li><code>-webkit-</code> in Chrome, Safari</li>
-<li><code>-o-</code> in Opera</li>
 </ul>
-
-In additional besides adding vendor prefix, it have also partial support for linear-gradient in IE9.
 
 ## How to use
 
-Simply add this line of code to your site for latest version
+Simply add this line of code to your site
 
-	<script src="http://static.zencodez.net/js/jquery.css3finalize-v3.x.min.js"></script>
-
-or for version 3.4.0
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/3.4.0/jquery.css3finalize.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/4.0.0/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
@@ -48,9 +41,9 @@ If you don't want the script to automatically load and parse then you could set 
 
 ## Tests
 
-This script has been tested in <code>IE 9-10</code>, <code>FF</code>, <code>Webkit</code>
+This script has been tested in <code>IE 10-11</code>, <code>FF</code>, <code>Webkit</code>
 
-<http://jsfiddle.net/UmquE/>
+<http://jsfiddle.net/Q96Gc/>
 
 #### Some notes
 * The script can only read link-tags where it source are from same domain.
@@ -68,11 +61,37 @@ In normal case you would have needed to add a prefix
 
 <code>$('a').css({'width' : '-webkit-calc(100% - 80px)', '-moz-column-width' : 10});</code>
 
+## LESS
+
+Example using <code>less.js</code> post processing together with this script
+
+	less = {
+		postProcessor: function(css) {
+			var processedCSS = css;
+			if ($.cssFinalize) {
+				$('<textarea>').val(css).cssFinalize({
+					'append' : false,
+					'callback': function(css) {
+						processedCSS += $.cssFinalize.cssObjToText(css);
+					}
+				});
+			}
+			return processedCSS;
+		}
+	};
+
 ## Feedback
 
 I appreciate all feedback, thanks! If you would like to donate you can send to this Bitcoin address <code>1FCT3xhLBRD1MUxnS1ppcLrbH9SCeZpu6D</code>
 
 ## Change log ##
+
+2013-05-24 - **v4.0.0**
+
+Version 4 have been updated to support IE10+ and other modern browsers.
+CSS Flex fallback support
+
+([codler](https://github.com/codler))
 
 2013-03-29 - **v3.4.0**
 

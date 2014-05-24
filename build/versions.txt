@@ -1,6 +1,6 @@
-js:jquery:1.9.1:jquery-1.9.1.min.js
-js:css3finalize:3.2:jquery.css3finalize-v3.x.min.js
-rar:kirby:0.7:kirby.rar
+js:jquery:2.1.1:jquery-2.1.1.min.js
+js:css3finalize:3.4.0:jquery.css3finalize-v3.x.min.js
+rar:kirby:0.8:kirby.rar
 php:smush:1.0:smush.php
 php:fetch_url:1.1:fetch_url.class.php
 php:secure_upload:1.0:secure_upload.php
