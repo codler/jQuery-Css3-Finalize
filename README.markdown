@@ -86,7 +86,7 @@ I appreciate all feedback, thanks! If you would like to donate you can send to t
 
 ## Change log ##
 
-2013-05-24 - **v4.0.0**
+2014-05-24 - **v4.0.0**
 
 Version 4 have been updated to support IE10+ and other modern browsers.
 CSS Flex fallback support
