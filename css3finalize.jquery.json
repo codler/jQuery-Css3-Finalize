@@ -2,7 +2,7 @@
 	"name":     "css3finalize",
 	"title":    "jQuery CSS3 Finalize",
 	"description": "Automatically add vendor prefixes.",
-	"version":  "4.0.0",
+	"version":  "4.0.1",
 	"bugs":     "https://github.com/codler/jQuery-Css3-Finalize/issues",
 	"docs":     "https://github.com/codler/jQuery-Css3-Finalize",
 	"download": "https://github.com/codler/jQuery-Css3-Finalize",

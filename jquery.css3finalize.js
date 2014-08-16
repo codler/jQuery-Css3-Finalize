@@ -1,4 +1,4 @@
-/*! CSS3 Finalize - v4.0.0 - 2014-05-24 - Automatically add vendor prefixes. 
+/*! CSS3 Finalize - v4.0.1 - 2014-08-16 - Automatically add vendor prefixes. 
 * https://github.com/codler/jQuery-Css3-Finalize
 * Copyright (c) 2014 Han Lin Yap http://yap.nu; MIT license */
 (function ($) {
@@ -57,15 +57,10 @@
 			}
 		}
 
-		if (currentPrefix == 'webkit') {
-		// IE9 dont have transition and only webkit need prefixes
-		/*
-			supportRules.push('animation');
-			supportRules.push('marquee');
-			supportRules.push('text-stroke');
-			supportRules.push('transition');
-			supportRules.push('transition-property');
-			*/
+		// IE10 do have flex but the code above didnt detect it so I added manually
+		if (currentPrefix == 'ms' && supportRules.indexOf('flex') === -1) {
+			supportRules.push('flex');
+		} else if (currentPrefix == 'webkit') {
 			for (var i in div.style) {
 				if (i.indexOf('webkit') === 0) {
 					var style = deCamelCase(i);

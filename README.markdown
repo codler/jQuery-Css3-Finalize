@@ -86,6 +86,10 @@ I appreciate all feedback, thanks! If you would like to donate you can send to t
 
 ## Change log ##
 
+2014-08-16 - **v4.0.1**
+
+* Fix detect property flex in IE10 ([codler](https://github.com/codler) [#25](https://github.com/codler/jQuery-Css3-Finalize/issues/25))
+
 2014-05-24 - **v4.0.0**
 
 Version 4 have been updated to support IE10+ and other modern browsers.
