@@ -1,0 +1,24 @@
+{
+	"name": "css3finalize",
+	"description": "Automatically add vendor prefixes",
+	"homepage": "https://github.com/codler/jQuery-Css3-Finalize",
+	"main": "jquery.css3finalize.js",
+	"license": "MIT",
+	"keywords": [
+		"css",
+		"css3",
+		"prefix",
+		"vendor",
+		"vendor-prefix",
+		"style"
+	],
+	"authors": [
+		{
+			"name": "Han Lin Yap",
+			"homepage": "http://yap.nu/"
+		}
+	],
+	"dependencies": {
+		"jquery": ">=1.4.3"
+	}
+}

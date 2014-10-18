@@ -13,7 +13,7 @@ For example the css3 attribute <code>transform</code> need to have the prefix
 
 Simply add this line of code to your site
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/4.0.0/jquery.css3finalize.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/4.0.1/jquery.css3finalize.min.js"></script>
 
 Once the script is loaded it will search for style-tags and link-tags (within same domain) and parse them.
 
@@ -85,6 +85,11 @@ Example using <code>less.js</code> post processing together with this script
 I appreciate all feedback, thanks! If you would like to donate you can send to this Bitcoin address <code>1FCT3xhLBRD1MUxnS1ppcLrbH9SCeZpu6D</code>
 
 ## Change log ##
+
+2014-10-18 - **v4.1.0**
+
+* Add Bower integration ([codler](https://github.com/codler) [#26](https://github.com/codler/jQuery-Css3-Finalize/issues/26))
+* Add CSS `@supports` support
 
 2014-08-16 - **v4.0.1**
 
